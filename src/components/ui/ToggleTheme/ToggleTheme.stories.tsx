@@ -9,7 +9,4 @@ const meta: Meta<typeof ToggleTheme> = {
 export default meta;
 type Story = StoryObj<typeof ToggleTheme>;
 
-export const ToggleThemeButton: Story = {
-    args: {
-    },
-};
+export const ToggleThemeButton: Story = {};
