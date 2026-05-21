@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "@/lib/cn";
+import ContentCard from "@/components/ui/ContentCard/ContentCard";
 
 export type HistoryContentStatus = "예정" | "체크안됨" | "체크됨" | "완료";
 
@@ -19,9 +20,6 @@ const STATUS_TEXT_CLASS_NAME: Record<HistoryContentStatus, string> = {
   완료: "text-emerald-600 dark:text-emerald-300",
 };
 
-const CARD_CLASS_NAME =
-  "flex rounded-[20px] border border-zinc-200 bg-zinc-100 px-6 py-4 shadow-sm shadow-zinc-900/5 transition-colors sm:px-8 lg:px-10 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-zinc-950/20";
-
 const DETAIL_LINK_CLASS_NAME =
   "flex aspect-square h-full cursor-pointer items-center justify-center rounded-full border border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
 
@@ -32,10 +30,7 @@ export function HistoryContentSection({
   redirectUrl,
 }: HistoryContentSectionProps) {
   return (
-    <article
-      data-testid="history-content-section"
-      className={CARD_CLASS_NAME}
-    >
+    <ContentCard>
       <div className="flex w-full justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-0">
           <h2
@@ -80,6 +75,6 @@ export function HistoryContentSection({
           ) : null}
         </div>
       </div>
-    </article>
+    </ContentCard>
   );
 }

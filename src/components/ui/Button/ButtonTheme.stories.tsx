@@ -4,7 +4,7 @@ import { ExternalLink, Send } from "lucide-react";
 import Button from "./Button";
 
 const meta = {
-  title: "Components/ui/Button",
+  title: "Components/UI/Button",
   tags: ["autodocs"],
   component: Button,
 } satisfies Meta<typeof Button>;
