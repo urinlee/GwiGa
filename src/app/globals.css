@@ -7,6 +7,9 @@
   --foreground: #171717;
   --text-primary: #171717;
   --text-secondary: #4b5563;
+  --text-force-primary: #ededed;
+  --text-force-secondary: #9ca3af;
+  --button-bg: #4b5563;
 }
 
 .dark,
@@ -15,11 +18,19 @@
   --foreground: #ededed;
   --text-primary: #ededed;
   --text-secondary: #9ca3af;
+  --text-force-primary: #171717;
+  --text-force-secondary: #4b5563;
+  --button-bg: #e5e7eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-force-primary: var(--text-force-primary);
+  --color-text-force-secondary: var(--text-force-secondary);
+  --color-button-bg: var(--button-bg);
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }

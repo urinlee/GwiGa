@@ -20,7 +20,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <WebThemeProviders>
           <Header></Header>
-          {children}
+          <section className="mx-auto w-full max-w-6xl flex-1 px-6 sm:px-8 lg:px-10">
+            {children}
+          </section>
         </WebThemeProviders>
       </body>
     </html>

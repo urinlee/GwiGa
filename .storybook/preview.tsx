@@ -1,9 +1,12 @@
 import type { Preview } from '@storybook/nextjs-vite'
 import "../src/app/globals.css";
 import { ThemeProvider } from 'next-themes';
+ 
+import { withThemeByClassName } from '@storybook/addon-themes';
 
 
 const preview: Preview = {
+  
   parameters: {
     controls: {
       matchers: {
@@ -27,6 +30,13 @@ const preview: Preview = {
       </ThemeProvider>
 
     ),
+    withThemeByClassName({
+      themes: {
+        light: '',
+        dark: 'dark',
+      },
+      defaultTheme: 'light',
+    }),
 
   ],
 };
