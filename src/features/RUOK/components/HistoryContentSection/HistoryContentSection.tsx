@@ -4,22 +4,23 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import ContentCard from "@/components/ui/ContentCard/ContentCard";
 import { ClassNameValue } from "tailwind-merge";
+import { participateContentStatus } from "@/types/ui";
 
-export type HistoryContentStatus = "예정" | "체크안됨" | "체크됨" | "완료";
+
 
 export interface HistoryContentSectionProps {
   title: string;
   date: string;
-  status: HistoryContentStatus;
+  status: participateContentStatus;
   redirectUrl?: string;
 }
 
-const STATUS_TEXT_CLASS_NAME: Record<HistoryContentStatus, string> = {
+const STATUS_TEXT_CLASS_NAME = {
   예정: "text-cyan-600 dark:text-cyan-300",
   체크안됨: "text-amber-600 dark:text-amber-300",
   체크됨: "text-sky-600 dark:text-sky-300",
   완료: "text-emerald-600 dark:text-emerald-300",
-};
+} satisfies Record<participateContentStatus, string> as Record<participateContentStatus, string>;
 
 const DETAIL_LINK_CLASS_NAME:ClassNameValue =
   "flex h-full aspect-square cursor-pointer items-center justify-center rounded-full border border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
