@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { cn } from "@/lib/cn";
 import ContentCard from "@/components/ui/ContentCard/ContentCard";
+import { ClassNameValue } from "tailwind-merge";
 
 export type HistoryContentStatus = "예정" | "체크안됨" | "체크됨" | "완료";
 
@@ -20,8 +21,11 @@ const STATUS_TEXT_CLASS_NAME: Record<HistoryContentStatus, string> = {
   완료: "text-emerald-600 dark:text-emerald-300",
 };
 
-const DETAIL_LINK_CLASS_NAME =
-  "flex aspect-square h-full cursor-pointer items-center justify-center rounded-full border border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
+const DETAIL_LINK_CLASS_NAME:ClassNameValue =
+  "flex h-full aspect-square cursor-pointer items-center justify-center rounded-full border border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
+const HistoryContent_HOVER_CLASS:ClassNameValue =
+    "transition-all duration-300 hover:-translate-y-1 hover:scale-101";
+
 
 export function HistoryContentSection({
   title,
@@ -30,28 +34,28 @@ export function HistoryContentSection({
   redirectUrl,
 }: HistoryContentSectionProps) {
   return (
-    <ContentCard>
-      <div className="flex w-full justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-0">
+    <ContentCard style={HistoryContent_HOVER_CLASS}>
+      <div className="w-full flex flex-col items-center gap-0 md:flex-row md:justify-between md:gap-4">
+        <div className="flex min-w-0 flex-row md:flex-col gap-0">
           <h2
             data-testid="history-content-title"
-            className="mb-4 truncate text-xl font-bold text-zinc-800 sm:text-2xl lg:text-2xl dark:text-zinc-100"
+            className={cn("mb-4 truncate font-bold text-zinc-800 sm:text-2xl lg:text-2xl dark:text-zinc-100", title.length > 8 ? "text-[15px]" : "text-[17px]")}
           >
             {title}
           </h2>
           <p
             data-testid="history-content-date"
-            className="px-1 text-[11px] font-medium text-zinc-500 sm:text-[11px] lg:px-2 lg:text-[12px] dark:text-zinc-400"
+            className="hidden px-1 text-[5px] md:block md:text-[12px] font-medium text-zinc-500 dark:text-zinc-400"
           >
             {date}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center gap-4 md:h-full">
           <span
             data-testid="history-content-status"
             className={cn(
-              "py-1 text-[20px] font-bold whitespace-nowrap lg:px-2 lg:text-[24px]",
+              "md:py-5 text-[15px] md:text-[20px] font-bold whitespace-nowrap lg:px-2 lg:text-[24px]",
               STATUS_TEXT_CLASS_NAME[status],
             )}
           >
@@ -61,13 +65,13 @@ export function HistoryContentSection({
           {redirectUrl ? (
             <div
               data-testid="history-content-showmore-container"
-              className="h-full w-auto py-5 sm:py-2"
+              className="hidden md:flex h-full w-auto py-2 items-center justify-center"
             >
               <Link
                 aria-label={`${title} 상세 보기`}
                 data-testid="history-content-showmore-button"
                 href={redirectUrl}
-                className={DETAIL_LINK_CLASS_NAME}
+                className={cn(DETAIL_LINK_CLASS_NAME)}
               >
                 <ChevronRight className="size-6" />
               </Link>

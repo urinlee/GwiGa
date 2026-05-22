@@ -16,3 +16,12 @@ export const Default: Story = {
         status: "예정"
     }
 };
+
+export const haveRedirectUrl: Story = {
+    args: {
+        title: "과 개강총회",
+        date: "2024-06-01",
+        status: "예정",
+        redirectUrl: "/some-url"
+    }
+};
