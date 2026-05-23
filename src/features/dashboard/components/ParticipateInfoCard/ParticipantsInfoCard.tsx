@@ -8,7 +8,8 @@ export interface ParticipantsInfoCardProps {
     enableStatus: participateContentStatus[];
 }
 
-const notIncludeStatusClasses = "text-gray-500 dark:text-gray-200";
+const notIncludeStatusClasses = "text-gray-300 dark:text-gray-600";
+const includedStatusFallbackClasses = "text-gray-600 dark:text-gray-200";
 
 export default function ParticipantInfoCard({ username, enableStatus, allStatus }: ParticipantsInfoCardProps) {
     return (
@@ -22,12 +23,18 @@ export default function ParticipantInfoCard({ username, enableStatus, allStatus 
                 </div>
                 <div className="grid grid-cols-2 odd:justify-start even:justify-end w-full gap-y-2">
                     { allStatus.map((status, index) => {
+                        const isEnabled = enableStatus.includes(status as participateContentStatus);
+                        const statusClass =
+                            participateStatusClasses[status as keyof typeof participateStatusClasses] ??
+                            includedStatusFallbackClasses;
+
                         return (
                         // 카드에 Status 상태 표시
                         <span 
                             key={status + index.toString()} 
                             className={cn("text-[13px] font-bold", "text-zinc-300 dark:text-zinc-600", 
-                                enableStatus.includes(status as participateContentStatus) && ((Object.prototype.hasOwnProperty.call(participateStatusClasses, status)) ? participateStatusClasses[status as participateContentStatus] : notIncludeStatusClasses)
+                                isEnabled && statusClass,
+                                !isEnabled && notIncludeStatusClasses,
                             )}
                         >
                             {status}

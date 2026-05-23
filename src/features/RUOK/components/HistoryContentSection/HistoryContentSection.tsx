@@ -20,6 +20,8 @@ const DETAIL_LINK_CLASS_NAME:ClassNameValue =
   "flex h-full aspect-square cursor-pointer items-center justify-center rounded-full border border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
 const HistoryContent_HOVER_CLASS:ClassNameValue =
     "transition-all duration-300 hover:-translate-y-1 hover:scale-101";
+const CUSTOM_STATUS_FALLBACK_CLASS: ClassNameValue =
+  "text-zinc-500 dark:text-zinc-300";
 
 
 export function HistoryContentSection({
@@ -28,6 +30,10 @@ export function HistoryContentSection({
   status,
   redirectUrl,
 }: HistoryContentSectionProps) {
+  const statusClass =
+    dashboardStatusClasses[status as keyof typeof dashboardStatusClasses] ??
+    CUSTOM_STATUS_FALLBACK_CLASS;
+
   return (
     <ContentCard style={HistoryContent_HOVER_CLASS}>
       <div className="w-full flex flex-col items-center gap-0 md:flex-row md:justify-between md:gap-4">
@@ -51,7 +57,7 @@ export function HistoryContentSection({
             data-testid="history-content-status"
             className={cn(
               "md:py-5 text-[15px] md:text-[20px] font-bold whitespace-nowrap lg:px-2 lg:text-[24px]",
-              dashboardStatusClasses[status],
+              statusClass,
             )}
           >
             {status}

@@ -5,6 +5,7 @@ import ParticipantInfoCard from "./ParticipantsInfoCard";
 
 const meta = {
     title: "Features/Dashboard/ParticipateInfoCard",
+    tags: ["autodocs"],
     component: ParticipantInfoCard,
     
 } satisfies Meta<typeof ParticipantInfoCard>;
