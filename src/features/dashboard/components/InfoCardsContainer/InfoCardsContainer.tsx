@@ -39,7 +39,7 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
     return (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
             {sortedParticipants.map((participant, index) => (
-                <ParticipantInfoCard key={participant.username + index.toString()} {...participant} />
+                <ParticipantInfoCard key={participant.username + '-' + index.toString()} {...participant} />
             ))}
         </div>
     );
