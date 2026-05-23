@@ -1,3 +1,4 @@
+import { expect, within } from 'storybook/test';
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import ContentSectionContainer from "./ContentSectionContainer.";
 
@@ -10,7 +11,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        // CreateNewSection should always be rendered
+        await expect(canvas.getByText("새로운 일정을 추가해보세요!")).toBeInTheDocument();
+    },
+};
 
 export const WithFiveContent: Story = {
     args: {
@@ -42,5 +49,13 @@ export const WithFiveContent: Story = {
             },
         ]
 
-    }
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText("과 신입생입학환영회")).toBeInTheDocument();
+        await expect(canvas.getByText("과 개강총회")).toBeInTheDocument();
+        await expect(canvas.getByText("단과대 MT")).toBeInTheDocument();
+        await expect(canvas.getByText("동아리 MT")).toBeInTheDocument();
+        await expect(canvas.getByText("고등학교 동창회")).toBeInTheDocument();
+    },
 };
