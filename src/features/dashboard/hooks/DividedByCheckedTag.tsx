@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { set } from "zod";
+import { useEffect, useState } from "react";
 
 
 
@@ -12,6 +11,16 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
     const [CheckedTagsStep, setCheckedTagsStep] = useState<TagsCheckObject>(
         Object.fromEntries(allStatuses.map((status) => [status, 0])) as TagsCheckObject
     );
+
+    useEffect(() => {
+        setCheckedTagsStep((prev) => {
+            const next = Object.fromEntries(
+                allStatuses.map((status) => [status, prev[status] ?? 0])
+            ) as TagsCheckObject;
+
+            return next;
+        });
+    }, [allStatuses]);
 
     const toggleTagClick = (status: typeof allStatuses[number]) => {
         setCheckedTagsStep((prev) => {

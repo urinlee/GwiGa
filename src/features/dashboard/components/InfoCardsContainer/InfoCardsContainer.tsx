@@ -31,10 +31,10 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
         <div>
             <div className="flex justify-between items-center mb-4 px-5 w-full">
                 <div className="flex gap-4">
-                    {Object.entries(CheckedTagsStep).map(([status, num], index) => (
-                        <div key={status + index.toString()} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(status)}>
+                    {Object.entries(CheckedTagsStep).map(([status, num]) => (
+                        <div key={status} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(status)}>
                             <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
-                            <span key={status + index.toString()} className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", participateStatusClasses[status as keyof typeof participateStatusClasses] ?? "")}>
+                            <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", participateStatusClasses[status as keyof typeof participateStatusClasses] ?? "")}>
                             {/* 색상 participateStatusClasses에 맞게 바꾸기 */}
                                 {status}
                             </span>
@@ -55,8 +55,8 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
             </div>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
                 {
-                filteredParticipants.map((participant, index) => (
-                    <div key={participant.username + '-' + index.toString()} className={cn("w-full", )}>
+                filteredParticipants.map((participant) => (
+                    <div key={participant.username} className={cn("w-full", )}>
                         <ParticipantInfoCard {...participant} />
                     </div>
                 ))
