@@ -14,11 +14,15 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
 
     useEffect(() => {
         setCheckedTagsStep((prev) => {
-            const next = Object.fromEntries(
+            const sameLength = Object.keys(prev).length === allStatuses.length;
+            const sameKeys = allStatuses.every((status) => status in prev);
+            if (sameLength && sameKeys) {
+                return prev;
+            }
+
+            return Object.fromEntries(
                 allStatuses.map((status) => [status, prev[status] ?? 0])
             ) as TagsCheckObject;
-
-            return next;
         });
     }, [allStatuses]);
 

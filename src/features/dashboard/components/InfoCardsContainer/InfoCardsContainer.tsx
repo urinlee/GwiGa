@@ -1,4 +1,5 @@
 'use client';
+import { useMemo } from "react";
 import ParticipantInfoCard, { ParticipantsInfoCardProps } from "../ParticipateInfoCard/ParticipantsInfoCard";
 import { cn } from "@/lib/cn";
 import useDividedByCheckedTag from "@/features/dashboard/hooks/DividedByCheckedTag";
@@ -17,10 +18,13 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
     //     new Set(participants.flatMap((participant) => participant.allStatus.map(String)))
     // ).sort((a, b) => a.localeCompare(b, "ko"));
 
-    const getAllStatuses = [...Array.from(new Set(participants.flatMap((participant) => participant.allStatus.map(String))))] as const;
+    const allStatuses = useMemo<readonly string[]>(
+        () => Array.from(new Set(participants.flatMap((participant) => participant.allStatus.map(String)))),
+        [participants]
+    );
 
     const { criteria, setCriteria, sortedParticipants } = useCriteriaForSorting(participants);
-    const {CheckedTagsStep, toggleTagClick, getStepCheckedTags,} = useDividedByCheckedTag(getAllStatuses);
+    const {CheckedTagsStep, toggleTagClick, getStepCheckedTags,} = useDividedByCheckedTag(allStatuses);
     // 0: 참조하지 안음
     // 1: 해당 Status가 아닌 것만 보임
     // 2: 해당 Status만 보임
