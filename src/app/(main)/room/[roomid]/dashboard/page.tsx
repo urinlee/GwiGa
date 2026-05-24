@@ -1,4 +1,3 @@
-// "use client";
 //pc에선 dashboard page만 만든다. 모바일에서는 room page도 만든다. pc에서는 room page는 만들지 않는다.
 
 import DashboardHero from "@/features/dashboard/components/DashboardHero/DashboardHero";
