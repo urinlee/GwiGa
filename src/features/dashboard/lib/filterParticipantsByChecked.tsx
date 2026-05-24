@@ -1,6 +1,12 @@
 
+import { ParticipantsInfoCardProps } from "../components/ParticipateInfoCard/ParticipantsInfoCard";
 
-export const filteredParticipantsByStep = ({sortedParticipants, getStepCheckedTags} : {sortedParticipants: any[], getStepCheckedTags: (step: number) => string[]}) => {
+type FilterParticipantsByStepArgs = {
+    sortedParticipants: ParticipantsInfoCardProps[];
+    getStepCheckedTags: (step: number) => string[];
+};
+
+export const filteredParticipantsByStep = ({sortedParticipants, getStepCheckedTags} : FilterParticipantsByStepArgs) => {
     return [...sortedParticipants].filter((participant) => {
         const participantStatuses = new Set(participant.enableStatus.map(String));
         const step1Statuses = getStepCheckedTags(1);

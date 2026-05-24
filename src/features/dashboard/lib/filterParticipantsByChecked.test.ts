@@ -1,18 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
+import { ParticipantsInfoCardProps } from '../components/ParticipateInfoCard/ParticipantsInfoCard';
 import { filteredParticipantsByStep } from './filterParticipantsByChecked';
 
-type Participant = {
-	username: string;
-	enableStatus: Array<string | number>;
-};
+const allStatuses = ['ready', 'help', 'late', 'custom-tag'] as const;
 
-const participants: Participant[] = [
-	{ username: 'alice', enableStatus: ['ready', 'help'] },
-	{ username: 'bob', enableStatus: ['ready'] },
-	{ username: 'chris', enableStatus: ['late', 'help'] },
-	{ username: 'dana', enableStatus: [1, 'ready'] },
-	{ username: 'eric', enableStatus: [] },
+const participants: ParticipantsInfoCardProps[] = [
+	{ username: 'alice', allStatus: [...allStatuses], enableStatus: ['ready', 'help'] },
+	{ username: 'bob', allStatus: [...allStatuses], enableStatus: ['ready'] },
+	{ username: 'chris', allStatus: [...allStatuses], enableStatus: ['late', 'help'] },
+	{ username: 'dana', allStatus: [...allStatuses], enableStatus: ['ready', 'custom-tag'] },
+	{ username: 'eric', allStatus: [...allStatuses], enableStatus: [] },
 ];
 
 const createGetStepCheckedTags = (steps: Record<number, string[]>) => {
@@ -65,10 +63,10 @@ describe('filteredParticipantsByStep', () => {
 		expect(result.map((participant) => participant.username)).toEqual(['bob', 'dana']);
 	});
 
-	it('handles numeric statuses by string comparison', () => {
+	it('handles custom string statuses that are not predefined', () => {
 		const result = filteredParticipantsByStep({
 			sortedParticipants: participants,
-			getStepCheckedTags: createGetStepCheckedTags({ 2: ['1'] }),
+			getStepCheckedTags: createGetStepCheckedTags({ 2: ['custom-tag'] }),
 		});
 
 		expect(result.map((participant) => participant.username)).toEqual(['dana']);
