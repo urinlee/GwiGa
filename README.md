@@ -2,19 +2,43 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, start PostgreSQL and apply the Prisma schema:
+
+```bash
+npm run db:up
+npm run db:migrate
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Database
+
+This project uses Docker Compose for local PostgreSQL and Prisma for schema/client management.
+
+```bash
+npm run db:up        # start PostgreSQL
+npm run db:down      # stop PostgreSQL
+npm run db:migrate   # create/apply a migration
+npm run db:generate  # regenerate Prisma Client
+npm run db:studio    # open Prisma Studio
+```
+
+The local connection string lives in `.env`. Use `.env.example` as the shared template.
+
+Useful API endpoints:
+
+- `GET /api/health`
+- `GET /api/rooms`
+- `POST /api/rooms`
+- `GET /api/rooms/:roomId`
+- `GET /api/rooms/:roomId/participants`
+- `POST /api/rooms/:roomId/participants`
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 
 
@@ -8,23 +8,17 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
         [key: typeof allStatuses[number]]: number;
     }
 
-    const [CheckedTagsStep, setCheckedTagsStep] = useState<TagsCheckObject>(
-        Object.fromEntries(allStatuses.map((status) => [status, 0])) as TagsCheckObject
+    const [checkedTagsStep, setCheckedTagsStep] = useState<TagsCheckObject>(
+        {}
     );
 
-    useEffect(() => {
-        setCheckedTagsStep((prev) => {
-            const sameLength = Object.keys(prev).length === allStatuses.length;
-            const sameKeys = allStatuses.every((status) => status in prev);
-            if (sameLength && sameKeys) {
-                return prev;
-            }
-
-            return Object.fromEntries(
-                allStatuses.map((status) => [status, prev[status] ?? 0])
-            ) as TagsCheckObject;
-        });
-    }, [allStatuses]);
+    const CheckedTagsStep = useMemo(
+        () =>
+            Object.fromEntries(
+                allStatuses.map((status) => [status, checkedTagsStep[status] ?? 0])
+            ) as TagsCheckObject,
+        [allStatuses, checkedTagsStep]
+    );
 
     const toggleTagClick = (status: typeof allStatuses[number]) => {
         setCheckedTagsStep((prev) => {
@@ -36,8 +30,8 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
 
     const getStepCheckedTags = (step: number) => {
         return Object.entries(CheckedTagsStep)
-            .filter(([_, value]) => value === step)
-            .map(([key, _]) => key);
+            .filter(([, value]) => value === step)
+            .map(([key]) => key);
     }
 
     return {
