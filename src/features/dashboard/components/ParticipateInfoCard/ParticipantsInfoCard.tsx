@@ -11,38 +11,77 @@ export interface ParticipantsInfoCardProps {
 const notIncludeStatusClasses = "text-gray-300 dark:text-gray-600";
 const includedStatusFallbackClasses = "text-gray-600 dark:text-gray-200";
 
-export default function ParticipantInfoCard({ username, enableStatus, allStatus }: ParticipantsInfoCardProps) {
-    return (
-        <div className="flex justify-center">
-            <div className="flex flex-col items-center gap-2 rounded-lg border border-zinc-300 bg-white py-4 px-2 text-center text-sm font-medium text-zinc-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
-                <div className="flex w-15 mx-5 aspect-square rounded-full items-center justify-center bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300 overflow-hidden">
-                    <User className="size-8"/>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                    <span className="">{username}</span>
-                </div>
-                <div className="grid grid-cols-2 odd:justify-start even:justify-end w-full gap-y-2">
-                    { allStatus.map((status, index) => {
-                        const isEnabled = enableStatus.includes(status as participateContentStatus);
-                        const statusClass =
-                            participateStatusClasses[status as keyof typeof participateStatusClasses] ??
-                            includedStatusFallbackClasses;
+export default function ParticipantInfoCard({
+  username,
+  enableStatus,
+  allStatus,
+}: ParticipantsInfoCardProps) {
+  return (
+    <div className="flex justify-center">
+      <div
+        className={cn(
+          // mobile
+          "flex w-full max-w-sm items-center gap-3 rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100",
 
-                        return (
-                        // 카드에 Status 상태 표시
-                        <span 
-                            key={status + index.toString()} 
-                            className={cn("text-[13px] font-bold", "text-zinc-300 dark:text-zinc-600", 
-                                isEnabled && statusClass,
-                                !isEnabled && notIncludeStatusClasses,
-                            )}
-                        >
-                            {status}
-                        </span>
-                        )
-                    }) }
-                </div>
-            </div>
+          // desktop
+          "sm:w-auto sm:flex-col sm:items-center sm:gap-2 sm:px-2 sm:py-4 sm:text-center"
+        )}
+      >
+        <div
+          className={cn(
+            // mobile
+            "flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300",
+
+            // desktop
+            "sm:mx-5 sm:size-15"
+          )}
+        >
+          <User className="size-7 sm:size-8" />
         </div>
-    )
+
+        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:items-center">
+          <span className="truncate text-left sm:text-center">
+            {username}
+          </span>
+
+          <div
+            className={cn(
+              // mobile
+              "flex flex-wrap gap-x-3 gap-y-1",
+
+              // desktop 2열 grid
+              "sm:grid sm:w-full sm:grid-cols-2 sm:gap-y-2"
+            )}
+          >
+            {allStatus.map((status, index) => {
+              const isEnabled = enableStatus.includes(
+                status as participateContentStatus
+              );
+
+              const statusClass =
+                participateStatusClasses[
+                  status as keyof typeof participateStatusClasses
+                ] ?? includedStatusFallbackClasses;
+
+              return (
+                <span
+                  key={status + index.toString()}
+                  className={cn(
+                    "text-[13px] font-bold",
+                    isEnabled && statusClass,
+                    !isEnabled && notIncludeStatusClasses,
+
+                    // desktop에서 좌우 정렬
+                    "sm:odd:justify-self-start sm:even:justify-self-end"
+                  )}
+                >
+                  {status}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

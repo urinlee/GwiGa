@@ -1,4 +1,5 @@
 
+import { participateContentStatus } from "@/types/status";
 import { ParticipantsInfoCardProps } from "../components/ParticipateInfoCard/ParticipantsInfoCard";
 
 type FilterParticipantsByStepArgs = {
@@ -6,7 +7,7 @@ type FilterParticipantsByStepArgs = {
     getStepCheckedTags: (step: number) => string[];
 };
 
-export const filteredParticipantsByStep = ({sortedParticipants, getStepCheckedTags} : FilterParticipantsByStepArgs) => {
+export const filterParticipantsByStatus = ({sortedParticipants, getStepCheckedTags} : FilterParticipantsByStepArgs) => {
     return [...sortedParticipants].filter((participant) => {
         const participantStatuses = new Set(participant.enableStatus.map(String));
         const step1Statuses = getStepCheckedTags(1);
@@ -24,4 +25,19 @@ export const filteredParticipantsByStep = ({sortedParticipants, getStepCheckedTa
 
         return true;
     });
+}
+
+export const countParticipantsByStatus = 
+    (participants: ParticipantsInfoCardProps[], allStatuses: readonly participateContentStatus[])
+    : Record<participateContentStatus, number> => {
+
+    const statusCounts: Record<participateContentStatus, number> = Object.fromEntries(
+        allStatuses.map((status) => [
+            status,
+            participants.filter((participant) =>
+                participant.enableStatus.map(String).includes(status)
+            ).length,
+        ])
+    ) as Record<participateContentStatus, number>;
+    return statusCounts;
 }

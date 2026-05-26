@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import useDividedByCheckedTag from "@/features/dashboard/hooks/DividedByCheckedTag";
 import { CriteriaForSorting, criteriaOptions, useCriteriaForSorting } from "../../hooks/CriteriaForSorting";
 import { participateStatusClasses } from "@/types/status";
-import { filteredParticipantsByStep } from "../../lib/filterParticipantsByChecked";
+import { filterParticipantsByStatus, countParticipantsByStatus } from "../../lib/filterParticipantsByChecked";
 
 
 export interface InfoCardsContainerProps {
@@ -29,23 +29,27 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
     // 1: 해당 Status가 아닌 것만 보임
     // 2: 해당 Status만 보임
 
-    const filteredParticipants = filteredParticipantsByStep({sortedParticipants, getStepCheckedTags});
+    const filteredParticipants = filterParticipantsByStatus({sortedParticipants, getStepCheckedTags});
+    const StatusParticipantCount = countParticipantsByStatus(filteredParticipants, allStatuses);
+
 
     return (
         <div>
             <div className="flex justify-between items-center mb-4 px-5 w-full">
-                <div className="flex gap-4">
+                <div className="hidden md:flex gap-4">
                     {Object.entries(CheckedTagsStep).map(([status, num]) => (
                         <div key={status} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(status)}>
                             <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
                             <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", participateStatusClasses[status as keyof typeof participateStatusClasses] ?? "")}>
                             {/* 색상 participateStatusClasses에 맞게 바꾸기 */}
-                                {status}
+                                {status} ({StatusParticipantCount[status as keyof typeof StatusParticipantCount] ?? 0}/{participants.length})
                             </span>
                         </div>
                     ))}
                 </div>
-                <div className="">
+
+                {/* 데스크탑용 sort 옵션 */}
+                <div className="hidden md:block">
                     {criteriaOptions.map((option) => (
                         <span 
                             key={option} 
@@ -55,9 +59,24 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
                         </span>
                     ))}
                 </div>
+
+                {/* 모바일용 sort 옵션 */}
+                <div className="md:hidden">
+                    <select 
+                        value={criteria} 
+                        onChange={(e) => setCriteria(e.target.value as CriteriaForSorting)}
+                        className="text-sm text-zinc-500 dark:text-zinc-400 border border-gray-300 dark:border-gray-700 rounded px-2 py-1"
+                    >
+                        {criteriaOptions.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 
             </div>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
+            <div className="flex flex-col md:grid md:grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
                 {
                 filteredParticipants.map((participant) => (
                     <div key={participant.username} className={cn("w-full", )}>

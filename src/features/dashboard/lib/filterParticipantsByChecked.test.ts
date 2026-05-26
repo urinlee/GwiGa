@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ParticipantsInfoCardProps } from '../components/ParticipateInfoCard/ParticipantsInfoCard';
-import { filteredParticipantsByStep } from './filterParticipantsByChecked';
+import { filterParticipantsByStatus, countParticipantsByStatus } from './filterParticipantsByChecked';
 
 const allStatuses = ['ready', 'help', 'late', 'custom-tag'] as const;
 
@@ -19,7 +19,7 @@ const createGetStepCheckedTags = (steps: Record<number, string[]>) => {
 
 describe('filteredParticipantsByStep', () => {
 	it('returns all participants when no filters are selected', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: participants,
 			getStepCheckedTags: createGetStepCheckedTags({}),
 		});
@@ -34,7 +34,7 @@ describe('filteredParticipantsByStep', () => {
 	});
 
 	it('excludes participants that contain any step1 status', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: participants,
 			getStepCheckedTags: createGetStepCheckedTags({ 1: ['help'] }),
 		});
@@ -43,7 +43,7 @@ describe('filteredParticipantsByStep', () => {
 	});
 
 	it('includes only participants that contain all step2 statuses', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: participants,
 			getStepCheckedTags: createGetStepCheckedTags({ 2: ['ready', 'help'] }),
 		});
@@ -52,7 +52,7 @@ describe('filteredParticipantsByStep', () => {
 	});
 
 	it('applies step1 and step2 together, with step1 exclusion taking precedence', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: participants,
 			getStepCheckedTags: createGetStepCheckedTags({
 				1: ['help'],
@@ -64,7 +64,7 @@ describe('filteredParticipantsByStep', () => {
 	});
 
 	it('handles custom string statuses that are not predefined', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: participants,
 			getStepCheckedTags: createGetStepCheckedTags({ 2: ['custom-tag'] }),
 		});
@@ -73,7 +73,7 @@ describe('filteredParticipantsByStep', () => {
 	});
 
 	it('returns an empty array when input participants are empty', () => {
-		const result = filteredParticipantsByStep({
+		const result = filterParticipantsByStatus({
 			sortedParticipants: [],
 			getStepCheckedTags: createGetStepCheckedTags({ 1: ['ready'], 2: ['help'] }),
 		});
@@ -84,7 +84,7 @@ describe('filteredParticipantsByStep', () => {
 	it('does not mutate the original participants array', () => {
 		const source = [...participants];
 
-		filteredParticipantsByStep({
+		filterParticipantsByStatus({
 			sortedParticipants: source,
 			getStepCheckedTags: createGetStepCheckedTags({ 1: ['ready'] }),
 		});
@@ -92,5 +92,14 @@ describe('filteredParticipantsByStep', () => {
 		expect(source).toEqual(participants);
 		expect(source).not.toBe(participants);
 	});
-});
 
+	it('the number of people who have finished work on something', () => {
+		const result = countParticipantsByStatus(participants, allStatuses);
+		expect(result).toEqual({
+			ready: 3,
+			help: 2,
+			late: 1,
+			'custom-tag': 1,
+		});
+	});
+});
