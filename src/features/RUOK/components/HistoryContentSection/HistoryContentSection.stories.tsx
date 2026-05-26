@@ -26,7 +26,7 @@ export const Default: Story = {
     },
 };
 
-export const haveRedirectUrl: Story = {
+export const HaveRedirectUrl: Story = {
     args: {
         title: "과 개강총회",
         date: "2024-06-01",

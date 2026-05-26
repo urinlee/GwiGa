@@ -1,6 +1,5 @@
 import ContentSectionContainer from "@/features/RUOK/components/ContentSectionContainer/ContentSectionContainer.";
-import CreateNewSection from "@/features/RUOK/components/CreateNewSection/CreateNewSection";
-import { HistoryContentSection, HistoryContentSectionProps } from "@/features/RUOK/components/HistoryContentSection/HistoryContentSection";
+import { HistoryContentSectionProps } from "@/features/RUOK/components/HistoryContentSection/HistoryContentSection";
 
 
 

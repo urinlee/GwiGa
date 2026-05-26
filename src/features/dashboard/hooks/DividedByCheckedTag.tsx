@@ -12,19 +12,19 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
         Object.fromEntries(allStatuses.map((status) => [status, 0])) as TagsCheckObject
     );
 
-    useEffect(() => {
-        setCheckedTagsStep((prev) => {
-            const sameLength = Object.keys(prev).length === allStatuses.length;
-            const sameKeys = allStatuses.every((status) => status in prev);
-            if (sameLength && sameKeys) {
-                return prev;
-            }
+    // useEffect(() => {
+    //     setCheckedTagsStep((prev) => {
+    //         const sameLength = Object.keys(prev).length === allStatuses.length;
+    //         const sameKeys = allStatuses.every((status) => status in prev);
+    //         if (sameLength && sameKeys) {
+    //             return prev;
+    //         }
 
-            return Object.fromEntries(
-                allStatuses.map((status) => [status, prev[status] ?? 0])
-            ) as TagsCheckObject;
-        });
-    }, [allStatuses]);
+    //         return Object.fromEntries(
+    //             allStatuses.map((status) => [status, prev[status] ?? 0])
+    //         ) as TagsCheckObject;
+    //     });
+    // }, [allStatuses]);
 
     const toggleTagClick = (status: typeof allStatuses[number]) => {
         setCheckedTagsStep((prev) => {
