@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 import { participateContentStatus, participateStatusClasses } from "@/types/status";
-import { User } from "lucide-react";
+import AuthorAvatar from "@/components/ui/AuthorAvatar/AuthorAvatar";
 
 export interface ParticipantsInfoCardProps {
     username: string;
@@ -27,17 +27,12 @@ export default function ParticipantInfoCard({
           "sm:w-auto sm:flex-col sm:items-center sm:gap-2 sm:px-2 sm:py-4 sm:text-center"
         )}
       >
-        <div
-          className={cn(
-            // mobile
-            "flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300",
-
-            // desktop
-            "sm:mx-5 sm:size-15"
-          )}
-        >
-          <User className="size-7 sm:size-8" />
-        </div>
+        <AuthorAvatar
+          imageUrl={`https://picsum.photos/seed/${username}/300/200`}  
+          description={username}
+          size={12}
+          style="size-12 sm:mx-5 sm:size-15"
+        />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:items-center">
           <span className="truncate text-left sm:text-center">

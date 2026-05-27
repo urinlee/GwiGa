@@ -35,8 +35,9 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-4 px-5 w-full">
-                <div className="hidden md:flex gap-4">
+            <div className="flex justify-between items-center mb-4 px-2 w-full">
+                <div className="hidden md:flex items-center gap-4">
+                    <span className={cn("text-[15px] font-bold text-zinc-500 dark:text-zinc-400")}>전체: {filteredParticipants.length}/{participants.length}명</span>
                     {Object.entries(CheckedTagsStep).map(([status, num]) => (
                         <div key={status} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(status)}>
                             <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
