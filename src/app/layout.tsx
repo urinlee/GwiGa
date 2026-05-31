@@ -3,6 +3,7 @@ import "./globals.css";
 import { WebThemeProviders } from "@/components/common/themeProviders";
 import Header from "@/components/layout/Header/Header";
 import { auth } from "@/lib/auth";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "GwiGa",
@@ -20,7 +21,9 @@ export default async function RootLayout({
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         <WebThemeProviders>
-            {children}
+            <SessionProvider>
+                {children}
+            </SessionProvider>
         </WebThemeProviders>
       </body>
     </html>

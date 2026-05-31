@@ -13,6 +13,7 @@ type Story = StoryObj<typeof Header>;
 
 export const Default: Story = {
   args: {
+    is_login: false,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
