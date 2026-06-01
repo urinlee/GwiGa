@@ -1,7 +1,6 @@
-import AuthorAvatar from "@/components/ui/AuthorAvatar/AuthorAvatar";
+import HeaderProfileButton from "@/components/ui/HeaderProfileButton/HeaderProfileButton";
 import ToggleTheme from "@/components/ui/ToggleTheme/ToggleTheme";
-import { auth } from "@/lib/auth";
-import { useSession } from "next-auth/react";
+import type { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface HeaderProps {
@@ -20,7 +19,15 @@ export default async function Header({ session }: HeaderProps) {
             <ToggleTheme />
           </div>
           <div className="flex items-center">
-            { session?.user ? <AuthorAvatar style="w-15" /> : <Link className="text-xl font-medium text-muted-foreground hover:text-primary" href="/login">로그인</Link> }
+            { session?.user ? (
+              <HeaderProfileButton
+                handle={session.user.email}
+                imageUrl={session.user.image}
+                name={session.user.name}
+              />
+            ) : (
+              <Link className="text-xl font-medium text-muted-foreground hover:text-primary" href="/login">로그인</Link>
+            ) }
           </div>
         </div>
       </div>
