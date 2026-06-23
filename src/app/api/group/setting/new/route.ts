@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { CurrentUser, getUser } from "@/utils/currentUser";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -12,12 +13,12 @@ const GroupRoomSchema = z.object({
 
 export async function POST(req: Request) {
     const body = GroupRoomSchema.safeParse(await req.json());
-    const session = await auth();
+    const currentUser = await getUser()
 
     if (!body.success) {
         return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
     }
-    if (!session) {
+    if (!currentUser) {
         return NextResponse.json({ error: "need login" }, { status: 400 });
     }
 
@@ -28,13 +29,13 @@ export async function POST(req: Request) {
             id:ID,
             name: body.data.name,
             description: body.data.description,
-            adminId:session?.user.id
+            adminId:currentUser?.id
         },
     });
 
 
     return NextResponse.json({
-        id:ID
+        id:ID,
   }, {
     status:200
   });
