@@ -29,6 +29,8 @@ export async function POST(req: Request) {
             id:ID,
             name: body.data.name,
             description: body.data.description,
+            Tags: body.data.tag,
+            Statuses: body.data.status,
             adminId:currentUser?.id
         },
     });

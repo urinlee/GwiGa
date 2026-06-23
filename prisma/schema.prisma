@@ -63,6 +63,8 @@ model Group {
   id        String   @id @default(cuid())
   name      String
   description String?
+  Tags      String[] @default([])
+  Statuses  String[] @default([])
   createdAt DateTime @default(now())
 
   adminId String

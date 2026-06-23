@@ -31,6 +31,10 @@ export default function CreateTagsList({ tags }: CreateTagsListProps) {
             <div className="flex gap-5">
                 {tagState?.map((value, index) => (
                     <div key={value} className="group flex gap-1 items-center">
+                        <input
+                            type="hidden"
+                            name="RoomTag"
+                            value={value} />
                         <div className="size-5" onClick={() => setTagState((prev) => prev.filter((_, i) => i !== index))}>
                             <div className="relative flex shrink-0">
                                 <Hash className="absolute size-5 inset-0 group-hover:opacity-0 text-text-primary" />

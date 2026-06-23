@@ -35,7 +35,7 @@ export default function CreateStatusList({ defaultStatusList }: CreateStatusList
                     const statusClass = participateBgStatusClasses[status as keyof typeof participateBgStatusClasses] ?? "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300";
                     return (
                         <div key={index + "status"} className="inline" >
-                            <input type="hidden" name="statusList[]" value={status} />
+                            <input type="hidden" name="RoomStatus" value={status} />
                             <button
                                 type="button"
                                 onClick={() => setStatusList((prev) => prev.filter((_, i) => i !== index))}

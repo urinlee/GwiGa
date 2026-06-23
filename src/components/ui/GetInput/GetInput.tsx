@@ -4,13 +4,14 @@ import { cn } from "@/lib/cn";
 
 interface GetInputProps {
     label: string;
+    name?: string
     placeholder?: string;
     required?: boolean;
     isLong?: boolean;
     maxLength?: number;
 }
 
-export default function GetInput({ label, placeholder, required, isLong, maxLength }: GetInputProps) {
+export default function GetInput({ label, name, placeholder, required, isLong, maxLength }: GetInputProps) {
 
     const InputStyle:string = `mt-3 w-full rounded-md border border-gray-300 dark:border-gray-500 px-4 py-2 focus:outline-none`;
     return (
@@ -21,6 +22,7 @@ export default function GetInput({ label, placeholder, required, isLong, maxLeng
             </p>
             {isLong ? (
                 <textarea
+                    name={label || name}
                     placeholder={placeholder || "Type something..."}
                     required={required}
                     maxLength={maxLength}
@@ -29,6 +31,7 @@ export default function GetInput({ label, placeholder, required, isLong, maxLeng
             ) : (
                 <input
                     type="text"
+                    name={label || name}
                     placeholder={placeholder || "Type something..."}
                     required={required}
                     maxLength={maxLength}
