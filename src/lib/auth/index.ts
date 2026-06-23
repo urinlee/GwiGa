@@ -8,12 +8,13 @@ export const { auth, handlers, signIn, signOut } =
   NextAuth({
     basePath: "/api/auth",
     adapter: PrismaAdapter(prisma as any),
-    providers:provider,
+    providers: provider,
     session: {
       strategy: "database",
     },
     callbacks: {
         session: sessionCallback,
         signIn: signInCallback,
-    }
+    },
+    trustHost: true,
   })

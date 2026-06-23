@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function CreateNewSection() {
     return (
-        <Link href="RUOK/create">
+        <Link href="room/create">
             <ContentCard style="border-dashed border-2 border-zinc-400 dark:border-zinc-600">
                 <div className="flex w-full flex-col items-center justify-center gap-4">
                     <h2 className="text-[15px] md:text-xl font-bold text-primary">새로운 일정을 추가해보세요!</h2>

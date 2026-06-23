@@ -21,6 +21,8 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  AdminGroups Group[]
+  groupMembers GroupMember[]
 }
 
 model Account {
@@ -57,4 +59,31 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  createdAt DateTime @default(now())
 
+  adminId String
+  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  members GroupMember[]
+}
+
+
+model GroupMember {
+  id      String   @id @default(cuid())
+  groupId String
+  userId  String
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+// # 테이블 수정
+// npx prisma migrate dev --name init
+// # 타입 재생성
+// npx prisma generate

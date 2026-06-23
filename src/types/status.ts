@@ -23,5 +23,11 @@ export const participateStatusClasses = {
   뒤풀이: "text-pink-600 dark:text-pink-300",
 } as const satisfies ObjectStatusWithCalsses;
 
+export const participateBgStatusClasses = {
+  입금: "bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300",
+  도착: "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300",
+  귀가: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300",
+  뒤풀이: "bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300",
+} as const satisfies ObjectStatusWithCalsses;
 
 export type participateContentStatus = keyof typeof participateStatusClasses | (string & {});
