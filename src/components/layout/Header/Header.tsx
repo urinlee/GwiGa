@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default async function Header({ session }: HeaderProps) {
   return (
-    <header className="w-full border-b">
+    <header className="w-full border-b z-10">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 sm:px-8 lg:px-10">
         <h1 className="text-[40px] font-bold text-primary">
           <Link href="/">GwiGa</Link>

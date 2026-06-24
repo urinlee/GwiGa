@@ -35,6 +35,13 @@ export async function POST(req: Request) {
         },
     });
 
+    await prisma.groupMember.create({
+        data:{
+            groupId: ID,
+            userId:currentUser.id,
+        }
+    })
+
 
     return NextResponse.json({
         id:ID,
