@@ -40,10 +40,17 @@ export async function ImAdminGroup(userId:string) {
     })
 }
 
-export async function ImGroupMember(userId:string) {
+export async function ImGroupMember(userId:string, includeAdmin=false) {
     return await prisma.groupMember.findMany({
         where:{
-            userId:userId
+            userId:userId,
+            ...(includeAdmin ? {} : {
+                group:{
+                    adminId:{
+                        not:userId
+                    }
+                }
+            })
         },
         include:{
             group:true

@@ -13,7 +13,7 @@ export default function Home() {
         </h1>
         <Link
           className="flex items-center gap-2 rounded-md bg-button-bg px-4 py-2 font-semibold text-text-force-primary transition-opacity hover:opacity-90"
-          href="/RUOK"
+          href="/my"
         >
           <ExternalLink className="size-5" />
           <span className="leading-none">시작하기</span>

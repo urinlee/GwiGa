@@ -17,6 +17,7 @@ export default function RoomInvite() {
     const [GroupName, setGroupName] = useState<string|null>(null)
     const [GroupNum, setGroupNum] = useState<number>(0)
     const [ErrorMsg, setErrorMsg] = useState<string|null>(null);
+    const [isLoading, setisLoading] = useState<boolean>(false);
     const router = useRouter();
 
 
@@ -52,6 +53,7 @@ export default function RoomInvite() {
 
     //TODO: 초대 관련 api 만들고 이거 하기
     const handleClickButton = async(e: React.MouseEvent<HTMLDivElement>) => {
+        setisLoading(true)
         if (inviteType === "new") {
             router.push(`/room/${roomid}/dashboard`)
         }
@@ -116,7 +118,7 @@ export default function RoomInvite() {
                         </div>
                     </div>
                 </div>
-                <div className={cn("group flex justify-center items-center gap-2 bg-green-600 w-full mt-5 rounded-2xl py-2 overflow-hidden text-green-900 text-[20px] font-extrabold cursor-pointer duration-300 hover:scale-102 hover:text-green-800", ErrorMsg && "bg-red-300 text-rose-500 hover:text-rose-500 hover:scale-100 cursor-no-drop")} onClick={() => {!ErrorMsg && handleClickButton}}>
+                <div className={cn("group flex justify-center items-center gap-2 bg-green-600 w-full mt-5 rounded-2xl py-2 overflow-hidden text-green-900 text-[20px] font-extrabold cursor-pointer duration-300 hover:scale-102 hover:text-green-800", ErrorMsg && "bg-red-300 text-rose-500 hover:text-rose-500 hover:scale-100 cursor-no-drop", isLoading && "bg-gray-400 text-zinc-500 hover:text-zinc-600 hover:scale-100 cursor-no-drop")} onClick={(e) => {!ErrorMsg && !isLoading && handleClickButton(e)}}>
                     <div className={cn("duration-300 delay-400 group-hover:delay-0 group-hover:-rotate-130", ErrorMsg && "hidden")}>
                         <div className="duration-400 group-hover:delay-300 group-hover:rotate-25">
                             <Send className="duration-400 group-hover:delay-300 group-hover:translate-x-25 group-hover:-translate-y-25 group-hover:ease-in"/>

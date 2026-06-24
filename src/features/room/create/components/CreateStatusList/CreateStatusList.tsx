@@ -15,6 +15,7 @@ export default function CreateStatusList({ defaultStatusList }: CreateStatusList
 
     const handleAddStatus = (newStatus: participateContentStatus) => {
         if (newStatus.trim() === "") return;
+        if (statusList.includes(newStatus)) return;
         setStatusList((prevList) => [...prevList, newStatus]);
     }
 

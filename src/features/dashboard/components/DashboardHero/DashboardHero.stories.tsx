@@ -17,7 +17,7 @@ export const Default: Story = {
         roomName: "과 개강총회",
         description: "과 개강총회입니다. 많은 참여 부탁드립니다!",
         date: "2026-10-01",
-        time: "17:00 - 20:00",
+        tags: "17:00 - 20:00",
         location: "쩡이포차",
         participantCount: 100,
     },
@@ -26,7 +26,7 @@ export const Default: Story = {
         await expect(canvas.getByText(args.roomName!)).toBeInTheDocument();
         await expect(canvas.getByText(args.description!)).toBeInTheDocument();
         await expect(canvas.getByText(`일정: ${args.date}`)).toBeInTheDocument();
-        await expect(canvas.getByText(`시간: ${args.time}`)).toBeInTheDocument();
+        await expect(canvas.getByText(`시간: ${args.tags}`)).toBeInTheDocument();
         await expect(canvas.getByText(`모집인원: ${args.participantCount}`)).toBeInTheDocument();
         await expect(canvas.getByText(`장소: ${args.location}`)).toBeInTheDocument();
     },

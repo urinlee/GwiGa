@@ -7,8 +7,8 @@ import { z } from "zod";
 const GroupRoomSchema = z.object({
     name: z.string().max(20).min(2),
     description: z.string().max(2000).optional(),
-    tag: z.array(z.string()),
-    status: z.array(z.string())
+    tag: z.array(z.string()).transform((arr) => [...new Set(arr)]),
+    status: z.array(z.string()).transform((arr) => [...new Set(arr)])
 })
 
 export async function POST(req: Request) {

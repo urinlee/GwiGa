@@ -3,6 +3,7 @@
 import DashboardHero from "@/features/dashboard/components/DashboardHero/DashboardHero";
 import InfoCardsContainer from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
 import { participateContentStatus } from "@/types/status";
+import { getGroup } from "@/utils/group";
 
 
 
@@ -38,12 +39,14 @@ export default async function DashboardPage({
 }: DashboardPageProps) {
   const { roomid } = await params
 
+  const RoomInfo = await getGroup(roomid)
+
   return (<div className="flex flex-col gap-20 my-10">
     <DashboardHero
-      roomName="과 개강총회"
-      description="과 개강총회입니다. 많은 참여 부탁드립니다!"
-      date="2026-10-01"
-      time="17:00 - 20:00"
+      roomName={RoomInfo?.name || ""}
+      description={RoomInfo?.description || ""}
+      date={RoomInfo?.createdAt.toLocaleDateString()}
+      tags={RoomInfo?.tags.map((value, _)=>`#${value}`).join(", ")}
       location="쩡이포차"
       participantCount={100}
     />
