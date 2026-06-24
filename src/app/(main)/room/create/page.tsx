@@ -1,11 +1,11 @@
 "use client"
 import Button from "@/components/ui/Button/Button";
 import GetInput from "@/components/ui/GetInput/GetInput";
-import { Toogle } from "@/components/ui/Toogle/Toogle";
 import CreateStatusList from "@/features/room/create/components/CreateStatusList/CreateStatusList";
 import CreateTagsList from "@/features/room/create/components/CreateTagsList/CreateTagsList";
 import { Plus } from "lucide-react";
-import { SyntheticEvent } from "react";
+import { useRouter } from "next/navigation";
+import { SyntheticEvent, useState } from "react";
 
 
 interface SubmitRes {
@@ -14,8 +14,12 @@ interface SubmitRes {
 
 export default function CreateRoomPage() {
 
+    const router = useRouter();
+    const [isCreating, setisCreating] = useState<boolean>(false)
+
     const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setisCreating(true)
         
         const formData = new FormData(e.currentTarget);
         const name : string= formData.get("RoomTitle") as string;
@@ -23,22 +27,22 @@ export default function CreateRoomPage() {
         const Tags : string[] = formData.getAll("RoomTag") as string[];
         const Statuses : string[] = formData.getAll("RoomStatus") as string[];
 
+        const body = { name, description, tag: Tags, status: Statuses };
+        console.log("[요청 body]", body);
+
         try {
             const res = await fetch("/api/group/setting/new", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                   name,
-                   description,
-                   tag:Tags,
-                   status:Statuses
-                })
+                body: JSON.stringify(body)
             })
-            
+
             const data = await res.json() as SubmitRes;
-            
+
+            router.push(`/room/${data.id}/invite?type=new`);
+
         } catch(error) {
             alert(error)
         }
@@ -53,9 +57,11 @@ export default function CreateRoomPage() {
                 <CreateTagsList tags={["2026"]}/>
                 <CreateStatusList defaultStatusList={["귀가", "입금"]}/>
                 <div className="flex items-center justify-center gap-3">
-                    <Button type="submit" size="lg" icon={<Plus className="size-4" />}>방 만들기</Button>
+                    <Button type="submit" size="lg" icon={<Plus className="size-4" />} disabled={isCreating}>{isCreating ? "만드는중..." : "방 만들기"}</Button>
                 </div>
             </form>
         </div>
     );
 }
+
+//TODO: reactForm 사용하기

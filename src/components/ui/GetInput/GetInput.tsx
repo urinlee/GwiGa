@@ -22,7 +22,7 @@ export default function GetInput({ label, name, placeholder, required, isLong, m
             </p>
             {isLong ? (
                 <textarea
-                    name={label || name}
+                    name={name || label}
                     placeholder={placeholder || "Type something..."}
                     required={required}
                     maxLength={maxLength}
@@ -31,7 +31,7 @@ export default function GetInput({ label, name, placeholder, required, isLong, m
             ) : (
                 <input
                     type="text"
-                    name={label || name}
+                    name={name || label}
                     placeholder={placeholder || "Type something..."}
                     required={required}
                     maxLength={maxLength}

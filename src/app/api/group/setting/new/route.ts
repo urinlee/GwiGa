@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
     }
     if (!currentUser) {
-        return NextResponse.json({ error: "need login" }, { status: 400 });
+        return NextResponse.json({ code: "NOT_LOGGED_IN", error: "need login" }, { status: 401 });
     }
 
     const ID = crypto.randomUUID();
@@ -28,9 +28,9 @@ export async function POST(req: Request) {
         data: {
             id:ID,
             name: body.data.name,
-            description: body.data.description,
-            Tags: body.data.tag,
-            Statuses: body.data.status,
+            description: body.data.description || null,
+            tags: body.data.tag,
+            statuses: body.data.status,
             adminId:currentUser?.id
         },
     });
