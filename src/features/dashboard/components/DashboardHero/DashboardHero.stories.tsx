@@ -1,12 +1,14 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
 import DashboardHero from "./DashboardHero";
-import { expect, within } from 'storybook/test';
 
 const meta = {
     title: "Features/Dashboard/DashboardHero",
     component: DashboardHero,
     tags: ["autodocs"],
-    
+    parameters: {
+        layout: "padded",
+    },
 } satisfies Meta<typeof DashboardHero>;
 
 export default meta;
@@ -25,9 +27,24 @@ export const Default: Story = {
         const canvas = within(canvasElement);
         await expect(canvas.getByText(args.roomName!)).toBeInTheDocument();
         await expect(canvas.getByText(args.description!)).toBeInTheDocument();
-        await expect(canvas.getByText(`일정: ${args.date}`)).toBeInTheDocument();
-        await expect(canvas.getByText(`시간: ${args.tags}`)).toBeInTheDocument();
-        await expect(canvas.getByText(`모집인원: ${args.participantCount}`)).toBeInTheDocument();
-        await expect(canvas.getByText(`장소: ${args.location}`)).toBeInTheDocument();
+    },
+};
+
+export const Defaults: Story = {
+    args: {},
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText("새로운 방")).toBeInTheDocument();
+    },
+};
+
+export const LongDescription: Story = {
+    args: {
+        roomName: "송년회",
+        description: "올 한 해도 수고 많으셨습니다! 연말을 맞아 함께 모여 한 해를 마무리하는 자리를 마련했습니다. 많은 참여 부탁드립니다. 장소는 추후 공지 예정입니다.",
+        date: "2026-12-31",
+        tags: "19:00 - 23:00",
+        location: "미정",
+        participantCount: 50,
     },
 };

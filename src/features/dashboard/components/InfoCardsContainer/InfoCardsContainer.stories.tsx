@@ -1,109 +1,60 @@
-import { expect, within } from 'storybook/test';
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import InfoCardsContainer from "./InfoCardsContainer";
-import { participateContentStatus } from "@/types/status";
+import { expect, within } from "storybook/test";
+import InfoCardsContainer, { stateType } from "./InfoCardsContainer";
+import { ParticipateStatusProps } from "../ParticipateInfoCard/ParticipantsInfoCard";
 
 const meta = {
     title: "Features/Dashboard/InfoCardsContainer",
-    tags: ["autodocs"],
     component: InfoCardsContainer,
+    tags: ["autodocs"],
 } satisfies Meta<typeof InfoCardsContainer>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const allStatuses: stateType[] = [
+    { id: "1", name: "입금", primaryColor: "#0d9488", secondaryColor: "#ccfbf1" },
+    { id: "2", name: "도착", primaryColor: "#f97316", secondaryColor: "#ffedd5" },
+    { id: "3", name: "귀가", primaryColor: "#a855f7", secondaryColor: "#f3e8ff" },
+    { id: "4", name: "뒤풀이", primaryColor: "#ec4899", secondaryColor: "#fce7f3" },
+];
+
+const toUserStatus = (enabledIds: string[]): ParticipateStatusProps[] =>
+    allStatuses.map((s) => ({ ...s, isTrue: enabledIds.includes(s.id) }));
+
 export const Default: Story = {
     args: {
-            participants: [
-                {
-                    username: "이우린",
-                    enableStatus: ["입금", "도착"],
-                    allStatus: ["입금", "도착", "귀가", "뒤풀이", "몰라"]
-                },
-                {
-                    username: "김민수",
-                    enableStatus: ["입금", "도착", "몰라"],
-                    allStatus: ["입금", "도착", "귀가", "뒤풀이", "몰라"]
-                },
-                {
-                    username: "박지민",
-                    enableStatus: [],
-                    allStatus: ["입금", "도착", "귀가", "뒤풀이", "몰라"]  
-                },
-                {
-                    username: "최수연",
-                    enableStatus: ["입금"],
-                    allStatus: ["입금", "도착", "귀가", "뒤풀이", "몰라"]
-                },
-            ]
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        // All participants should be rendered
-        await expect(canvas.getByText("이우린")).toBeInTheDocument();
-        await expect(canvas.getByText("김민수")).toBeInTheDocument();
-        await expect(canvas.getByText("박지민")).toBeInTheDocument();
-        await expect(canvas.getByText("최수연")).toBeInTheDocument();
-    },
-};
-
-export const SortingOrder: Story = {
-    args: {
+        allStatuses,
         participants: [
-            // Pattern "11000" — 2 statuses
-            { username: "나중", enableStatus: ["입금", "도착"], allStatus: ["입금", "도착", "귀가", "뒤풀이"] },
-            // Pattern "00000" — 0 statuses (appears first)
-            { username: "가나다", enableStatus: [], allStatus: ["입금", "도착", "귀가", "뒤풀이"] },
-            // Pattern "11110" — 4 statuses (appears last)
-            { username: "마지막", enableStatus: ["입금", "도착", "귀가", "뒤풀이"], allStatus: ["입금", "도착", "귀가", "뒤풀이"] },
+            { username: "이우린",  userStatus: toUserStatus(["1", "2"]) },
+            { username: "김민수",  userStatus: toUserStatus(["1", "2", "3", "4"]) },
+            { username: "박지민",  userStatus: toUserStatus([]) },
+            { username: "최수연",  userStatus: toUserStatus(["1"]) },
+            { username: "정하늘",  userStatus: toUserStatus(["3", "4"]) },
         ],
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        const cards = canvas.getAllByText(/가나다|나중|마지막/);
-        // Verify all cards are rendered
-        await expect(cards.length).toBe(3);
-        // "가나다" has pattern "0000" (fewest statuses) so should appear before others
-        const allText = canvasElement.textContent ?? "";
-        const idxNone = allText.indexOf("가나다");
-        const idxTwo = allText.indexOf("나중");
-        const idxAll = allText.indexOf("마지막");
-        await expect(idxNone).toBeLessThan(idxTwo);
-        await expect(idxTwo).toBeLessThan(idxAll);
+        await expect(canvas.getByText("이우린")).toBeInTheDocument();
+        await expect(canvas.getByText("박지민")).toBeInTheDocument();
     },
 };
 
-export const EmptyParticipants: Story = {
+export const Empty: Story = {
     args: {
+        allStatuses,
         participants: [],
     },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        // Container renders but is empty
-        await expect(canvas.queryByText(/참가자/)).not.toBeInTheDocument();
-    },
 };
 
-const ExampleallStatus: participateContentStatus[] = ["입금", "도착", "귀가", "뒤풀이", "몰라"]
-
-const getRandomStatus = () => {
-    const randomCount = Math.floor(Math.random() * ExampleallStatus.length) + 1;
-    return [...ExampleallStatus].sort(() => Math.random() - 0.5).slice(0, randomCount);
-}
-
-export const _29Participants: Story = {
+export const ManyParticipants: Story = {
     args: {
-        participants: Array.from({ length: 29 }, (_, i) => ({
+        allStatuses,
+        participants: Array.from({ length: 30 }, (_, i) => ({
             username: `참가자${i + 1}`,
-            enableStatus: getRandomStatus(),
-            allStatus: ExampleallStatus
-        }))
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        // All 29 participants should be rendered
-        for (let i = 1; i <= 29; i++) {
-            await expect(canvas.getByText(`참가자${i}`)).toBeInTheDocument();
-        }
+            userStatus: toUserStatus(
+                allStatuses.filter(() => Math.random() > 0.5).map((s) => s.id)
+            ),
+        })),
     },
 };

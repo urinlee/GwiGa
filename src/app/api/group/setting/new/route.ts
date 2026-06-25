@@ -30,10 +30,18 @@ export async function POST(req: Request) {
             name: body.data.name,
             description: body.data.description || null,
             tags: body.data.tag,
-            statuses: body.data.status,
             adminId:currentUser?.id
         },
     });
+
+    body.data.status.forEach(async (status, _)=>{
+        await prisma.status.create({
+            data:{
+                name:status,
+                groupId:ID
+            }
+        })
+    })
 
     await prisma.groupMember.create({
         data:{

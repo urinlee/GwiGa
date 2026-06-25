@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
+import { stateType } from "../components/InfoCardsContainer/InfoCardsContainer";
 
 
 
 /// T:
-export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
+export default function useDividedByCheckedTag(allStatuses: stateType[]) {
     interface TagsCheckObject {
-        [key: typeof allStatuses[number]]: number;
+        [key: string]: number;
     }
 
+
     const [CheckedTagsStep, setCheckedTagsStep] = useState<TagsCheckObject>(
-        Object.fromEntries(allStatuses.map((status) => [status, 0])) as TagsCheckObject
+        Object.fromEntries(allStatuses.map((status) => [status.id, 0])) as TagsCheckObject
     );
 
     // useEffect(() => {
@@ -26,18 +28,19 @@ export default function useDividedByCheckedTag(allStatuses: readonly string[]) {
     //     });
     // }, [allStatuses]);
 
-    const toggleTagClick = (status: typeof allStatuses[number]) => {
+    const toggleTagClick = (statusId:string) => {
         setCheckedTagsStep((prev) => {
             const newCheckedTagsStep = { ...prev };
-            newCheckedTagsStep[status] = (newCheckedTagsStep[status] + 1) % 3; // 0 -> 1 -> 2 -> 0
+            newCheckedTagsStep[statusId] = (newCheckedTagsStep[statusId] + 1) % 3; // 0 -> 1 -> 2 -> 0
             return newCheckedTagsStep;
         });
     }
 
-    const getStepCheckedTags = (step: number) => {
-        return Object.entries(CheckedTagsStep)
+    const getStepCheckedTags = (step: number) : stateType[] => {
+        const checkedStatuesId = Object.entries(CheckedTagsStep)
             .filter(([_, value]) => value === step)
             .map(([key, _]) => key);
+        return allStatuses.filter((value) => checkedStatuesId.includes(value.id))
     }
 
     return {

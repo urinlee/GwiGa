@@ -1,29 +1,32 @@
 'use client';
 import { useMemo } from "react";
-import ParticipantInfoCard, { ParticipantsInfoCardProps } from "../ParticipateInfoCard/ParticipantsInfoCard";
+import ParticipantInfoCard, { ParticipantsInfoCardProps, ParticipateStatusProps } from "../ParticipateInfoCard/ParticipantsInfoCard";
 import { cn } from "@/lib/cn";
 import useDividedByCheckedTag from "@/features/dashboard/hooks/DividedByCheckedTag";
 import { CriteriaForSorting, criteriaOptions, useCriteriaForSorting } from "../../hooks/CriteriaForSorting";
 import { participateStatusClasses } from "@/types/status";
 import { filterParticipantsByStatus, countParticipantsByStatus } from "../../lib/filterParticipantsByChecked";
+import { getStatusbyId } from "../../lib/status";
 
+export interface stateType {
+    id:string
+    name:string
+    primaryColor:string
+    secondaryColor:string
+  }
 
 export interface InfoCardsContainerProps {
     participants: ParticipantsInfoCardProps[];
+    allStatuses: stateType[];
 }
 
-export default function InfoCardsContainer({ participants }: InfoCardsContainerProps) {
+export default function InfoCardsContainer({ participants, allStatuses }: InfoCardsContainerProps) {
     // // 전체 참가자 기준으로 상태 순서를 하나 정해두고, 그 순서대로 비교
     // const statusOrder = Array.from(
     //     new Set(participants.flatMap((participant) => participant.allStatus.map(String)))
     // ).sort((a, b) => a.localeCompare(b, "ko"));
 
-    const allStatuses = useMemo<readonly string[]>(
-        () => Array.from(new Set(participants.flatMap((participant) => participant.allStatus.map(String)))),
-        [participants]
-    );
-
-    const { criteria, setCriteria, sortedParticipants } = useCriteriaForSorting(participants);
+    const { criteria, setCriteria, sortedParticipants } = useCriteriaForSorting(participants, allStatuses);
     const {CheckedTagsStep, toggleTagClick, getStepCheckedTags,} = useDividedByCheckedTag(allStatuses);
     // 0: 참조하지 안음
     // 1: 해당 Status가 아닌 것만 보임
@@ -38,15 +41,18 @@ export default function InfoCardsContainer({ participants }: InfoCardsContainerP
             <div className="flex justify-between items-center mb-4 px-2 w-full">
                 <div className="hidden md:flex items-center gap-4">
                     <span className={cn("text-[15px] font-bold text-zinc-500 dark:text-zinc-400")}>전체: {filteredParticipants.length}/{participants.length}명</span>
-                    {Object.entries(CheckedTagsStep).map(([status, num]) => (
-                        <div key={status} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(status)}>
-                            <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
-                            <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", participateStatusClasses[status as keyof typeof participateStatusClasses] ?? "")}>
-                            {/* 색상 participateStatusClasses에 맞게 바꾸기 */}
-                                {status} ({StatusParticipantCount[status as keyof typeof StatusParticipantCount] ?? 0}/{participants.length})
-                            </span>
-                        </div>
-                    ))}
+                    {Object.entries(CheckedTagsStep).map(([statusId, num], _) => {
+                        const state = getStatusbyId(allStatuses, statusId)
+                        return(
+                            <div key={statusId} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(statusId)}>
+                                <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
+                                <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", `text-[${state?.primaryColor}] dark:text-[${state?.primaryColor}]`)}>
+                                {/* 색상 participateStatusClasses에 맞게 바꾸기 */}
+                                    {state?.name} ({StatusParticipantCount[statusId] ?? 0}/{participants.length})
+                                </span>
+                            </div>
+                        )
+                    })}
                 </div>
 
                 {/* 데스크탑용 sort 옵션 */}

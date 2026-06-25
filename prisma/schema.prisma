@@ -64,35 +64,59 @@ model Group {
   name      String
   description String?
   tags      String[] @default([])
-  statuses  String[] @default([])
+  statuses Status[]
   createdAt DateTime @default(now())
 
   adminId String
   admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   members GroupMember[]
+
 }
 
 
 model GroupMember {
-  id      String   @id @default(cuid())
-  groupId String
-  userId  String
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
   createdAt DateTime @default(now())
-
-  allStatus String[]
-  enableStatus  String[]
 
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  memberStatuses MemberStatus[]
 
   @@unique([groupId, userId])
 }
 
 
 model Status {
-  id  String  @id @default(uuid())
-  name  
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  primaryColor       String?  @default("#F4F4F5")
+  secondaryColor       String?  @default("#57565C")
+  createAt    DateTime @default(now())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  memberStatuses MemberStatus[]
+
+  @@unique([id, groupId])
+}
+
+model MemberStatus {
+  id       String @id @default(cuid())
+  groupId  String
+  userId   String
+  statusId String
+  enable   Boolean
+
+  groupMember GroupMember @relation(fields: [groupId, userId], references: [groupId, userId])
+  status      Status      @relation(fields: [statusId, groupId], references: [id, groupId])
+
+  @@unique([groupId, userId, statusId])
 }
 
 // # 테이블 수정

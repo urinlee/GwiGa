@@ -1,21 +1,33 @@
 import { cn } from "@/lib/cn";
 import { participateContentStatus, participateStatusClasses } from "@/types/status";
 import AuthorAvatar from "@/components/ui/AuthorAvatar/AuthorAvatar";
+import Color from "color";
+import Image from "next/image";
 
-export interface ParticipantsInfoCardProps {
-    username: string;
-    allStatus: (participateContentStatus | string)[];
-    enableStatus: participateContentStatus[];
+
+const MAX_NAME_LENGTH = 16
+
+export interface ParticipateStatusProps {
+  id:string
+  name: string;
+  primaryColor:string;
+  secondaryColor:string;
+  isTrue:boolean
 }
 
-const notIncludeStatusClasses = "text-gray-300 dark:text-gray-600";
-const includedStatusFallbackClasses = "text-gray-600 dark:text-gray-200";
+export interface ParticipantsInfoCardProps {
+  username: string;
+  userStatus: ParticipateStatusProps[];
+}
+
 
 export default function ParticipantInfoCard({
   username,
-  enableStatus,
-  allStatus,
+  userStatus
 }: ParticipantsInfoCardProps) {
+
+
+
   return (
     <div className="flex justify-center">
       <div
@@ -35,9 +47,10 @@ export default function ParticipantInfoCard({
         />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:items-center">
-          <span className="truncate text-left sm:text-center">
-            {username}
+          <span className="truncate text-left sm:text-center sm:min-h-12 min-w-0 break-all whitespace-pre-wrap" title={username.length >= MAX_NAME_LENGTH+1 ? username : undefined}>
+            {username.slice(0, MAX_NAME_LENGTH)}{username.length >= MAX_NAME_LENGTH+1 && "..."}
           </span>
+  
 
           <div
             className={cn(
@@ -45,38 +58,32 @@ export default function ParticipantInfoCard({
               "flex flex-wrap gap-x-3 gap-y-1",
 
               // desktop 2열 grid
-              "sm:grid sm:w-full sm:grid-cols-2 sm:gap-y-2"
+              "sm:grid sm:grid-cols-2 sm:gap-y-2 sm:w-20"
             )}
           >
-            {allStatus.map((status, index) => {
-              const isEnabled = enableStatus.includes(
-                status as participateContentStatus
-              );
-
-              const statusClass =
-                participateStatusClasses[
-                  status as keyof typeof participateStatusClasses
-                ] ?? includedStatusFallbackClasses;
-
-              return (
-                <span
-                  key={status + index.toString()}
-                  className={cn(
-                    "text-[13px] font-bold",
-                    isEnabled && statusClass,
-                    !isEnabled && notIncludeStatusClasses,
-
-                    // desktop에서 좌우 정렬
-                    "sm:odd:justify-self-start sm:even:justify-self-end"
-                  )}
-                >
-                  {status}
-                </span>
-              );
-            })}
+            {userStatus.map((status) => (
+              <span
+                key={status.id}
+                className={cn(
+                  "text-[13px] font-bold",
+                  !status.isTrue && "text-zinc-300 dark:text-zinc-600",
+                  "sm:odd:justify-self-start sm:even:justify-self-end"
+                )}
+                style={status.isTrue ? { color: status.primaryColor } : undefined}
+              >
+                {status.name}
+              </span>
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+//TODO: status 갈아업기
+//DONE: 1. ParticipantsInfo쪽
+//DONE: 2. InfoCardsContainer쪽
+//DONE: 3. Page 수정
+//TODO: 3.1.my Page 수정
+//TODO: 4. 쓸데없는 type/status같은거 없애기

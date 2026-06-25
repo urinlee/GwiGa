@@ -1,18 +1,23 @@
 import { useState } from "react";
-import { ParticipantsInfoCardProps } from "../components/ParticipateInfoCard/ParticipantsInfoCard";
+import { ParticipantsInfoCardProps, ParticipateStatusProps } from "../components/ParticipateInfoCard/ParticipantsInfoCard";
+import { getEnableStatus } from "../lib/status";
+import { stateType } from "../components/InfoCardsContainer/InfoCardsContainer";
 
 export const criteriaOptions = ["추천순", "끝낸 일 많은순", "끝낸 일 적은순", "이름순"] as const;
 
 export type CriteriaForSorting = typeof criteriaOptions[number];
 
-export function useCriteriaForSorting(participants: ParticipantsInfoCardProps[]) {
+export function useCriteriaForSorting(participants: ParticipantsInfoCardProps[], allStatuses: stateType[]) {
     const [criteria, setCriteria] = useState<CriteriaForSorting>("추천순");
     // 각 참가자가 어떤 상태를 가지고 있는지 1/0 패턴으로 바꿔서 그룹 기준으로 사용함
 
+
+    const recommendationArray = recommendationSorting(participants, allStatuses)
+
     const sortedParticipants = 
-        criteria === "추천순" ? recommendationSorting(participants) :
-        criteria === "끝낸 일 많은순" ? recommendationSorting(participants).sort((a, b) => b.enableStatus.length - a.enableStatus.length) :
-        criteria === "끝낸 일 적은순" ? recommendationSorting(participants).sort((a, b) => a.enableStatus.length - b.enableStatus.length) :
+        criteria === "추천순" ? [...recommendationArray] :
+        criteria === "끝낸 일 많은순" ? [...recommendationArray].sort((a, b) => getEnableStatus(b).length - getEnableStatus(a).length) :
+        criteria === "끝낸 일 적은순" ? [...recommendationArray].sort((a, b) => getEnableStatus(a).length - getEnableStatus(b).length) :
         criteria === "이름순" ? [...participants].sort((a, b) => a.username.localeCompare(b.username, "ko", {
             numeric: true,
         })) :
@@ -25,11 +30,11 @@ export function useCriteriaForSorting(participants: ParticipantsInfoCardProps[])
     }
 }
 
-export function recommendationSorting(participants: ParticipantsInfoCardProps[]) {
+export function recommendationSorting(participants: ParticipantsInfoCardProps[], allStatuses: stateType[]) {
     const getStatusPattern = (participant: ParticipantsInfoCardProps) => {
-        const enabledSet = new Set(participant.enableStatus.map(String));
-        const baseStatuses = participants[0]?.allStatus ?? [];
-        return baseStatuses.map((status) => (enabledSet.has(status.toString()) ? "1" : "0")).join("");
+        const enabledSet = getEnableStatus(participant) // new Set(participant.enableStatus.map(String));
+        const baseStatuses = allStatuses;
+        return baseStatuses.map((eachStatus) => (enabledSet.find((enabledState) => (enabledState.id === eachStatus.id)) ? "1" : "0")).join("");
     };
 
     // 1) 상태 패턴, 2) 보유 상태 개수, 3) 이름 순으로 오름차순 정렬
@@ -41,8 +46,8 @@ export function recommendationSorting(participants: ParticipantsInfoCardProps[])
             return aPattern.localeCompare(bPattern);
         }
 
-        if (a.enableStatus.length !== b.enableStatus.length) {
-            return a.enableStatus.length - b.enableStatus.length;
+        if (getEnableStatus(a).length !== getEnableStatus(b).length) {
+            return getEnableStatus(a).length - getEnableStatus(b).length;
         }
 
         return a.username.localeCompare(b.username, "ko");
