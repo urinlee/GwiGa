@@ -1,4 +1,4 @@
-import RUOK from "@/app/(main)/RUOK/page";
+import RUOK from "@/app/(main)/my/page";
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 

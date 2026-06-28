@@ -1,51 +1,128 @@
 "use client";
+import type { UseFormRegisterReturn } from "react-hook-form";
 import { cn } from "@/lib/cn";
+import { EnterChoiceInput } from "./EnterForm";
 
 
-interface GetInputProps {
-    label: string;
-    name?: string
-    placeholder?: string;
+// interface GetInputProps {
+//     label: string;
+//     name?: string
+//     placeholder?: string;
+//     required?: boolean;
+//     isLong?: boolean;
+//     maxLength?: number;
+// }
+
+// export default function GetInput({ label, name, placeholder, required, isLong, maxLength }: GetInputProps) {
+
+//     const InputStyle:string = `mt-3 w-full rounded-md border border-gray-300 dark:border-gray-500 px-4 py-2 focus:outline-none`;
+//     return (
+//         <div className="">
+//             <p className="ml-3 text-lg font-medium text-gray-600 dark:text-gray-200">
+//                 {label}
+//                 {required && <span className="text-red-500 ml-1">*</span>}
+//             </p>
+//             {isLong ? (
+//                 <textarea
+//                     name={name || label}
+//                     placeholder={placeholder || "Type something..."}
+//                     required={required}
+//                     maxLength={maxLength}
+//                     className={cn(InputStyle, "h-32 resize-none")}
+//                 />
+//             ) : (
+//                 <input
+//                     type="text"
+//                     name={name || label}
+//                     placeholder={placeholder || "Type something..."}
+//                     required={required}
+//                     maxLength={maxLength}
+//                     className={cn(InputStyle)}
+//                 />
+//             )}
+
+//             {maxLength && (
+//                 <div className="flex">
+//                     <span className="mt-1 ml-auto text-sm text-gray-500 dark:text-gray-400">
+//                         최대 {maxLength}자
+//                     </span>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// }
+
+
+export interface InputBaseProps {
+    title: string;
+    description?:string;
     required?: boolean;
-    isLong?: boolean;
-    maxLength?: number;
+    /** 사용하는 곳에서 register("이름", rules) 결과를 넘긴다 */
+    registration?: UseFormRegisterReturn;
+    /** 사용하는 곳에서 errors["이름"]?.message 를 넘긴다 */
+    error?: string;
 }
 
-export default function GetInput({ label, name, placeholder, required, isLong, maxLength }: GetInputProps) {
+export interface GetInputTextProps extends InputBaseProps {
+    type: "text" ;
+    defaultValue?: string;
+    maxLength?: number;
+}
+// | "textarea" | "toggle" | "select" | "checkbox" | "radio"
 
-    const InputStyle:string = `mt-3 w-full rounded-md border border-gray-300 dark:border-gray-500 px-4 py-2 focus:outline-none`;
+export interface GetInputTextAreaProps extends InputBaseProps {
+    type: "textarea";
+    defaultValue?: string;
+    maxLength?: number;
+    isLong?: boolean;
+}
+
+
+export interface GetInputToggleProps extends InputBaseProps {
+    type: "toggle";
+}
+
+export interface GetInputCheckboxProps extends InputBaseProps {
+    type: "checkbox";
+}
+
+export interface GetInputSelectProps extends InputBaseProps {
+    type: "select";
+    options?: string[];
+}
+
+export interface GetInputRadioProps extends InputBaseProps {
+    type: "radio";
+    options?: string[];
+}
+
+export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps;
+
+
+const TextAreaContainerStyle = "flex flex-col w-full items-start";
+
+export function GetInputArea(props: GetInputProps) {
+    const { type, title, description, required, registration, error, ...rest } = props;
+
     return (
-        <div className="">
-            <p className="ml-3 text-lg font-medium text-gray-600 dark:text-gray-200">
-                {label}
-                {required && <span className="text-red-500 ml-1">*</span>}
-            </p>
-            {isLong ? (
-                <textarea
-                    name={name || label}
-                    placeholder={placeholder || "Type something..."}
-                    required={required}
-                    maxLength={maxLength}
-                    className={cn(InputStyle, "h-32 resize-none")}
-                />
-            ) : (
-                <input
-                    type="text"
-                    name={name || label}
-                    placeholder={placeholder || "Type something..."}
-                    required={required}
-                    maxLength={maxLength}
-                    className={cn(InputStyle)}
-                />
-            )}
-
-            {maxLength && (
-                <div className="flex">
-                    <span className="mt-1 ml-auto text-sm text-gray-500 dark:text-gray-400">
-                        최대 {maxLength}자
-                    </span>
+        <div className={cn("flex w-full px-4 py-6 items-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200", type === "textarea" && TextAreaContainerStyle)}>
+            <div className="flex-1">
+                <h3 className="font-semibold text-[18px]">
+                    {title}
+                    {required && <span className="text-red-500 ml-1">*</span>}
+                </h3>
+                <p className="mt-2 text-[12px] text-zinc-500">
+                    {description}
+                </p>
+            </div>
+            <div className={cn("flex mt-2 w-100 items-center justify-center",
+                type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10" : "w-150"
+            )}>
+                <div className="flex w-full h-full flex-col items-center">
+                    <EnterChoiceInput type={type} registration={registration} {...rest} />
+                    {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
                 </div>
-            )}
+            </div>
         </div>
-    );
+    )
 }

@@ -51,3 +51,5 @@ storybook-static
 .env
 .env.local
 /src/generated/prisma
+
+.claude

@@ -1,11 +1,12 @@
 //pc에선 dashboard page만 만든다. 모바일에서는 room page도 만든다. pc에서는 room page는 만들지 않는다.
 
+import DashboardFastSetting from "@/features/dashboard/components/DashboardFastSetting/DashboardFastSetting";
 import DashboardHero from "@/features/dashboard/components/DashboardHero/DashboardHero";
 import InfoCardsContainer, { stateType } from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
 import { ParticipantsInfoCardProps, ParticipateStatusProps } from "@/features/dashboard/components/ParticipateInfoCard/ParticipantsInfoCard";
 import { prisma } from "@/lib/prisma";
 import { participateContentStatus } from "@/types/status";
-import { getGroup } from "@/utils/group";
+import { getGroup } from "@/services/group/group";
 import valueProcessor from "next/dist/build/webpack/loaders/resolve-url-loader/lib/value-processor";
 
 
@@ -98,7 +99,7 @@ export default async function DashboardPage({
 
 
 
-  return (<div className="flex flex-col gap-20 my-10">
+  return (<div className="flex flex-col gap-10 my-10">
     <DashboardHero
       roomName={RoomInfo?.name || ""}
       description={RoomInfo?.description || ""}
@@ -107,6 +108,7 @@ export default async function DashboardPage({
       location="쩡이포차"
       participantCount={100}
     />
+    <DashboardFastSetting roomId={roomid}/>
     <InfoCardsContainer participants={participants} allStatuses={allStatus}/>
   </div>)
 }

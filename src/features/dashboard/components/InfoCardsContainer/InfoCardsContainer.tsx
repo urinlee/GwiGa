@@ -46,7 +46,7 @@ export default function InfoCardsContainer({ participants, allStatuses }: InfoCa
                         return(
                             <div key={statusId} className="flex items-center gap-1 cursor-pointer select-none" onClick={()=>toggleTagClick(statusId)}>
                                 <div className={cn("w-2 h-2 rounded-full", num == 1 ? "bg-orange-500" : num == 2 ? "bg-green-500" : num==0 && "bg-gray-300 dark:bg-gray-700")} />
-                                <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400", `text-[${state?.primaryColor}] dark:text-[${state?.primaryColor}]`)}>
+                                <span className={cn("text-sm font-bold text-zinc-500 dark:text-zinc-400")} style={{ color: state?.primaryColor }}>
                                 {/* 색상 participateStatusClasses에 맞게 바꾸기 */}
                                     {state?.name} ({StatusParticipantCount[statusId] ?? 0}/{participants.length})
                                 </span>

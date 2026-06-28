@@ -37,7 +37,7 @@ export const countParticipantsByStatus =
 
     const statusCounts: Record<string, number> = Object.fromEntries(
         allStatuses.map((status) => [
-            status,
+            status.id,
             participants.filter((participant) =>
                 participant.userStatus.filter(value => value.isTrue).map((value) => value.id).includes(status.id)
             ).length,

@@ -1,4 +1,4 @@
-import { getGroup, isMember } from "@/utils/group";
+import { getGroup, isMember } from "@/services/group/group";
 import { RoomWithSlug } from "../../route";
 import { getUser } from "@/utils/currentUser";
 import { prisma } from "@/lib/prisma";

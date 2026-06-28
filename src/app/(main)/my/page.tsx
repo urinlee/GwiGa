@@ -1,7 +1,7 @@
 import ContentSectionContainer, { contentSectionContainerProps } from "@/features/RUOK/components/ContentSectionContainer/ContentSectionContainer.";
 import { HistoryContentSectionProps } from "@/features/RUOK/components/HistoryContentSection/HistoryContentSection";
 import { getUser } from "@/utils/currentUser";
-import { ImAdminGroup, ImGroupMember } from "@/utils/group";
+import { ImAdminGroup, ImGroupMember } from "@/services/group/group";
 
 
 
