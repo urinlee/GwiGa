@@ -1,12 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 
 
 export async function getGroup(id: string, include?: Record<string, boolean>) {
-    if (!id) {
-        return null;
-    }
-
     return await prisma.group.findUnique({
         where: { id },
         include

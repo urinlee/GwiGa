@@ -2,6 +2,7 @@
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { cn } from "@/lib/cn";
 import { EnterChoiceInput } from "./EnterForm";
+import { SettingContainer } from "../SettingContainer/SettingContainer";
 
 
 // interface GetInputProps {
@@ -82,6 +83,10 @@ export interface GetInputToggleProps extends InputBaseProps {
     type: "toggle";
 }
 
+export interface GetInputNumberProps extends InputBaseProps {
+    type: "number";
+}
+
 export interface GetInputCheckboxProps extends InputBaseProps {
     type: "checkbox";
 }
@@ -96,7 +101,7 @@ export interface GetInputRadioProps extends InputBaseProps {
     options?: string[];
 }
 
-export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps;
+export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps;
 
 
 const TextAreaContainerStyle = "flex flex-col w-full items-start";
@@ -105,24 +110,25 @@ export function GetInputArea(props: GetInputProps) {
     const { type, title, description, required, registration, error, ...rest } = props;
 
     return (
-        <div className={cn("flex w-full px-4 py-6 items-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200", type === "textarea" && TextAreaContainerStyle)}>
-            <div className="flex-1">
-                <h3 className="font-semibold text-[18px]">
-                    {title}
-                    {required && <span className="text-red-500 ml-1">*</span>}
-                </h3>
-                <p className="mt-2 text-[12px] text-zinc-500">
-                    {description}
-                </p>
-            </div>
-            <div className={cn("flex mt-2 w-100 items-center justify-center",
-                type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10" : "w-150"
-            )}>
-                <div className="flex w-full h-full flex-col items-center">
-                    <EnterChoiceInput type={type} registration={registration} {...rest} />
-                    {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+        <SettingContainer>
+            <div className={cn("flex items-center", type === "textarea" && TextAreaContainerStyle)}>
+                <div className="flex-1">
+                    <h3 className="font-semibold text-[18px]">
+                        {title}
+                        {required && <span className="text-red-500 ml-1">*</span>}
+                    </h3>
+                    <p className="mt-2 text-[12px] text-zinc-500">
+                        {description}
+                    </p>
+                </div>
+                <div className={cn("flex mt-2 w-100 items-center justify-center",
+                    type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10" : "w-150"
+                )}>
+                    <div className="flex w-full h-full flex-col items-center">
+                        <EnterChoiceInput type={type} registration={registration} {...rest} />
+                        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        </SettingContainer>)
 }

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
-export type InputType = "text" | "textarea" | "select" | "toggle" | "checkbox" | "radio";
+export type InputType = "text" | "textarea" | "select" | "toggle" | "checkbox" | "radio" | "number";
 
 export interface InputProps {
     type: InputType;
@@ -84,10 +84,23 @@ export function EnterRadioZone({ registration, options = [] }: ChoiceInputProps)
     );
 }
 
+
+export function EnterNumberZone({ registration}: ZoneProps) {
+    return (
+        <input
+            type="number"
+            className={inputClassName}
+            {...registration}
+        />
+    );
+}
+
 export function EnterChoiceInput({ type, ...rest }: InputProps) {
     switch (type) {
         case "text":
             return <EnterTextZone {...rest} />;
+        case "number":
+            return <EnterNumberZone {...rest} />;
         case "textarea":
             return <EnterTextAreaZone {...rest} />;
         case "select":

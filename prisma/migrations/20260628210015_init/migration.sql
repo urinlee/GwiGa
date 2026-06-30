@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Group" ADD COLUMN     "limit" INTEGER NOT NULL DEFAULT 100;

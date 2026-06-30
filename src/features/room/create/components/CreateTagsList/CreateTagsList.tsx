@@ -5,9 +5,11 @@ import React, { useRef, useState } from "react";
 
 interface CreateTagsListProps {
     tags?: string[];
+    registration?: any; // react-hook-form의 register("이름", rules) 결과를 넘긴다
 }
 
-export default function CreateTagsList({ tags }: CreateTagsListProps) {
+export default function CreateTagsList({ tags, registration }: CreateTagsListProps) {
+    const [isChange, setIsChange] = useState(false);
     const [tagState, setTagState] = useState<string[]>(tags || []);
     const inputRef = useRef<HTMLInputElement>(null);
     
@@ -18,6 +20,7 @@ export default function CreateTagsList({ tags }: CreateTagsListProps) {
     }
 
     const handleButtonClick = () => {
+        setIsChange(true);
         const inputValue = inputRef.current?.value;
         if (inputValue){
             handleAddTag(inputValue);
@@ -29,6 +32,7 @@ export default function CreateTagsList({ tags }: CreateTagsListProps) {
     return (
         <div className="flex flex-col gap-5">
             <div className="flex gap-5">
+                {registration && <input type="hidden" {...registration} value={isChange} />}
                 {tagState?.map((value, index) => (
                     <div key={value} className="group flex gap-1 items-center">
                         <input

@@ -1,6 +1,8 @@
 import { MenuSelectprops, MenuSidebarLayout } from "@/components/layout/MenuSidebar/MenuSidebar";
 import SidebarBackLink from "@/components/layout/MenuSidebar/SidebarBackLink";
-import { ChevronLeft, Settings, Users } from "lucide-react";
+import { getGroup } from "@/services/group/group";
+import { getUser } from "@/utils/currentUser";
+import { ChevronLeft, Flame, Settings, Users } from "lucide-react";
 import Link from "next/link";
 
 
@@ -28,7 +30,32 @@ export default async function RoomSettingLayout({
       description: "멤버 관리와 권한 설정",
       href: `/setting/room/${encodedRoomId}/member`,
     },
+    {
+      icon: <Flame className="size-4" />,
+      title: "액티브",
+      description: "액티브와 관련된 설정",
+      href: `/setting/room/${encodedRoomId}/active`,
+    }
   ];
+
+  const session = await getUser();
+  const data = await getGroup(roomid);
+  if (data === null) {
+      return (
+          <div className="flex flex-col items-center justify-center h-full">
+              <h1 className="text-2xl font-bold">방을 찾을 수 없습니다.</h1>
+              <p className="text-gray-500">존재하지 않는 방이거나 삭제된 방입니다.</p>
+          </div>
+      );
+  }
+  if (session?.id !== data?.adminId) {
+      return (
+          <div className="flex flex-col items-center justify-center h-full">
+              <h1 className="text-2xl font-bold">권한이 없습니다.</h1>
+              <p className="text-gray-500">이 페이지에 접근할 수 있는 권한이 없습니다.</p>
+          </div>
+      );
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden">

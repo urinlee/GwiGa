@@ -63,6 +63,7 @@ model Group {
   id        String   @id @default(cuid())
   name      String
   description String?
+  limit     Int      @default(100)
   tags      String[] @default([])
   statuses Status[]
   createdAt DateTime @default(now())
