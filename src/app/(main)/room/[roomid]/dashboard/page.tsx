@@ -5,7 +5,6 @@ import DashboardHero from "@/features/dashboard/components/DashboardHero/Dashboa
 import InfoCardsContainer, { stateType } from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
 import { ParticipantsInfoCardProps, ParticipateStatusProps } from "@/features/dashboard/components/ParticipateInfoCard/ParticipantsInfoCard";
 import { prisma } from "@/lib/prisma";
-import { participateContentStatus } from "@/types/status";
 import { getGroup } from "@/services/group/group";
 import valueProcessor from "next/dist/build/webpack/loaders/resolve-url-loader/lib/value-processor";
 
@@ -51,17 +50,17 @@ export default async function DashboardPage({
       id:roomid
     },
     include: {
-      statuses:{
+      actives:{
         include:{
-          memberStatuses:true
+          memberActives:true
         }
       },
       members: {
         include:{
           user:true,
-          memberStatuses:{
+          memberActives:{
             include:{
-              status:true
+              active:true
             }
           },
         }
@@ -78,18 +77,18 @@ export default async function DashboardPage({
   
   const participants = (Group?.members ?? []).map((Member) => ({
     username: Member.user.name || "",
-    userStatus:[...Member.memberStatuses].map((memberStatus, _) => ({
-      id:memberStatus.status.id,
-      name:memberStatus.status.name,
-      primaryColor:memberStatus.status.primaryColor,
-      secondaryColor:memberStatus.status.secondaryColor,
+    userStatus:[...Member.memberActives].map((memberStatus, _) => ({
+      id:memberStatus.active.id,
+      name:memberStatus.active.name,
+      primaryColor:memberStatus.active.primaryColor,
+      secondaryColor:memberStatus.active.secondaryColor,
       isTrue:memberStatus.enable,
     }))
   })) as ParticipantsInfoCardProps[]
 
 
-  const allStatus = ((Group?.statuses ?? [])
-    .filter((value, _) => value.memberStatuses.length)
+  const allStatus = ((Group?.actives ?? [])
+    .filter((value, _) => value.memberActives.length)
     .map((eachStatus, _) => ({
       id: eachStatus.id,
       name: eachStatus.name,

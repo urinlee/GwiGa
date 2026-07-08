@@ -1,5 +1,4 @@
 import { cn } from "@/lib/cn";
-import { participateContentStatus, participateStatusClasses } from "@/types/status";
 import AuthorAvatar from "@/components/ui/AuthorAvatar/AuthorAvatar";
 import Color from "color";
 import Image from "next/image";

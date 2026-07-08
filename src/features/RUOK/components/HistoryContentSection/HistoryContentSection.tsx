@@ -3,14 +3,13 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import ContentCard from "@/components/ui/ContentCard/ContentCard";
 import { ClassNameValue } from "tailwind-merge";
-import { dashboardStatusTypes, dashboardStatusClasses } from "@/types/status";
 
 
 
 export interface HistoryContentSectionProps {
   title: string;
   date: string;
-  status: dashboardStatusTypes;
+  status: string;
   redirectUrl?: string;
 }
 
@@ -30,9 +29,7 @@ export function HistoryContentSection({
   status,
   redirectUrl,
 }: HistoryContentSectionProps) {
-  const statusClass =
-    dashboardStatusClasses[status as keyof typeof dashboardStatusClasses] ??
-    CUSTOM_STATUS_FALLBACK_CLASS;
+  const statusClass = CUSTOM_STATUS_FALLBACK_CLASS;
 
   return (
     <ContentCard style={HistoryContent_HOVER_CLASS}>

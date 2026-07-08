@@ -1,5 +1,4 @@
 
-import { participateContentStatus } from "@/types/status";
 import { ParticipantsInfoCardProps } from "../components/ParticipateInfoCard/ParticipantsInfoCard";
 import { stateType } from "../components/InfoCardsContainer/InfoCardsContainer";
 import { getEnableStatus } from "./status";

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   });
 
   body.data.status.forEach(async (status, _) => {
-    await prisma.status.create({
+    await prisma.active.create({
       data: {
         name: status,
         groupId: ID,

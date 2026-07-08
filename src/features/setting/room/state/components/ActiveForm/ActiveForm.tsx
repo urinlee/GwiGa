@@ -1,19 +1,36 @@
 "use client";
 import { ActiveSettingForm } from "@/schemas/setting/room/schemas";
 import { useForm } from "react-hook-form";
+import { ActivePreview, SelectActive } from "../SelectActive/SelectActive";
+import { useEffect, useState } from "react";
 
 
-export function RoomActiveSettingsForm({ roomid, defaultValues }: { roomid: string, defaultValues: ActiveSettingForm }) {
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ActiveSettingForm>({
-        mode: "onChange",
-        defaultValues,
-    });
 
-    const onSubmit = async (data: ActiveSettingForm) => {}
+
+
+export function RoomActiveSettingsForm({ roomid }: { roomid: string }) {
+
+    const [actives, setActives] = useState<ActiveSettingForm[]>([]);
+
+    useEffect(() => {
+        const fetchActives = async () => {
+            const response = await fetch(`/api/group/${roomid}/setting/active`);
+            if (response.ok) {
+                const data = await response.json();
+                setActives(data);
+            } else {
+                console.error("Failed to fetch actives");
+            }
+        }
+        fetchActives();
+    }, [roomid]);
+
+
+
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-
+        <form>
+            <SelectActive actives={actives} />
         </form>
     )
 }

@@ -4,7 +4,6 @@ import ParticipantInfoCard, { ParticipantsInfoCardProps, ParticipateStatusProps 
 import { cn } from "@/lib/cn";
 import useDividedByCheckedTag from "@/features/dashboard/hooks/DividedByCheckedTag";
 import { CriteriaForSorting, criteriaOptions, useCriteriaForSorting } from "../../hooks/CriteriaForSorting";
-import { participateStatusClasses } from "@/types/status";
 import { filterParticipantsByStatus, countParticipantsByStatus } from "../../lib/filterParticipantsByChecked";
 import { getStatusbyId } from "../../lib/status";
 

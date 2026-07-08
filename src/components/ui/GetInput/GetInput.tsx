@@ -101,7 +101,13 @@ export interface GetInputRadioProps extends InputBaseProps {
     options?: string[];
 }
 
-export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps;
+export interface GetInputColorProps extends InputBaseProps {
+    type: "color";
+    defaultColor?: string;
+    onColorChange?: (hex: string) => void;
+}
+
+export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps | GetInputColorProps;
 
 
 const TextAreaContainerStyle = "flex flex-col w-full items-start";
@@ -122,7 +128,9 @@ export function GetInputArea(props: GetInputProps) {
                     </p>
                 </div>
                 <div className={cn("flex mt-2 w-100 items-center justify-center",
-                    type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10" : "w-150"
+                    type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10"
+                        : type === "color" ? "w-auto justify-end"
+                        : "w-150"
                 )}>
                     <div className="flex w-full h-full flex-col items-center">
                         <EnterChoiceInput type={type} registration={registration} {...rest} />

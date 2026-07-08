@@ -1,26 +1,25 @@
 "use client";
 import { cn } from "@/lib/cn";
-import { participateBgStatusClasses, participateContentStatus } from "@/types/status";
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface CreateStatusListProps {
-    defaultStatusList?: participateContentStatus[];
+    defaultStatusList?: string[];
 }
 
 export default function CreateStatusList({ defaultStatusList }: CreateStatusListProps) {
 
-    const [statusList, setStatusList] = useState<participateContentStatus[]>(defaultStatusList || []);
+    const [statusList, setStatusList] = useState<string[]>(defaultStatusList || []);
     const InputRef = useRef<HTMLInputElement>(null);
 
-    const handleAddStatus = (newStatus: participateContentStatus) => {
+    const handleAddStatus = (newStatus: string) => {
         if (newStatus.trim() === "") return;
         if (statusList.includes(newStatus)) return;
         setStatusList((prevList) => [...prevList, newStatus]);
     }
 
     const handleButtonClick = () => {
-        const newStatus = InputRef.current?.value as participateContentStatus;
+        const newStatus = InputRef.current?.value as string;
         if (newStatus) {
             handleAddStatus(newStatus);
             if (InputRef.current) {
@@ -33,7 +32,7 @@ export default function CreateStatusList({ defaultStatusList }: CreateStatusList
         <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2">
                 {statusList.map((status, index) => {
-                    const statusClass = participateBgStatusClasses[status as keyof typeof participateBgStatusClasses] ?? "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300";
+                    const statusClass = "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300";
                     return (
                         <div key={index + "status"} className="inline" >
                             <input type="hidden" name="RoomStatus" value={status} />
