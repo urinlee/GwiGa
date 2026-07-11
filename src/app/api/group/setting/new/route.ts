@@ -4,7 +4,7 @@ import { CurrentUser, getUser } from "@/utils/currentUser";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const GroupRoomSchema = z.object({
+const CreateGroupSchema = z.object({
   name: z.string().max(20).min(2),
   description: z.string().max(2000).optional(),
   tag: z.array(z.string()).transform((arr) => [...new Set(arr)]),
@@ -12,7 +12,7 @@ const GroupRoomSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const body = GroupRoomSchema.safeParse(await req.json());
+  const body = CreateGroupSchema.safeParse(await req.json());
   const currentUser = await getUser();
 
   if (!body.success) {

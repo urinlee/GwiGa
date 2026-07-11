@@ -6,9 +6,9 @@ import { MenuSidebarLayout, type MenuSelectprops } from "./MenuSidebar";
 const settingsMenu: MenuSelectprops[] = [
   { icon: <LayoutGrid className="size-4" />, title: "대시보드", description: "방 통계와 상태를 확인해요", href: "/", isActive: true },
   { icon: <CircleUserRound className="size-4" />, title: "프로필", description: "닉네임과 공개 정보를 관리", href: "/profile/me" },
-  { icon: <Bell className="size-4" />, title: "알림", description: "초대와 공지 알림 설정", href: "/setting/room/demo-room" },
-  { icon: <ShieldCheck className="size-4" />, title: "권한", description: "멤버 권한과 승인 정책", href: "/setting/room/demo-room" },
-  { icon: <Settings className="size-4" />, title: "방 설정", description: "기본 정보와 접근 범위", href: "/setting/room/demo-room" },
+  { icon: <Bell className="size-4" />, title: "알림", description: "초대와 공지 알림 설정", href: "/setting/group/demo-group" },
+  { icon: <ShieldCheck className="size-4" />, title: "권한", description: "멤버 권한과 승인 정책", href: "/setting/group/demo-group" },
+  { icon: <Settings className="size-4" />, title: "방 설정", description: "기본 정보와 접근 범위", href: "/setting/group/demo-group" },
 ];
 
 const meta = {
@@ -37,7 +37,7 @@ const meta = {
     },
   },
   args: {
-    title: "Room Settings",
+    title: "Group Settings",
     menus: settingsMenu,
   },
   decorators: [
@@ -57,7 +57,7 @@ export const Default: Story = {
     const canvas = within(canvasElement);
 
     // 제목과 모든 메뉴 항목이 렌더링된다
-    await expect(canvas.getByRole("heading", { name: "Room Settings" })).toBeInTheDocument();
+    await expect(canvas.getByRole("heading", { name: "Group Settings" })).toBeInTheDocument();
     await expect(canvas.getByText("대시보드")).toBeInTheDocument();
     await expect(canvas.getByText("방 설정")).toBeInTheDocument();
 

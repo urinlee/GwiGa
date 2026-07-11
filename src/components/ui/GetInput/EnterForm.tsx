@@ -1,16 +1,19 @@
 "use client";
 import { cn } from "@/lib/cn";
-import { useState } from "react";
+import { Calendar, CalendarClock, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { ColorPicker } from "../ColorPicker/ColorPicker";
 import { Modal, ModalContent } from "../Modal/Modal";
 
-export type InputType = "text" | "textarea" | "select" | "toggle" | "checkbox" | "radio" | "number" | "color";
+export type InputType = "text" | "textarea" | "select" | "toggle" | "checkbox" | "radio" | "number" | "color" | "time" | "datetime";
 
 export interface InputProps {
     type: InputType;
     /** 사용하는 곳에서 register("이름", rules) 결과를 넘긴다 */
     registration?: UseFormRegisterReturn;
+    /** text / textarea에서만 사용된다 */
+    placeholder?: string;
 }
 
 export interface ChoiceInputProps extends Omit<InputProps, "type"> {
@@ -21,19 +24,21 @@ type ZoneProps = Omit<InputProps, "type">;
 
 const inputClassName = "w-full rounded-md border border-gray-400 dark:border-gray-500 px-4 py-2 focus:outline-none";
 
-export function EnterTextZone({ registration}: ZoneProps) {
+export function EnterTextZone({ registration, placeholder }: ZoneProps) {
     return (
         <input
             className={inputClassName}
+            placeholder={placeholder}
             {...registration}
         />
     );
 }
 
-export function EnterTextAreaZone({ registration}: ZoneProps) {
+export function EnterTextAreaZone({ registration, placeholder }: ZoneProps) {
     return (
         <textarea
             className={cn(inputClassName, "h-full resize-none")}
+            placeholder={placeholder}
             {...registration}
         />
     );
@@ -99,6 +104,55 @@ export function EnterNumberZone({ registration}: ZoneProps) {
     );
 }
 
+export interface TimeZoneProps extends ZoneProps {
+    /** "HH:MM" 형식 */
+    defaultValue?: string;
+    /** 초 단위 정밀도가 필요하면 1, 기본은 분 단위 */
+    step?: number;
+}
+
+export function EnterTimeZone({ registration, defaultValue, step }: TimeZoneProps) {
+    return (
+        <div className="relative w-full">
+            <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <input
+                type="time"
+                step={step}
+                defaultValue={defaultValue}
+                // 다크모드에서 네이티브 시계 피커/텍스트가 어둡게 렌더되도록
+                className={cn(inputClassName, "pl-10 dark:[color-scheme:dark]")}
+                {...registration}
+            />
+        </div>
+    );
+}
+
+export interface DateTimeZoneProps extends ZoneProps {
+    /** dateOnly면 "YYYY-MM-DD", 아니면 "YYYY-MM-DDTHH:MM" */
+    defaultValue?: string;
+    /** true면 시간 없이 날짜만 입력받는다 */
+    dateOnly?: boolean;
+    /** 초 단위 정밀도가 필요하면 1 (dateOnly일 땐 무시됨) */
+    step?: number;
+}
+
+export function EnterDateTimeZone({ registration, defaultValue, dateOnly, step }: DateTimeZoneProps) {
+    const Icon = dateOnly ? Calendar : CalendarClock;
+    return (
+        <div className="relative w-full">
+            <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <input
+                type={dateOnly ? "date" : "datetime-local"}
+                step={dateOnly ? undefined : step}
+                defaultValue={defaultValue}
+                // 다크모드에서 네이티브 달력 피커/텍스트가 어둡게 렌더되도록
+                className={cn(inputClassName, "pl-10 dark:[color-scheme:dark]")}
+                {...registration}
+            />
+        </div>
+    );
+}
+
 export interface ColorZoneProps extends ZoneProps {
     defaultColor?: string;
     onColorChange?: (hex: string) => void;
@@ -107,6 +161,11 @@ export interface ColorZoneProps extends ZoneProps {
 export function EnterColorZone({ registration, defaultColor = "#3B82F6", onColorChange }: ColorZoneProps) {
     const [color, setColor] = useState(defaultColor);
     const [open, setOpen] = useState(false);
+
+    // 바깥에서 색이 바뀌면(예: 선택된 항목 변경, 서버 데이터 도착) 스와치도 따라간다
+    useEffect(() => {
+        setColor(defaultColor);
+    }, [defaultColor]);
 
     const commit = (next: string) => {
         setColor(next);
@@ -154,6 +213,10 @@ export function EnterChoiceInput({ type, ...rest }: InputProps) {
             return <EnterRadioZone {...rest} />;
         case "color":
             return <EnterColorZone {...rest} />;
+        case "time":
+            return <EnterTimeZone {...rest} />;
+        case "datetime":
+            return <EnterDateTimeZone {...rest} />;
         default:
             return null;
     }

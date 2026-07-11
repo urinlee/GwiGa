@@ -1,55 +1,55 @@
 import { prisma } from "@/lib/prisma";
-import { roomGeneralSetSchema } from "@/schemas/setting/room/schemas";
+import { groupGeneralSetSchema } from "@/schemas/setting/group/schemas";
 import { getGroup, isAdmin } from "@/services/group/group";
 import { getUser } from "@/utils/currentUser";
 
 
-export interface RoomWithSlug {
+export interface GroupWithSlug {
     params: Promise<{ id: string }>
 }
 
-export async function GET(req: Request, { params }: RoomWithSlug) {
+export async function GET(req: Request, { params }: GroupWithSlug) {
     const { id } = await params;
-    const roomId = id
+    const groupId = id
 
     const user = await getUser();
 
     if (!user) return new Response("Unauthorized", { status: 401 });
 
-    if (!(await isAdmin(roomId, user.id))) {
+    if (!(await isAdmin(groupId, user.id))) {
         return new Response("Forbidden", { status: 403 });
     }
 
-    const room = await getGroup(roomId);
+    const group = await getGroup(groupId);
     
-    if (!room) return new Response("Not Found", { status: 404 });
+    if (!group) return new Response("Not Found", { status: 404 });
 
-    return new Response(JSON.stringify(room), { status: 200 });
+    return new Response(JSON.stringify(group), { status: 200 });
 }
 
 
 
-export async function POST(req: Request, { params }: RoomWithSlug) {
+export async function POST(req: Request, { params }: GroupWithSlug) {
     const { id } = await params;
-    const roomId = id
+    const groupId = id
 
     const user = await getUser();
-    const body = roomGeneralSetSchema.parse(await req.json());
+    const body = groupGeneralSetSchema.parse(await req.json());
     
 
     if (!user) return new Response("Unauthorized", { status: 401 });
 
-    if (!(await isAdmin(roomId, user.id))) {
+    if (!(await isAdmin(groupId, user.id))) {
         return new Response("Forbidden", { status: 403 });
     }
 
-    const room = await getGroup(roomId);
-    if (!room) return new Response("Not Found", { status: 404 });
+    const group = await getGroup(groupId);
+    if (!group) return new Response("Not Found", { status: 404 });
 
-    const updatedRoom = await prisma.group.update({
-        where: { id: roomId },
+    const updatedGroup = await prisma.group.update({
+        where: { id: groupId },
         data: body
     });
     
-    return new Response(JSON.stringify(updatedRoom), { status: 200 });
+    return new Response(JSON.stringify(updatedGroup), { status: 200 });
 }

@@ -3,12 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const roomId = id;
+    const groupId = id;
 
 
     const group = await prisma.group.findUnique({
         where: {
-            id: roomId,
+            id: groupId,
         },
         include: {
             actives: true,

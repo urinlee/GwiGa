@@ -18,15 +18,15 @@ function DashboardFastSettingButton({ icon, label, onClick }: DashboardFastSetti
     );
 }
 
-export default function DashboardFastSetting({ roomId }: { roomId: string }) {
+export default function DashboardFastSetting({ groupId }: { groupId: string }) {
     const router = useRouter();
     return (
         <div className="flex gap-2">
             <div className="flex-1">
-                <DashboardFastSettingButton icon={<Settings size={16} />} label="설정 하러 가기" onClick={() => router.push(`/setting/room/${roomId}/general`)} />
+                <DashboardFastSettingButton icon={<Settings size={16} />} label="설정 하러 가기" onClick={() => router.push(`/setting/group/${groupId}/general`)} />
             </div>
             <div className="flex-1">
-                <DashboardFastSettingButton icon={<Info size={16} />} label="공지사항 추가하기" onClick={() => router.push(`/room/${roomId}/notices/new`)} />
+                <DashboardFastSettingButton icon={<Info size={16} />} label="공지사항 추가하기" onClick={() => router.push(`/group/${groupId}/notices/new`)} />
             </div>
         </div>
     );

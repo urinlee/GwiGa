@@ -83,6 +83,8 @@ model GroupMember {
   userId    String
   createdAt DateTime @default(now())
 
+  nickname String?
+
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -99,6 +101,8 @@ model Active {
   primaryColor       String?  @default("#F4F4F5")
   secondaryColor       String?  @default("#57565C")
   createAt    DateTime @default(now())
+  startAt     DateTime @default(now())
+  endAt       DateTime @default(now())
 
   groupId String
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)

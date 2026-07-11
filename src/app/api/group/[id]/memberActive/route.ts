@@ -1,0 +1,28 @@
+import { prisma } from "@/lib/prisma";
+import { GroupWithSlug } from "../route";
+
+
+export async function GET(_request: Request, { params }: GroupWithSlug) {
+    const { id } = await params;
+    const groupId = id;
+
+    const group = await prisma.group.findUnique({
+        where: {
+            id: groupId,
+        },
+        include: {
+            members: {
+                include: {
+                    user: true,
+                }
+            }
+        }
+    });
+
+    if (!group) {
+        return Response.json({ error: "Group not found" }, { status: 404 });
+    }
+
+    // 이 엔드포인트는 "멤버 목록"이므로 group 전체가 아니라 members 배열을 반환한다
+    return Response.json(group.members, { status: 200 });
+}

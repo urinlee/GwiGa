@@ -1,7 +1,7 @@
 import ContentCard from "@/components/ui/ContentCard/ContentCard";
 
 interface DashboardHeroProps {
-    roomName?: string;
+    groupName?: string;
     description?: string;
     date?: string;
     tags?: string;
@@ -10,7 +10,7 @@ interface DashboardHeroProps {
 }
 
 export default function DashboardHero({
-    roomName = "새로운 방",
+    groupName = "새로운 방",
     description = "설명 없음",
     date = "날짜 미정",
     tags = "태그 없음",
@@ -25,7 +25,7 @@ export default function DashboardHero({
             <ContentCard>
                 <div className="flex flex-col gap-6 mb-4 w-full">
                     <div className="block">
-                        <h1 className="text-2xl font-bold block">{roomName}</h1>
+                        <h1 className="text-2xl font-bold block">{groupName}</h1>
                         <p className={opTionsTextClass}>{description}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 w-full">

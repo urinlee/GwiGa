@@ -68,6 +68,7 @@ export interface GetInputTextProps extends InputBaseProps {
     type: "text" ;
     defaultValue?: string;
     maxLength?: number;
+    placeholder?: string;
 }
 // | "textarea" | "toggle" | "select" | "checkbox" | "radio"
 
@@ -76,6 +77,7 @@ export interface GetInputTextAreaProps extends InputBaseProps {
     defaultValue?: string;
     maxLength?: number;
     isLong?: boolean;
+    placeholder?: string;
 }
 
 
@@ -107,7 +109,25 @@ export interface GetInputColorProps extends InputBaseProps {
     onColorChange?: (hex: string) => void;
 }
 
-export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps | GetInputColorProps;
+export interface GetInputTimeProps extends InputBaseProps {
+    type: "time";
+    /** "HH:MM" 형식 */
+    defaultValue?: string;
+    /** 초 단위 정밀도가 필요하면 1, 기본은 분 단위 */
+    step?: number;
+}
+
+export interface GetInputDateTimeProps extends InputBaseProps {
+    type: "datetime";
+    /** dateOnly면 "YYYY-MM-DD", 아니면 "YYYY-MM-DDTHH:MM" */
+    defaultValue?: string;
+    /** true면 시간 없이 날짜만 입력받는다 */
+    dateOnly?: boolean;
+    /** 초 단위 정밀도가 필요하면 1 (dateOnly일 땐 무시됨) */
+    step?: number;
+}
+
+export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps | GetInputColorProps | GetInputTimeProps | GetInputDateTimeProps;
 
 
 const TextAreaContainerStyle = "flex flex-col w-full items-start";
@@ -130,6 +150,8 @@ export function GetInputArea(props: GetInputProps) {
                 <div className={cn("flex mt-2 w-100 items-center justify-center",
                     type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10"
                         : type === "color" ? "w-auto justify-end"
+                        : type === "time" ? "w-60 justify-end"
+                        : type === "datetime" ? ((rest as GetInputDateTimeProps).dateOnly ? "w-60 justify-end" : "w-80 justify-end")
                         : "w-150"
                 )}>
                     <div className="flex w-full h-full flex-col items-center">

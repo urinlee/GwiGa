@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { GetInputArea, type GetInputProps } from "./GetInput";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
+import { GetInputArea } from "./GetInput";
 
 const meta = {
     title: "Components/UI/GetInput",
@@ -8,7 +9,7 @@ const meta = {
 
 export default meta;
 
-type Story = StoryObj<GetInputProps>;
+type Story = StoryObj<typeof meta>;
 
 export const TextInput: Story = {
     args: {
@@ -30,11 +31,38 @@ export const TextInputWithError: Story = {
     },
 };
 
+export const TextInputWithPlaceholder: Story = {
+    args: {
+        type: "text",
+        title: "그룹 내 닉네임",
+        description: "멤버의 그룹 내 닉네임을 입력하세요",
+        placeholder: "예) 방장",
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getByPlaceholderText("예) 방장")).toBeInTheDocument();
+    },
+};
+
 export const TextAreaDefault: Story = {
     args: {
         type: "textarea",
         title: "이름 입력",
         description: "이름을 입력하세요",
+    },
+};
+
+export const TextAreaWithPlaceholder: Story = {
+    args: {
+        type: "textarea",
+        title: "그룹 소개",
+        description: "그룹 소개를 입력하세요",
+        isLong: true,
+        placeholder: "어떤 모임인지 간단히 적어주세요",
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getByPlaceholderText("어떤 모임인지 간단히 적어주세요")).toBeInTheDocument();
     },
 };
 

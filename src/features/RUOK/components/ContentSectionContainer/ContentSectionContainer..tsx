@@ -22,7 +22,7 @@ export default function ContentSectionContainer({ HistoryContents }: contentSect
             <div className="grid grid-cols-2 gap-4 md:flex md:flex-col">
                 <div className="hidden md:block"><CreateNewSection /></div>
                 {HistoryContents?.map(({ id, admin, ...props }) => (
-                    <Link key={id} href={`/room/${id}/dashboard`}>
+                    <Link key={id} href={`/group/${id}/dashboard`}>
                         <HistoryContentSection key={id} {...props} />
                     </Link>
                 ))}

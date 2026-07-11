@@ -123,12 +123,12 @@ interface ModalContentProps {
 
 export function ModalContent({
   children,
-  backgroundColor = "#f0f0f0",
+  backgroundColor,
   className = "",
 }: ModalContentProps) {
   return (
     <div
-      className={`rounded-2xl p-5 shadow-xl ${className}`}
+      className={`rounded-2xl p-5 shadow-xl bg-zinc-100 dark:bg-zinc-900 ${className}`}
       style={{ backgroundColor }}
     >
       {children}
