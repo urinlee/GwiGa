@@ -1,14 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { RouteContext } from "@/lib/api/params";
 import { groupGeneralSetSchema } from "@/schemas/setting/group/schemas";
 import { getGroup, isAdmin } from "@/services/group/group";
 import { getUser } from "@/utils/currentUser";
 
 
-export interface GroupWithSlug {
-    params: Promise<{ id: string }>
-}
-
-export async function GET(req: Request, { params }: GroupWithSlug) {
+export async function GET(req: Request, { params }: RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id
 
@@ -29,7 +26,7 @@ export async function GET(req: Request, { params }: GroupWithSlug) {
 
 
 
-export async function POST(req: Request, { params }: GroupWithSlug) {
+export async function POST(req: Request, { params }: RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id
 

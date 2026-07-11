@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { GroupWithSlug } from "../route";
+import { RouteContext } from "@/lib/api/params";
 
 
-export async function GET(_request: Request, { params }: GroupWithSlug) {
+export async function GET(_request: Request, { params }: RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id;
 

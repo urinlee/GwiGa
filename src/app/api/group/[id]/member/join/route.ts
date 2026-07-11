@@ -1,11 +1,11 @@
 import { getGroup, isMember } from "@/services/group/group";
-import { GroupWithSlug } from "../../route";
+import { RouteContext } from "@/lib/api/params";
 import { getUser } from "@/utils/currentUser";
 import { prisma } from "@/lib/prisma";
 
 
 
-export async function GET(req:Request, {params}:GroupWithSlug) {
+export async function GET(req:Request, {params}:RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id
 
@@ -19,7 +19,7 @@ export async function GET(req:Request, {params}:GroupWithSlug) {
     }, {status:200})
 }
 
-export async function POST(req:Request, {params}:GroupWithSlug) {
+export async function POST(req:Request, {params}:RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id
     console.log("groupid: ", groupId)
