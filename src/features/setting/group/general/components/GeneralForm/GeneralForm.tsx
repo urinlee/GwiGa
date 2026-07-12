@@ -20,7 +20,7 @@ export function GroupGeneralSettingsForm( {groupid, defaultValues}: { groupid: s
 
     const onSubmit = async (data: GeneralSettingForm) => {
         try {
-            const response = await fetch(`/api/group/${groupid}/setting/general`, {
+            const response = await fetch(`/api/v1/group/${groupid}/setting/general`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

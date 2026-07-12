@@ -97,7 +97,7 @@ export function NewActiveModal({ groupid , isOpen, setIsOpen }: { groupid: strin
     });
 
     const handleCreate = async (data: ActiveSettingForm) => {
-        const response = await fetch(`/api/group/${groupid}/setting/active/create`, {
+        const response = await fetch(`/api/v1/group/${groupid}/actives`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

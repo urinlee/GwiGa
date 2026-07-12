@@ -37,7 +37,7 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
 
     useEffect(() => {
         const fetchActives = async () => {
-            const response = await fetch(`/api/group/${groupid}/setting/active`);
+            const response = await fetch(`/api/v1/group/${groupid}/actives`);
             if (response.ok) {
                 const data = await response.json();
                 setActives(data);
@@ -57,12 +57,12 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
             return;
         }
 
-        const response = await fetch(`/api/group/${groupid}/setting/active/update`, {
-            method: "POST",
+        const response = await fetch(`/api/v1/group/${groupid}/actives/${selectedActive.id}`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ activeId: selectedActive.id, ...data }),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -81,12 +81,8 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
             return;
         }
 
-        const response = await fetch(`/api/group/${groupid}/setting/active/delete`, {
+        const response = await fetch(`/api/v1/group/${groupid}/actives/${selectedActive.id}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ activeId: selectedActive.id }),
         });
 
         if (!response.ok) {

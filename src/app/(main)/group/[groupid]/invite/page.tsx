@@ -32,7 +32,7 @@ export default function GroupInvite() {
 
     useEffect(() => {
         if (inviteType === "new") return
-        fetch(`/api/group/${groupid}/member/join`)
+        fetch(`/api/v1/group/${groupid}/member/join`)
             .then((res)=>res.json())
             .then((data) => {
                 setGroupName(data.name)
@@ -58,7 +58,7 @@ export default function GroupInvite() {
             router.push(`/group/${groupid}/dashboard`)
         }
         else if (!inviteType) {
-            const res = await fetch(`/api/group/${groupid}/member/join`,{
+            const res = await fetch(`/api/v1/group/${groupid}/member/join`,{
                 method:"POST"
             })
             const data = await res.json()

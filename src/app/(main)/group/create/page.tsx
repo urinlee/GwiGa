@@ -40,7 +40,7 @@ export default function CreateGroupPage() {
         console.log("[요청 body]", body);
 
         try {
-            const res = await fetch("/api/group/setting/new", {
+            const res = await fetch("/api/v1/group/setting/new", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

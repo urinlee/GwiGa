@@ -19,7 +19,7 @@ export function MemberForm({ groupid }: { groupid: string }) {
 
     useEffect(() => {
         const fetchMembers = async () => {
-            const response = await fetch(`/api/group/${groupid}/member`);
+            const response = await fetch(`/api/v1/group/${groupid}/member`);
             if (!response.ok) {
                 console.error("Failed to fetch members", response.status);
                 return;
