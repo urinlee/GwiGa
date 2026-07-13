@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { RouteContext } from "@/lib/api/params";
 import { groupGeneralSetSchema } from "@/schemas/setting/group/schemas";
-import { getGroup, isAdmin } from "@/services/group/group";
-import { getUser } from "@/utils/currentUser";
+import { getGroup, isAdmin } from "@/services/group";
+import { getCurrentUser } from "@/utils/currentUser";
 
 
 export async function GET(req: Request, { params }: RouteContext<{ id: string }>) {
     const { id } = await params;
     const groupId = id
 
-    const user = await getUser();
+    const user = await getCurrentUser();
 
     if (!user) return new Response("Unauthorized", { status: 401 });
 
@@ -30,7 +30,7 @@ export async function POST(req: Request, { params }: RouteContext<{ id: string }
     const { id } = await params;
     const groupId = id
 
-    const user = await getUser();
+    const user = await getCurrentUser();
     const body = groupGeneralSetSchema.parse(await req.json());
     
 

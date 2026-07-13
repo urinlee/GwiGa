@@ -3,7 +3,7 @@ import { RouteContext } from "@/lib/api/params";
 import { route, ok, created } from "@/lib/api/response";
 import { requireAdmin, requireUser } from "@/lib/api/guard";
 import { groupActiveSetSchema } from "@/schemas/setting/group/schemas";
-import { createActive, listActives } from "@/services/group/active";
+import { createActive, listActives } from "@/services/active";
 
 type Ctx = RouteContext<{ id: string }>;
 

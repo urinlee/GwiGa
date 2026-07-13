@@ -1,6 +1,6 @@
 import { GroupGeneralSettingsForm } from "@/features/setting/group/general/components/GeneralForm/GeneralForm";
-import { getGroup, isAdmin } from "@/services/group/group";
-import { getUser } from "@/utils/currentUser";
+import { getGroup, isAdmin } from "@/services/group";
+import { getCurrentUser } from "@/utils/currentUser";
 
 
 

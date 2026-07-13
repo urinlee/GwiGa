@@ -1,7 +1,7 @@
 import { MenuSelectprops, MenuSidebarLayout } from "@/components/layout/MenuSidebar/MenuSidebar";
 import SidebarBackLink from "@/components/layout/MenuSidebar/SidebarBackLink";
-import { getGroup } from "@/services/group/group";
-import { getUser } from "@/utils/currentUser";
+import { getGroup } from "@/services/group";
+import { getCurrentUser } from "@/utils/currentUser";
 import { ChevronLeft, Flame, Settings, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -38,7 +38,7 @@ export default async function GroupSettingLayout({
     }
   ];
 
-  const session = await getUser();
+  const session = await getCurrentUser();
   const data = await getGroup(groupid);
   if (data === null) {
       return (

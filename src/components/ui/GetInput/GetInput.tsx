@@ -147,14 +147,14 @@ export function GetInputArea(props: GetInputProps) {
                         {description}
                     </p>
                 </div>
-                <div className={cn("flex mt-2 w-100 items-center justify-center",
-                    type === "textarea" ? (rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10"
-                        : type === "color" ? "w-auto justify-end"
-                        : type === "time" ? "w-60 justify-end"
-                        : type === "datetime" ? ((rest as GetInputDateTimeProps).dateOnly ? "w-60 justify-end" : "w-80 justify-end")
-                        : "w-150"
+                <div className={cn("flex mt-2 items-center justify-end",
+                    type === "textarea" ? ((rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10")
+                        : type === "text" || type === "select" || type === "number" ? "w-150"
+                        : type === "time" ? "w-60"
+                        : type === "datetime" ? ((rest as GetInputDateTimeProps).dateOnly ? "w-60" : "w-80")
+                        : "w-auto"
                 )}>
-                    <div className="flex w-full h-full flex-col items-center">
+                    <div className="flex w-full h-full flex-col items-end">
                         <EnterChoiceInput type={type} registration={registration} {...rest} />
                         {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
                     </div>

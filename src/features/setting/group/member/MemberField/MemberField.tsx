@@ -1,11 +1,12 @@
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
-import { useForm } from "react-hook-form";
+import { MemberNicknameForm } from "@/schemas/setting/group/schemas";
+import type { UseFormRegister } from "react-hook-form";
 
 
-export function MemberField({register}: {register: ReturnType<typeof useForm>["register"]}) {
+export function MemberField({register}: {register: UseFormRegister<MemberNicknameForm>}) {
     return (
         <div>
-            <GetInputArea type="text" title="그룹 내 닉네임" description="멤버의 그룹 내 닉네임을 입력하세요" placeholder="" {...register("search")} />
+            <GetInputArea type="text" title="그룹 내 닉네임" description="멤버의 그룹 내 닉네임을 입력하세요" placeholder="" registration={register("nickname")} />
         </div>
     )
 }

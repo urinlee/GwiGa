@@ -5,7 +5,7 @@ export interface CurrentUser {
     name:string,
 }
 
-export async function getUser() : Promise<CurrentUser | null> {
+export async function getCurrentUser() : Promise<CurrentUser | null> {
     const session = await auth();
     if (!session) return null;
 

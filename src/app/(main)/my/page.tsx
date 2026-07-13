@@ -1,7 +1,7 @@
 import ContentSectionContainer, { contentSectionContainerProps } from "@/features/RUOK/components/ContentSectionContainer/ContentSectionContainer.";
 import { HistoryContentSectionProps } from "@/features/RUOK/components/HistoryContentSection/HistoryContentSection";
-import { getUser } from "@/utils/currentUser";
-import { ImAdminGroup, ImGroupMember } from "@/services/group/group";
+import { getCurrentUser } from "@/utils/currentUser";
+import { ImAdminGroup, ImGroupMember } from "@/services/group";
 
 
 
@@ -38,7 +38,7 @@ import { ImAdminGroup, ImGroupMember } from "@/services/group/group";
 //TODO: Status를 하드코딩 해둠 추후 변경할것!
 
 export default async function RUOK() {
-    const currentUser = await getUser()
+    const currentUser = await getCurrentUser()
     if (!currentUser) {
         return(<></>)
     }

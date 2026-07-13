@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CurrentUser, getUser } from "@/utils/currentUser";
+import { CurrentUser, getCurrentUser } from "@/utils/currentUser";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ const CreateGroupSchema = z.object({
 
 export async function POST(req: Request) {
   const body = CreateGroupSchema.safeParse(await req.json());
-  const currentUser = await getUser();
+  const currentUser = await getCurrentUser();
 
   if (!body.success) {
     return NextResponse.json({ error: body.error.flatten() }, { status: 400 });

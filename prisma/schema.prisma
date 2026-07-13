@@ -118,6 +118,8 @@ model MemberActive {
   userId   String
   activeId String
   enable   Boolean
+  startAt  DateTime?
+  endAt    DateTime?
 
   groupMember GroupMember @relation(fields: [groupId, userId], references: [groupId, userId])
   active      Active      @relation(fields: [activeId, groupId], references: [id, groupId])

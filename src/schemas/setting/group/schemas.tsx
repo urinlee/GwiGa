@@ -16,3 +16,29 @@ export const groupActiveSetSchema = z.object({
 
 })
 export type ActiveSettingForm = z.infer<typeof groupActiveSetSchema>;
+
+export const MemberNicknameSchema = z.object({
+    nickname: z.string().min(0).max(20),
+});
+export type MemberNicknameForm = z.infer<typeof MemberNicknameSchema>;
+
+// 멤버별 설정 필드 = 여기가 유일한 정의처. 나중엔 이 객체에만 추가하면 됨.
+export const memberActiveSettingsSchema = z.object({
+  enable: z.boolean(),
+  startAt: z.coerce.date().nullable(),
+  endAt: z.coerce.date().nullable(),
+  // 나중: notify: z.boolean(),
+  //       memo: z.string().max(200).nullable(),
+});
+
+// 한 항목 = 설정 + 어느 액티브냐(key)
+export const memberActiveItemSchema = memberActiveSettingsSchema.extend({
+  activeId: z.string(),
+});
+
+export const memberActivesSchema = z.object({
+  actives: z.array(memberActiveItemSchema),
+});
+
+export type MemberActiveSettings = z.infer<typeof memberActiveSettingsSchema>;
+export type MemberActiveItem = z.infer<typeof memberActiveItemSchema>;

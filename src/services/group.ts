@@ -13,6 +13,15 @@ export async function getGroup(id: string, include?: Record<string, boolean>) {
     });
 }
 
+export async function getMember(groupId: string, userId: string) {
+    return await prisma.group.findUnique({
+        where: {
+            id: groupId,
+            adminId: userId
+        }
+    })
+}
+
 export async function isMember(groupId: string, userId: string): Promise<boolean> {
     const member = await prisma.groupMember.findUnique({
         where: {

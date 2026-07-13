@@ -5,7 +5,7 @@ import DashboardHero from "@/features/dashboard/components/DashboardHero/Dashboa
 import InfoCardsContainer, { stateType } from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
 import { ParticipantsInfoCardProps, ParticipateStatusProps } from "@/features/dashboard/components/ParticipateInfoCard/ParticipantsInfoCard";
 import { prisma } from "@/lib/prisma";
-import { getGroup } from "@/services/group/group";
+import { getGroup } from "@/services/group";
 import valueProcessor from "next/dist/build/webpack/loaders/resolve-url-loader/lib/value-processor";
 
 

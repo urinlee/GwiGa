@@ -1,6 +1,6 @@
-import { getGroup, isMember } from "@/services/group/group";
+import { getGroup, isMember } from "@/services/group";
 import { RouteContext } from "@/lib/api/params";
-import { getUser } from "@/utils/currentUser";
+import { getCurrentUser } from "@/utils/currentUser";
 import { prisma } from "@/lib/prisma";
 
 
@@ -24,7 +24,7 @@ export async function POST(req:Request, {params}:RouteContext<{ id: string }>) {
     const groupId = id
     console.log("groupid: ", groupId)
 
-    const currentUser = await getUser()
+    const currentUser = await getCurrentUser()
     if (!currentUser) {
         return Response.json({ code:"NOT_LOGGED_IN", error: "need login" }, { status: 401 });
     }
