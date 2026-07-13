@@ -1,6 +1,7 @@
 "use client";
 import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import { ActiveFields } from "../ActiveFields/ActiveFields";
+import { ActivePreview } from "@/types/active";
 import { ActiveSettingForm, groupActiveSetSchema } from "@/schemas/setting/group/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
@@ -55,7 +56,7 @@ function randomHarmoniousPair(): { primary: string; secondary: string } {
     };
 }
 
-export function NewActiveButton({ groupid }: { groupid: string }) {
+export function NewActiveButton({ groupid, onCreated }: { groupid: string, onCreated?: (active: ActivePreview) => void }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const handleClick = () => {
@@ -76,13 +77,13 @@ export function NewActiveButton({ groupid }: { groupid: string }) {
                 </span>
             </button>
             {isOpen && (
-                <NewActiveModal groupid={groupid} isOpen={isOpen} setIsOpen={setIsOpen} />
+                <NewActiveModal groupid={groupid} isOpen={isOpen} setIsOpen={setIsOpen} onCreated={onCreated} />
             )}
         </>
     )
 }
 
-export function NewActiveModal({ groupid , isOpen, setIsOpen }: { groupid: string, isOpen: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+export function NewActiveModal({ groupid , isOpen, setIsOpen, onCreated }: { groupid: string, isOpen: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>>, onCreated?: (active: ActivePreview) => void }) {
     const [initialColors] = useState(randomHarmoniousPair);
     const [primaryColor, setPrimaryColor] = useState(initialColors.primary);
     const [secondaryColor, setSecondaryColor] = useState(initialColors.secondary);
@@ -109,6 +110,10 @@ export function NewActiveModal({ groupid , isOpen, setIsOpen }: { groupid: strin
             console.error(await response.text());
             return;
         }
+        // 생성된 액티브를 부모(목록)로 올려 즉시 반영한다. router.refresh()는
+        // 클라이언트 useState/useEffect 목록을 되돌리지 못하므로 이것만으로는 안 됐다.
+        const created: ActivePreview = await response.json();
+        onCreated?.(created);
         setIsOpen(false);
         router.refresh();
     }

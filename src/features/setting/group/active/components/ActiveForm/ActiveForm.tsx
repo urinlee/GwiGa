@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
 import Button from "@/components/ui/Button/Button";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
+import { NewActiveButton } from "../NewActiveModal/NewActiveModal";
 
 
 
@@ -75,6 +76,12 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
         setSelectedActive(updatedActive);
     }
 
+    // 새 액티브 생성 직후: POST가 돌려준 액티브를 목록에 바로 추가하고 선택한다
+    const handleCreated = (active: ActivePreview) => {
+        setActives(prev => [active, ...prev]);
+        setSelectedActive(active);
+    }
+
     const handleDelete = async () => {
         if (!selectedActive) {
             console.error("No active selected");
@@ -98,6 +105,8 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
 
     return (
         <div>
+            <NewActiveButton groupid={groupid} onCreated={handleCreated} />
+            <div className="h-4" />
             <div className="rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900/40 max-h-100 overflow-y-auto">
                 <ActiveList actives={actives} selectedActive={selectedActive} onSelect={setSelectedActive} />
             </div>
