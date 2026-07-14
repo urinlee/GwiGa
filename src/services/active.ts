@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { ActiveSettingForm } from "@/schemas/setting/group/schemas";
+import type { ActiveSettingForm } from "@/schemas/schemas";
 
 export async function listActives(groupId: string) {
     return prisma.active.findMany({ where: { groupId } });

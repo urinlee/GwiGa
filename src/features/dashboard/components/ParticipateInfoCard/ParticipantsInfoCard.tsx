@@ -16,12 +16,14 @@ export interface ParticipateStatusProps {
 
 export interface ParticipantsInfoCardProps {
   username: string;
+  avatarUrl?: string;
   userStatus: ParticipateStatusProps[];
 }
 
 
 export default function ParticipantInfoCard({
   username,
+  avatarUrl,
   userStatus
 }: ParticipantsInfoCardProps) {
 
@@ -39,7 +41,7 @@ export default function ParticipantInfoCard({
         )}
       >
         <AuthorAvatar
-          imageUrl={`https://picsum.photos/seed/${username}/300/200`}  
+          imageUrl={avatarUrl || `https://picsum.photos/seed/${username}/300/200`}  
           description={username}
           size={12}
           style="size-12 sm:mx-5 sm:size-15"

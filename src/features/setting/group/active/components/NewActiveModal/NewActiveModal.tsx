@@ -2,7 +2,7 @@
 import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import { ActiveFields } from "../ActiveFields/ActiveFields";
 import { ActivePreview } from "@/types/active";
-import { ActiveSettingForm, groupActiveSetSchema } from "@/schemas/setting/group/schemas";
+import { ActiveSettingForm, groupActiveSetSchema } from "@/schemas/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";

@@ -5,9 +5,8 @@ import { prisma } from "@/lib/prisma";
 
 
 
-export async function GET(req:Request, {params}:RouteContext<{ id: string }>) {
-    const { id } = await params;
-    const groupId = id
+export async function GET(req:Request, {params}:RouteContext<{ groupId: string }>) {
+    const { groupId } = await params;
 
     const group = await getGroup(groupId, {members:true}) as { members: any[]; name: string } | null;
     if (!group) {return Response.json({error:"group is Not Found"}, {status:404})}
@@ -19,9 +18,8 @@ export async function GET(req:Request, {params}:RouteContext<{ id: string }>) {
     }, {status:200})
 }
 
-export async function POST(req:Request, {params}:RouteContext<{ id: string }>) {
-    const { id } = await params;
-    const groupId = id
+export async function POST(req:Request, {params}:RouteContext<{ groupId: string }>) {
+    const { groupId } = await params;
     console.log("groupid: ", groupId)
 
     const currentUser = await getCurrentUser()

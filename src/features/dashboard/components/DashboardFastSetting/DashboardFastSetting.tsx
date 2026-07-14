@@ -14,7 +14,7 @@ function DashboardFastSettingButton({ icon, label, onClick }: DashboardFastSetti
         <button
             type="button"
             onClick={onClick}
-            className="group flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-left transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-50 hover:shadow-sm active:scale-[0.99] dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60"
+            className="group cursor-pointer flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-left transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-50 hover:shadow-sm active:scale-[0.99] dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60"
         >
             {icon && (
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600 transition-colors group-hover:bg-zinc-900 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-white dark:group-hover:text-zinc-900">
@@ -44,8 +44,8 @@ export default function DashboardFastSetting({ groupId }: { groupId: string }) {
             <div className="flex-1">
                 <DashboardFastSettingButton
                     icon={<Info size={18} />}
-                    label="공지사항 추가하기"
-                    onClick={() => router.push(`/group/${groupId}/notices/new`)}
+                    label="공지사항"
+                    onClick={() => router.push(`/group/${groupId}/dashboard/notices`)}
                 />
             </div>
         </div>

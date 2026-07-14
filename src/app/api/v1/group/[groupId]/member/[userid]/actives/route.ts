@@ -1,15 +1,14 @@
 import { requireAdmin, requireUser } from "@/lib/api/guard";
 import {RouteContext} from "@/lib/api/params";
 import { ok, route } from "@/lib/api/response";
-import { memberActivesSchema } from "@/schemas/setting/group/schemas";
+import { memberActivesSchema } from "@/schemas/schemas";
 import { setMemberActives } from "@/services/memberactive";
 
 
-type Ctx = RouteContext<{ id: string; userid: string }>;
+type Ctx = RouteContext<{ groupId: string; userid: string }>;
 
 export const PUT = route<Ctx>(async (_req, { params }) => {
-    const { id, userid } = await params;
-    const groupId = id;
+    const { groupId, userid } = await params;
     const userId = userid;
     const user = await requireUser();
     await requireAdmin(groupId, user.id);

@@ -1,5 +1,5 @@
 import type { Active } from "@/generated/prisma/client";
-import type { MemberActiveItem } from "@/schemas/setting/group/schemas";
+import type { MemberActiveItem } from "@/schemas/schemas";
 import type { GroupMemberActives } from "../MemberForm/MemberForm";
 import { CircleMinus, CirclePlus, Plus } from "lucide-react";
 import { useMemo, useState } from "react";

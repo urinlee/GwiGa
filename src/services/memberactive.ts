@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { MemberActiveItem } from "@/schemas/setting/group/schemas";
+import { MemberActiveItem } from "@/schemas/schemas";
 
 
 export function getMemberActive(groupId: string, userId: string) {

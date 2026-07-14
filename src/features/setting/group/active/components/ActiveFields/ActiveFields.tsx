@@ -1,6 +1,6 @@
 "use client";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
-import { ActiveSettingForm } from "@/schemas/setting/group/schemas";
+import { ActiveSettingForm } from "@/schemas/schemas";
 import type { UseFormRegister } from "react-hook-form";
 
 interface ActiveFieldsProps {

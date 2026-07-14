@@ -2,7 +2,7 @@
 import { ActiveFields } from "../ActiveFields/ActiveFields";
 import { ActiveList } from "../ActiveList/ActiveList";
 import { ActivePreview } from "@/types/active";
-import { ActiveSettingForm } from "@/schemas/setting/group/schemas";
+import { ActiveSettingForm } from "@/schemas/schemas";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";

@@ -1,6 +1,6 @@
 "use client";
 import type { Active } from "@/generated/prisma/client";
-import type { MemberActiveItem } from "@/schemas/setting/group/schemas";
+import type { MemberActiveItem } from "@/schemas/schemas";
 import type { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";

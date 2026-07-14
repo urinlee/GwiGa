@@ -42,3 +42,10 @@ export const memberActivesSchema = z.object({
 
 export type MemberActiveSettings = z.infer<typeof memberActiveSettingsSchema>;
 export type MemberActiveItem = z.infer<typeof memberActiveItemSchema>;
+
+
+export const groupNoticeSetSchema = z.object({
+  title: z.string().trim().min(1, "제목을 입력하세요").max(100, "최대 100자까지 입력할 수 있어요"),
+  content: z.string().trim().min(1, "내용을 입력하세요").max(2000, "최대 2000자까지 입력할 수 있어요"),
+});
+export type GroupNoticeForm = z.infer<typeof groupNoticeSetSchema>;

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MemberList } from "../MemberList/MemberList";
 import { useForm } from "react-hook-form";
 import { MemberField } from "../MemberField/MemberField";
-import { MemberNicknameForm } from "@/schemas/setting/group/schemas";
+import { MemberNicknameForm } from "@/schemas/schemas";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
 import { MemberActiveSetting } from "../MemberActiveSetting/MemberActivSetting";
 

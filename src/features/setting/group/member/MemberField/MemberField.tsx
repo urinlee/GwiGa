@@ -1,5 +1,5 @@
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
-import { MemberNicknameForm } from "@/schemas/setting/group/schemas";
+import { MemberNicknameForm } from "@/schemas/schemas";
 import type { UseFormRegister } from "react-hook-form";
 
 

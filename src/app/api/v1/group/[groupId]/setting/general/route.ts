@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { RouteContext } from "@/lib/api/params";
-import { groupGeneralSetSchema } from "@/schemas/setting/group/schemas";
+import { groupGeneralSetSchema } from "@/schemas/schemas";
 import { getGroup, isAdmin } from "@/services/group";
 import { getCurrentUser } from "@/utils/currentUser";
 
 
-export async function GET(req: Request, { params }: RouteContext<{ id: string }>) {
-    const { id } = await params;
-    const groupId = id
+export async function GET(req: Request, { params }: RouteContext<{ groupId: string }>) {
+    const { groupId } = await params;
 
     const user = await getCurrentUser();
 
@@ -26,9 +25,8 @@ export async function GET(req: Request, { params }: RouteContext<{ id: string }>
 
 
 
-export async function POST(req: Request, { params }: RouteContext<{ id: string }>) {
-    const { id } = await params;
-    const groupId = id
+export async function POST(req: Request, { params }: RouteContext<{ groupId: string }>) {
+    const { groupId } = await params;
 
     const user = await getCurrentUser();
     const body = groupGeneralSetSchema.parse(await req.json());

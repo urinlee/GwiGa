@@ -2,7 +2,7 @@
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
 import CreateTagsList from "@/features/group/create/components/CreateTagsList/CreateTagsList";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
-import { GeneralSettingForm, groupGeneralSetSchema } from "@/schemas/setting/group/schemas";
+import { GeneralSettingForm, groupGeneralSetSchema } from "@/schemas/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

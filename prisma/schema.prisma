@@ -58,6 +58,7 @@ model User {
   sessions Session[]
   AdminGroups Group[]
   groupMembers GroupMember[]
+  groupNotices GroupNotice[]
 }
 
 model Group {
@@ -73,7 +74,39 @@ model Group {
   admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   members GroupMember[]
+  notices GroupNotice[]
 
+}
+
+
+model GroupNotice {
+  id        String   @id @default(cuid())
+  groupId   String
+  authorId  String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  readMembers GroupNoticeReadMember[]
+
+  @@unique([id, groupId])
+}
+
+
+model GroupNoticeReadMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  noticeId  String
+  userId    String
+  readAt    DateTime @default(now())
+
+  groupNotice GroupNotice @relation(fields: [noticeId, groupId], references: [id, groupId])
+  user        GroupMember        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([noticeId, userId])
 }
 
 
@@ -89,6 +122,7 @@ model GroupMember {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   memberActives MemberActive[]
+  groupNoticeReadMembers GroupNoticeReadMember[]
 
   @@unique([groupId, userId])
 }

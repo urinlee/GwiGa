@@ -76,7 +76,8 @@ export default async function DashboardPage({
   }
   
   const participants = (Group?.members ?? []).map((Member) => ({
-    username: Member.user.name || "",
+    username: Member.nickname || Member.user.name,
+    avatarUrl: Member.user.image,
     userStatus:[...Member.memberActives].map((memberStatus, _) => ({
       id:memberStatus.active.id,
       name:memberStatus.active.name,

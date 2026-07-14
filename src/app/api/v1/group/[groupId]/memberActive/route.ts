@@ -4,11 +4,10 @@ import { ok, route } from "@/lib/api/response";
 import { getGroupMemberActives } from "@/services/memberactive";
 
 
-export type MemberActiveCtx = RouteContext<{ id: string }>;
+export type MemberActiveCtx = RouteContext<{ groupId: string }>;
 
 export const GET = route<MemberActiveCtx>(async (_req, { params }) => {
-    const { id } = await params;
-    const groupId = id;
+    const { groupId } = await params;
 
     const groupMemberActives = await getGroupMemberActives(groupId);
 
