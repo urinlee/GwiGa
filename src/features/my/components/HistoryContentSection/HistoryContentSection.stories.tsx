@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { HistoryContentSection } from "./HistoryContentSection";
 
 const meta = {
-    title: "Features/RUOK/HistoryContentSection",
+    title: "Features/MY/HistoryContentSection",
     component: HistoryContentSection,
 } satisfies Meta<typeof HistoryContentSection>;
 

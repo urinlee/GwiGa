@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import ContentSectionContainer from "./ContentSectionContainer.";
 
 const meta = {
-    title: "Features/RUOK/ContentSectionContainer",
+    title: "Features/MY/ContentSectionContainer",
     component: ContentSectionContainer,
     tags: ["autodocs"],
 } satisfies Meta<typeof ContentSectionContainer>;

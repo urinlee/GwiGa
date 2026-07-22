@@ -1,11 +1,11 @@
-import RUOK from "@/app/(main)/my/page";
+import MyPage from "@/app/(main)/my/page";
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 
 const meta = {
-    title: "Page/RUOK",
-    component: RUOK,
-} satisfies Meta<typeof RUOK>;
+    title: "Page/MyPage",
+    component: MyPage,
+} satisfies Meta<typeof MyPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

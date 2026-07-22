@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import CreateNewSection from "./CreateNewSection";
 
 const meta = {
-    title: "Features/RUOK/CreateNewSection",
+    title: "Features/MY/CreateNewSection",
     component: CreateNewSection,
 } satisfies Meta<typeof CreateNewSection>;
 
