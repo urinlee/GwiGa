@@ -19,25 +19,7 @@ interface DashboardPageProps {
 
 
 
-// 테스트를 위한 임의의 참가자 데이터 생성 추후 백엔드 연결로 불러옴
-//=========================================================================================
-// const ExampleallStatus: participateContentStatus[] = ["입금", "도착", "귀가", "뒤풀이", "몰라"]
 
-// const getRandomStatus = () => {
-//     const randomCount = Math.floor(Math.random() * ExampleallStatus.length) + 1;
-//     return [...ExampleallStatus].sort(() => Math.random() - 0.5).slice(0, randomCount);
-// }
-
-// const testParticipants = Array.from({ length: 52 }, (_, index) => ({
-//     username: `참가자 ${index + 1}`,
-//     enableStatus: getRandomStatus(),
-//     allStatus: ExampleallStatus,
-// }));
-
-//=========================================================================================
-
-
-//TODO: 백엔드에서 방 정보, 참가자 정보 불러와서 렌더링하도록 수정
 
 export default async function DashboardPage({
   params,

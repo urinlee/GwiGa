@@ -1,11 +1,23 @@
 import { ok, route } from "@/lib/api/response";
 import {RouteContext} from "@/lib/api/params";
 import { requireGroupNoticeAuthorOrAdmin, requireMember, requireUser } from "@/lib/api/guard";
-import { deleteGroupNotice, updateGroupNotice } from "@/services/groupnotice";
-import { groupNoticeSetSchema } from "@/schemas/schemas";
+import { addGroupNoticeRecord, deleteGroupNotice, getGroupNotice, updateGroupNotice } from "@/services/groupnotice";
+import { groupNoticeSchema } from "@/schemas/schemas";
 
 
 export type GroupNoticeContext = RouteContext<{ groupId: string; noticeId: string }>;
+
+
+export const GET = route<GroupNoticeContext>(async (_req, { params }) => {
+    const { groupId, noticeId } = await params;
+    const user = await requireUser();
+    await requireMember(groupId, user.id);
+    await addGroupNoticeRecord(groupId, noticeId); // 조회수 증가
+
+    return ok(await getGroupNotice(noticeId));
+
+})
+
 
 export const DELETE = route<GroupNoticeContext>(async (_req, { params }) => {
     const { groupId, noticeId } = await params;
@@ -21,6 +33,6 @@ export const PUT = route<GroupNoticeContext>(async (req, { params }) => {
     const user = await requireUser();
     await requireGroupNoticeAuthorOrAdmin(groupId, noticeId, user.id);
 
-    const { title, content } = groupNoticeSetSchema.parse(await req.json());
-    return ok( await updateGroupNotice(noticeId, title, content));
+    const { title, content, badgeId } = groupNoticeSchema.parse(await req.json());
+    return ok(await updateGroupNotice({ noticeId, title, content, badgeId }));
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Info, Settings } from "lucide-react";
+import { ChevronRight, Info, Settings, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface DashboardFastSettingButtonProps {
@@ -33,7 +33,7 @@ function DashboardFastSettingButton({ icon, label, onClick }: DashboardFastSetti
 export default function DashboardFastSetting({ groupId }: { groupId: string }) {
     const router = useRouter();
     return (
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="grid grid-cols-2 gap-3 sm:flex-row">
             <div className="flex-1">
                 <DashboardFastSettingButton
                     icon={<Settings size={18} />}
@@ -45,7 +45,14 @@ export default function DashboardFastSetting({ groupId }: { groupId: string }) {
                 <DashboardFastSettingButton
                     icon={<Info size={18} />}
                     label="공지사항"
-                    onClick={() => router.push(`/group/${groupId}/dashboard/notices`)}
+                    onClick={() => router.push(`/group/${groupId}/notices`)}
+                />
+            </div>
+            <div className="flex-1">
+                <DashboardFastSettingButton
+                    icon={<CreditCard size={18} />}
+                    label="정산 관리"
+                    onClick={() => router.push(`/group/${groupId}/settlement`)}
                 />
             </div>
         </div>
