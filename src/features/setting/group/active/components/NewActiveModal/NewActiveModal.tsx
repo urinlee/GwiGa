@@ -2,7 +2,7 @@
 import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import { ActiveFields } from "../ActiveFields/ActiveFields";
 import { ActivePreview } from "@/types/active";
-import { ActiveSettingForm, groupActiveSetSchema } from "@/schemas/schemas";
+import { ActiveFormValues, activeSchema } from "@/schemas/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -92,12 +92,12 @@ export function NewActiveModal({ groupid , isOpen, setIsOpen, onCreated }: { gro
 
     const router = useRouter();
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ActiveSettingForm>({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ActiveFormValues>({
         mode: "onChange",
-        resolver: zodResolver(groupActiveSetSchema )
+        resolver: zodResolver(activeSchema )
     });
 
-    const handleCreate = async (data: ActiveSettingForm) => {
+    const handleCreate = async (data: ActiveFormValues) => {
         const response = await fetch(`/api/v1/group/${groupid}/actives`, {
             method: "POST",
             headers: {

@@ -1,7 +1,7 @@
 import { RouteContext } from "@/lib/api/params";
 import { route, ok } from "@/lib/api/response";
 import { requireAdmin, requireUser } from "@/lib/api/guard";
-import { groupActiveSetSchema } from "@/schemas/schemas";
+import { activeSchema } from "@/schemas/schemas";
 import { deleteActive, updateActive } from "@/services/active";
 
 type Ctx = RouteContext<{ groupId: string; activeId: string }>;
@@ -11,7 +11,7 @@ export const PATCH = route<Ctx>(async (req, { params }) => {
     const user = await requireUser();
     await requireAdmin(groupId, user.id);
 
-    const data = groupActiveSetSchema.parse(await req.json());
+    const data = activeSchema.parse(await req.json());
 
     return ok(await updateActive(groupId, activeId, data));
 });

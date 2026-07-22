@@ -2,7 +2,7 @@
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
 import CreateTagsList from "@/features/group/create/components/CreateTagsList/CreateTagsList";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
-import { GeneralSettingForm, groupGeneralSetSchema } from "@/schemas/schemas";
+import { GroupGeneralFormValues, groupGeneralSchema } from "@/schemas/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,15 +10,15 @@ import { z } from "zod";
 
 
 
-export function GroupGeneralSettingsForm( {groupid, defaultValues}: { groupid: string, defaultValues: GeneralSettingForm }) {
+export function GroupGeneralSettingsForm( {groupid, defaultValues}: { groupid: string, defaultValues: GroupGeneralFormValues }) {
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<GeneralSettingForm>({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<GroupGeneralFormValues>({
         mode: "onChange",
-        resolver: zodResolver(groupGeneralSetSchema),
+        resolver: zodResolver(groupGeneralSchema),
         defaultValues,
     });
 
-    const onSubmit = async (data: GeneralSettingForm) => {
+    const onSubmit = async (data: GroupGeneralFormValues) => {
         try {
             const response = await fetch(`/api/v1/group/${groupid}/setting/general`, {
                 method: "POST",

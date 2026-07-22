@@ -2,7 +2,7 @@ import { z } from "zod";
 import { RouteContext } from "@/lib/api/params";
 import { route, ok, created } from "@/lib/api/response";
 import { requireAdmin, requireUser } from "@/lib/api/guard";
-import { groupActiveSetSchema } from "@/schemas/schemas";
+import { activeSchema } from "@/schemas/schemas";
 import { createActive, listActives } from "@/services/active";
 
 type Ctx = RouteContext<{ groupId: string }>;
@@ -12,12 +12,11 @@ export const GET = route<Ctx>(async (_req, { params }) => {
     const { groupId } = await params;
     const user = await requireUser();
     await requireAdmin(groupId, user.id);
-
     return ok(await listActives(groupId));
 });
 
 // applyToAll은 액티브 속성이 아니라 "생성 동작" 플래그라 스키마에서 분리해 받는다
-const createActiveSchema = groupActiveSetSchema.extend({
+const createActiveSchema = activeSchema.extend({
     applyToAll: z.boolean().optional().default(false),
 });
 

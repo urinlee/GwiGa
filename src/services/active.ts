@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { ActiveSettingForm } from "@/schemas/schemas";
+import type { ActiveInput } from "@/schemas/schemas";
 
 export async function listActives(groupId: string) {
     return prisma.active.findMany({ where: { groupId } });
@@ -11,7 +11,7 @@ export async function listActives(groupId: string) {
  */
 export async function createActive(
     groupId: string,
-    data: ActiveSettingForm,
+    data: ActiveInput,
     applyToAll: boolean,
 ) {
     return prisma.$transaction(async (tx) => {
@@ -45,7 +45,7 @@ export async function createActive(
 export async function updateActive(
     groupId: string,
     activeId: string,
-    data: ActiveSettingForm,
+    data: ActiveInput,
 ) {
     return prisma.active.update({
         where: { id_groupId: { id: activeId, groupId } },

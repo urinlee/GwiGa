@@ -1,11 +1,11 @@
 "use client";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
-import { ActiveSettingForm } from "@/schemas/schemas";
+import { ActiveFormValues } from "@/schemas/schemas";
 import type { UseFormRegister } from "react-hook-form";
 
 interface ActiveFieldsProps {
-    /** 부모의 useForm<ActiveSettingForm>()에서 온 register */
-    register: UseFormRegister<ActiveSettingForm>;
+    /** 부모의 useForm<ActiveFormValues>()에서 온 register */
+    register: UseFormRegister<ActiveFormValues>;
     primaryColor: string;
     secondaryColor: string;
     /** 색이 바뀔 때 부모 상태로 끌어올리고 싶을 때만 전달 */

@@ -2,7 +2,7 @@
 import { ActiveFields } from "../ActiveFields/ActiveFields";
 import { ActiveList } from "../ActiveList/ActiveList";
 import { ActivePreview } from "@/types/active";
-import { ActiveSettingForm } from "@/schemas/schemas";
+import { ActiveFormValues } from "@/schemas/schemas";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
@@ -21,7 +21,7 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
 
     // defaultValues는 최초 마운트 때 한 번만 반영된다.
     // 서버에서 불러온 selectedActive를 폼에 반영하려면 반응형인 values를 써야 한다.
-    const { register, handleSubmit, formState: {isDirty, isSubmitting} } = useForm<ActiveSettingForm>({
+    const { register, handleSubmit, formState: {isDirty, isSubmitting} } = useForm<ActiveFormValues>({
         defaultValues: {
             name: "",
             description: "",
@@ -52,7 +52,7 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
         fetchActives();
     }, [groupid]);
 
-    const handleUpdate = async (data: ActiveSettingForm) => {
+    const handleUpdate = async (data: ActiveFormValues) => {
         if (!selectedActive) {
             console.error("No active selected");
             return;
