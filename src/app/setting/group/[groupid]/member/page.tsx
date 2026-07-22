@@ -1,4 +1,4 @@
-import { MemberForm } from "@/features/setting/group/member/MemberForm/MemberForm";
+import { MemberForm } from "@/features/setting/group/member/components/MemberForm/MemberForm";
 
 
 export default async function GroupMemberSettingsPage({ params }: { params: Promise<{ groupid: string }> }) {

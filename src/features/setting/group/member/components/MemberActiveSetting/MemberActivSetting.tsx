@@ -3,7 +3,7 @@ import type { MemberActiveItem } from "@/schemas/schemas";
 import type { GroupMemberActives } from "../MemberForm/MemberForm";
 import { CircleMinus, CirclePlus, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { ActiveList } from "../../active/components/ActiveList/ActiveList";
+import { ActiveList } from "../../../active/components/ActiveList/ActiveList";
 import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import { MemberActiveDetailForm } from "./MemberActiveDetailForm";
 

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MemberList } from "../MemberList/MemberList";
 import { useForm } from "react-hook-form";
 import { MemberField } from "../MemberField/MemberField";
-import { MemberNicknameForm } from "@/schemas/schemas";
+import { MemberNicknameFormValues } from "@/schemas/schemas";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
 import { MemberActiveSetting } from "../MemberActiveSetting/MemberActivSetting";
 
@@ -23,7 +23,7 @@ export function MemberForm({ groupid }: { groupid: string }) {
     const [members, setMembers] = useState<GroupMemberWithUser[]>([]);
     const [selectedMember, setSelectedMember] = useState<GroupMemberWithUser | null>(null);
 
-    const { register, reset, handleSubmit, formState:{isDirty, isSubmitting} } = useForm<MemberNicknameForm>({ defaultValues: { nickname: selectedMember?.nickname || "" } });
+    const { register, reset, handleSubmit, formState:{isDirty, isSubmitting} } = useForm<MemberNicknameFormValues>({ defaultValues: { nickname: selectedMember?.nickname || "" } });
 
     // 저장 후 다시 불러올 수 있게 useEffect 밖으로 뺀다
     const fetchMemberActives = useCallback(async () => {
@@ -78,7 +78,7 @@ export function MemberForm({ groupid }: { groupid: string }) {
         reset({ nickname: selectedMember?.nickname ?? "" });
     }, [selectedMember, reset]);
 
-    const onSubmit = async (data: MemberNicknameForm) => {
+    const onSubmit = async (data: MemberNicknameFormValues) => {
         if (!selectedMember) {
             console.error("No member selected");
             return;
