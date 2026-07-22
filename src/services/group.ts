@@ -22,13 +22,17 @@ export async function getMember(groupId: string, userId: string) {
     })
 }
 
-export async function isMember(groupId: string, userId: string): Promise<boolean> {
-    const member = await prisma.groupMember.findUnique({
+/** 그룹의 멤버십 레코드. 멤버가 아니면 null. */
+export async function getGroupMember(groupId: string, userId: string) {
+    return await prisma.groupMember.findUnique({
         where: {
             groupId_userId: { groupId, userId },
         }
     });
-    return !!member;
+}
+
+export async function isMember(groupId: string, userId: string): Promise<boolean> {
+    return !!(await getGroupMember(groupId, userId));
 }
 
 export async function isAdmin(groupId: string, userId: string): Promise<boolean> {

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 /**
@@ -47,7 +47,7 @@ export function toResponse(err: unknown) {
     return fail(500, "INTERNAL_ERROR");
 }
 
-type Handler<Ctx> = (req: Request, ctx: Ctx) => Promise<Response> | Response;
+type Handler<Ctx> = (req: NextRequest, ctx: Ctx) => Promise<Response> | Response;
 
 /**
  * 라우트 핸들러 래퍼. try/catch를 매번 쓰지 않아도 되도록
@@ -63,7 +63,7 @@ type Handler<Ctx> = (req: Request, ctx: Ctx) => Promise<Response> | Response;
  * });
  */
 export function route<Ctx>(handler: Handler<Ctx>) {
-    return async (req: Request, ctx: Ctx): Promise<Response> => {
+    return async (req: NextRequest, ctx: Ctx): Promise<Response> => {
         try {
             return await handler(req, ctx);
         } catch (err) {
