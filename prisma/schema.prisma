@@ -75,7 +75,9 @@ model Group {
 
   members GroupMember[]
   notices GroupNotice[]
+  groupNoticeBadges GroupNoticeBadge[]
 
+  events Event[]
 }
 
 
@@ -83,30 +85,54 @@ model GroupNotice {
   id        String   @id @default(cuid())
   groupId   String
   authorId  String
+  badgeId  String?
   title     String
   content   String
+  preview   String   @default("") // 목록용 본문 앞 30자 (저장/수정 시 자동 갱신)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  readMembers GroupNoticeReadMember[]
+  reads GroupNoticeRead[]
+
+  badge GroupNoticeBadge? @relation(fields: [badgeId], references: [id])
 
   @@unique([id, groupId])
 }
 
 
-model GroupNoticeReadMember {
+model GroupNoticeBadge {
   id        String   @id @default(cuid())
   groupId   String
+  name      String
+  type      String @default("default")
+  backgroundColor     String? @default("#a1a1a1")
+  textColor     String? @default("#ffffff")
+  description String?
+  createdAt DateTime @default(now())
+
+  notices GroupNotice[]
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+
+// 읽음 1건 = 1행 (이벤트 로그). 같은 멤버가 여러 번 읽으면 여러 행 → 총 조회수는 행 수(_count).
+model GroupNoticeRead {
+  id        String   @id @default(cuid())
+  groupId   String
+  memberId  String
   noticeId  String
-  userId    String
   readAt    DateTime @default(now())
 
-  groupNotice GroupNotice @relation(fields: [noticeId, groupId], references: [id, groupId])
-  user        GroupMember        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupNotice GroupNotice @relation(fields: [noticeId, groupId], references: [id, groupId], onDelete: Cascade)
+  groupMember GroupMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  @@unique([noticeId, userId])
+  // 중복 읽음 허용(총 조회수)이라 unique 없음
+  @@index([noticeId, memberId]) // 공지별 집계 + "이 멤버가 읽었나"
+  @@index([memberId])
 }
 
 
@@ -122,14 +148,45 @@ model GroupMember {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   memberActives MemberActive[]
-  groupNoticeReadMembers GroupNoticeReadMember[]
+  groupNoticeReads GroupNoticeRead[]
 
   @@unique([groupId, userId])
+}
+
+enum EventStatus {
+  RECRUITING
+  ONGOING
+  CLOSED
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  groupId   String
+  status   EventStatus @default(RECRUITING)
+  name      String
+  description String?
+  startAt   DateTime
+  endAt     DateTime
+  createdAt DateTime @default(now())
+
+  actives Active[]
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([id, groupId])
+}
+
+enum ActiveType {
+  MANUAL
+  JOIN
+  PAYMENT
+  SURVEY
 }
 
 
 model Active {
   id          String   @id @default(uuid())
+  type        ActiveType @default(MANUAL)
   name        String
   description String?
   primaryColor       String?  @default("#F4F4F5")
@@ -138,12 +195,27 @@ model Active {
   startAt     DateTime @default(now())
   endAt       DateTime @default(now())
 
+  selfServe Boolean @default(false) // true면 멤버가 직접 활성화 가능, false면 관리자가 활성화해야함
+
+
+  prerequisiteId String? // prerequisite Active id
+  prerequisite Active? @relation("ActiveChain", fields: [prerequisiteId, groupId], references: [id, groupId])
+  nextActives  Active[] @relation("ActiveChain")
+
   groupId String
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
+  eventId String?
+  event   Event?  @relation(fields: [eventId, groupId], references: [id, groupId])
+
   memberActives MemberActive[]
 
+  //액티브 종류
+  paymentActive PaymentActive?
+  surveyActive SurveyActive?
+
   @@unique([id, groupId])
+  @@unique([id, type])
 }
 
 model MemberActive {
@@ -154,12 +226,34 @@ model MemberActive {
   enable   Boolean
   startAt  DateTime?
   endAt    DateTime?
+  completedAt DateTime?
 
   groupMember GroupMember @relation(fields: [groupId, userId], references: [groupId, userId])
   active      Active      @relation(fields: [activeId, groupId], references: [id, groupId])
 
   @@unique([groupId, userId, activeId])
 }
+
+//결제 액티브
+//이 액티브를 가진 사람은 입금을 해야지만 액티브가 활성화된다.
+model PaymentActive {
+  activeId String     @unique
+  type     ActiveType @default(PAYMENT)
+  amount   Int
+  dueAt    DateTime?
+  active   Active     @relation(fields: [activeId, type], references: [id, type], onDelete: Cascade)
+  @@unique([activeId, type])
+}
+
+model SurveyActive {
+  activeId  String     @unique
+  type      ActiveType @default(SURVEY)
+  surveyUrl String
+  closedAt  DateTime?
+  active    Active     @relation(fields: [activeId, type], references: [id, type], onDelete: Cascade)
+  @@unique([activeId, type])
+}
+
 
 // # 테이블 수정
 // npx prisma migrate dev --name init
