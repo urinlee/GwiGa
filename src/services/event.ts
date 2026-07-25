@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/browser";
+import { EventStatus, Prisma } from "@/generated/prisma/browser";
 import { prisma } from "@/lib/prisma";
 
 
@@ -11,16 +11,17 @@ export function getEventById(groupId: string, eventId: string) {
     })
 }
 
-export function getEventsByGroupId(groupId: string) {
-    return prisma.event.findMany({
+export function getEventsByGroupId(groupId: string, status?: EventStatus) {
+    return prisma.event?.findMany({
         where: {
-            groupId: groupId
+            groupId: groupId,
+            ...(status && { status })
         }
     })
 }
 
 export function createEvent(groupId: string, name: string, startAt: Date, endAt: Date) {
-    return prisma.event.create({
+    return prisma.event?.create({
         data: {
             groupId,
             name,
@@ -33,7 +34,7 @@ export function createEvent(groupId: string, name: string, startAt: Date, endAt:
 }
 
 export function updateEvent(eventId:string, data: Prisma.EventUpdateInput) {
-    return prisma.event.update({
+    return prisma.event?.update({
         where: {
             id: eventId
         },
@@ -42,7 +43,7 @@ export function updateEvent(eventId:string, data: Prisma.EventUpdateInput) {
 }
 
 export function deleteEvent(eventId:string) {
-    return prisma.event.delete({
+    return prisma.event?.delete({
         where: {
             id: eventId
         }
@@ -50,7 +51,7 @@ export function deleteEvent(eventId:string) {
 }
 
 export function setOnGoingEvent(eventId: string) {
-    return prisma.event.update({
+    return prisma.event?.update({
         where: {
             id: eventId
         },
