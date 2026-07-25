@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { WebThemeProviders } from "@/components/common/themeProviders";
+import { QueryProvider } from "@/components/common/QueryProvider";
 import Header from "@/components/layout/Header/Header";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
@@ -21,9 +22,11 @@ export default async function RootLayout({
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         <WebThemeProviders>
-            <SessionProvider>
-                {children}
-            </SessionProvider>
+            <QueryProvider>
+                <SessionProvider>
+                    {children}
+                </SessionProvider>
+            </QueryProvider>
         </WebThemeProviders>
       </body>
     </html>

@@ -2,9 +2,11 @@
 
 import DashboardFastSetting from "@/features/dashboard/components/DashboardFastSetting/DashboardFastSetting";
 import DashboardHero from "@/features/dashboard/components/DashboardHero/DashboardHero";
+import { EventList } from "@/features/dashboard/components/EventList/EventList";
 import InfoCardsContainer, { stateType } from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
 import { ParticipantsInfoCardProps, ParticipateStatusProps } from "@/features/dashboard/components/ParticipateInfoCard/ParticipantsInfoCard";
 import { prisma } from "@/lib/prisma";
+import { getEventsByGroupId } from "@/services/event";
 import { getGroup } from "@/services/group";
 import valueProcessor from "next/dist/build/webpack/loaders/resolve-url-loader/lib/value-processor";
 
@@ -79,6 +81,8 @@ export default async function DashboardPage({
       secondaryColor: eachStatus.secondaryColor,
     })) as stateType[])
 
+    const events = await getEventsByGroupId(groupid)
+
 
 
   return (<div className="flex flex-col gap-10 my-10">
@@ -91,6 +95,7 @@ export default async function DashboardPage({
       participantCount={100}
     />
     <DashboardFastSetting groupId={groupid}/>
+    <EventList groupId={groupid}/>
     <InfoCardsContainer participants={participants} allStatuses={allStatus}/>
   </div>)
 }
