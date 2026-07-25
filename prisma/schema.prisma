@@ -165,9 +165,11 @@ model Event {
   status   EventStatus @default(RECRUITING)
   name      String
   description String?
-  startAt   DateTime
-  endAt     DateTime
+  startAt   DateTime?
+  endAt     DateTime?
   createdAt DateTime @default(now())
+  minMember Int?
+  maxMember Int?
 
   actives Active[]
 

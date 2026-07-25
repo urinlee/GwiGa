@@ -4,6 +4,8 @@ import storybook from "eslint-plugin-storybook";
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+// queryKey 누락, 잘못된 무효화 등 TanStack Query 실수를 잡아준다.
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -16,7 +18,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs["flat/recommended"],
+  ...pluginQuery.configs["flat/recommended"],
 ]);
 
 export default eslintConfig;
