@@ -1,7 +1,8 @@
 "use client";
 import type { UseFormRegisterReturn } from "react-hook-form";
+import { useId } from "react";
 import { cn } from "@/lib/cn";
-import { EnterChoiceInput } from "./EnterForm";
+import { EnterChoiceInput, type InputType, type ZonePropsByType } from "./EnterForm";
 import { SettingContainer } from "../SettingContainer/SettingContainer";
 
 
@@ -54,9 +55,10 @@ import { SettingContainer } from "../SettingContainer/SettingContainer";
 // }
 
 
+/** 라벨·설명·에러처럼 GetInputArea가 그리는 부분 */
 export interface InputBaseProps {
     title: string;
-    description?:string;
+    description?: string;
     required?: boolean;
     /** 사용하는 곳에서 register("이름", rules) 결과를 넘긴다 */
     registration?: UseFormRegisterReturn;
@@ -64,70 +66,16 @@ export interface InputBaseProps {
     error?: string;
 }
 
-export interface GetInputTextProps extends InputBaseProps {
-    type: "text" ;
-    defaultValue?: string;
-    maxLength?: number;
-    placeholder?: string;
-}
-// | "textarea" | "toggle" | "select" | "checkbox" | "radio"
-
-export interface GetInputTextAreaProps extends InputBaseProps {
-    type: "textarea";
-    defaultValue?: string;
-    maxLength?: number;
-    isLong?: boolean;
-    placeholder?: string;
-}
-
-
-export interface GetInputToggleProps extends InputBaseProps {
-    type: "toggle";
-}
-
-export interface GetInputNumberProps extends InputBaseProps {
-    type: "number";
-}
-
-export interface GetInputCheckboxProps extends InputBaseProps {
-    type: "checkbox";
-}
-
-export interface GetInputSelectProps extends InputBaseProps {
-    type: "select";
-    options?: string[];
-}
-
-export interface GetInputRadioProps extends InputBaseProps {
-    type: "radio";
-    options?: string[];
-}
-
-export interface GetInputColorProps extends InputBaseProps {
-    type: "color";
-    defaultColor?: string;
-    onColorChange?: (hex: string) => void;
-}
-
-export interface GetInputTimeProps extends InputBaseProps {
-    type: "time";
-    /** "HH:MM" 형식 */
-    defaultValue?: string;
-    /** 초 단위 정밀도가 필요하면 1, 기본은 분 단위 */
-    step?: number;
-}
-
-export interface GetInputDateTimeProps extends InputBaseProps {
-    type: "datetime";
-    /** dateOnly면 "YYYY-MM-DD", 아니면 "YYYY-MM-DDTHH:MM" */
-    defaultValue?: string;
-    /** true면 시간 없이 날짜만 입력받는다 */
-    dateOnly?: boolean;
-    /** 초 단위 정밀도가 필요하면 1 (dateOnly일 땐 무시됨) */
-    step?: number;
-}
-
-export type GetInputProps = GetInputTextProps | GetInputTextAreaProps | GetInputSelectProps | GetInputToggleProps | GetInputCheckboxProps | GetInputRadioProps | GetInputNumberProps | GetInputColorProps | GetInputTimeProps | GetInputDateTimeProps;
+/**
+ * 입력 종류별 prop은 EnterForm의 ZonePropsByType이 유일한 정의처다.
+ * 여기서 다시 선언하지 않고 그대로 가져다 쓴다 — 따로 적으면 한쪽에만 추가한 prop이
+ * 타입은 통과하는데 실제로는 무시되는 일이 생긴다(maxLength가 그랬다).
+ * id·describedBy·hasError는 GetInputArea가 직접 만들어 넣으므로 바깥에 노출하지 않는다.
+ */
+export type GetInputProps = {
+    [K in InputType]: { type: K } & InputBaseProps &
+        Omit<ZonePropsByType[K], "registration" | "id" | "describedBy" | "hasError">;
+}[InputType];
 
 
 const TextAreaContainerStyle = "flex flex-col w-full items-start";
@@ -135,28 +83,56 @@ const TextAreaContainerStyle = "flex flex-col w-full items-start";
 export function GetInputArea(props: GetInputProps) {
     const { type, title, description, required, registration, error, ...rest } = props;
 
+    // 라벨·설명·에러를 입력과 이어주는 id. 같은 폼에 같은 종류가 여러 개 있어도 안 겹친다.
+    const baseId = useId();
+    const inputId = `${baseId}-input`;
+    const descId = description ? `${baseId}-desc` : undefined;
+    const errorId = error ? `${baseId}-error` : undefined;
+    // 설명과 에러를 함께 읽어준다. 공백으로 이어 여러 개를 지정할 수 있다.
+    const describedBy = [descId, errorId].filter(Boolean).join(" ") || undefined;
+
+    const isLong = type === "textarea" && (rest as ZonePropsByType["textarea"]).isLong;
+    const dateOnly = type === "datetime" && (rest as ZonePropsByType["datetime"]).dateOnly;
+
     return (
         <SettingContainer>
             <div className={cn("flex items-center", type === "textarea" && TextAreaContainerStyle)}>
                 <div className="flex-1">
-                    <h3 className="font-semibold text-[18px]">
+                    {/* label로 감싸야 제목을 눌렀을 때 입력으로 포커스가 간다 */}
+                    <label htmlFor={inputId} className="font-semibold text-[18px] cursor-pointer">
                         {title}
                         {required && <span className="text-red-500 ml-1">*</span>}
-                    </h3>
-                    <p className="mt-2 text-[12px] text-zinc-500">
-                        {description}
-                    </p>
+                    </label>
+                    {description && (
+                        <p id={descId} className="mt-2 text-[12px] text-zinc-500">
+                            {description}
+                        </p>
+                    )}
                 </div>
                 <div className={cn("flex mt-2 items-center justify-end",
-                    type === "textarea" ? ((rest as GetInputTextAreaProps).isLong ? "w-full h-50" : "w-full h-10")
+                    type === "textarea" ? (isLong ? "w-full h-50" : "w-full h-10")
                         : type === "text" || type === "select" || type === "number" ? "w-150"
                         : type === "time" ? "w-60"
-                        : type === "datetime" ? ((rest as GetInputDateTimeProps).dateOnly ? "w-60" : "w-80")
+                        : type === "datetime" ? (dateOnly ? "w-60" : "w-80")
                         : "w-auto"
                 )}>
                     <div className="flex w-full h-full flex-col items-end">
-                        <EnterChoiceInput type={type} registration={registration} {...rest} />
-                        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+                        <EnterChoiceInput
+                            {...({
+                                ...rest,
+                                type,
+                                registration,
+                                id: inputId,
+                                describedBy,
+                                hasError: Boolean(error),
+                            } as Parameters<typeof EnterChoiceInput>[0])}
+                        />
+                        {error && (
+                            // role="alert"이라야 스크린리더가 에러 발생 즉시 읽어준다
+                            <p id={errorId} role="alert" className="mt-1 text-xs text-red-500">
+                                {error}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
