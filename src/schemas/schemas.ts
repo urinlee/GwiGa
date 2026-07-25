@@ -1,4 +1,4 @@
-import { z } from "zod";
+ import { z } from "zod";
 import { ActiveType, EventStatus } from "@/generated/prisma/enums";
 
 /** 빈 문자열 → null. FK에 ""가 들어가는 것과, 수정 시 "지우기"가 "안 바꿈"이 되는 것을 둘 다 막는다. */
@@ -35,14 +35,19 @@ export type GroupNoticeInput = z.output<typeof groupNoticeSchema>;
 export const eventBaseSchema = z.object({
     name: z.string().trim().min(1, "이벤트 이름을 입력하세요").max(50, "최대 50자까지 입력할 수 있어요"),
     description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
-    startAt: z.coerce.date(),
-    endAt: z.coerce.date(),
+    startAt: z.coerce.date().optional(),
+    endAt: z.coerce.date().optional(),
+    minMember: z.number().optional(),
+    maxMember: z.number().optional(),
     status: z.enum(EventStatus).optional(),
 });
 
-export const eventSchema = eventBaseSchema.refine((d) => d.startAt < d.endAt, {
+export const eventSchema = eventBaseSchema.refine((d) => !d.startAt || !d.endAt || d.startAt < d.endAt, {
     message: "종료 시각은 시작 시각보다 늦어야 해요",
     path: ["endAt"],
+}).refine((d) => !d.minMember || !d.maxMember || d.minMember <= d.maxMember, {
+    message: "최대인원은 최소인원과 같거나 커야돼요",
+    path: ["maxMember"],
 });
 export type EventFormValues = z.infer<typeof eventSchema>;
 
