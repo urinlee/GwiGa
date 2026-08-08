@@ -212,7 +212,7 @@ enum RecruitStatus {
 /// 액티브(결제·설문)와 달리 "이 이벤트에 들어올 것인가"를 다루므로 별도 테이블이다.
 model Recruit {
   id        String        @id @default(cuid())
-  eventId   String
+  eventId   String        
   groupId   String
   title     String? // "1차 모집" 처럼 구분이 필요할 때
   notice    String? // 신청 시 보여줄 유의사항

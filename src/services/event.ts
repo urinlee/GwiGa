@@ -93,16 +93,7 @@ export function setClosedEvent(eventId: string) {
     })
 }
 
-export function getEventActive(eventId: string){
-    return prisma.event.findUnique({
-        where:{
-            id:eventId
-        },
-        select:{
-            actives:true
-        }
-    })
-}
+
 
 
 

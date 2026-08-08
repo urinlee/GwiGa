@@ -1,8 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import type { ActiveInput } from "@/schemas/schemas";
 
-export async function listActives(groupId: string) {
+export async function getActives(groupId: string) {
     return prisma.active.findMany({ where: { groupId } });
+}
+
+export async function getRecruits(eventId:string) {
+    return prisma.recruit.findMany({
+        where: {
+            eventId
+        }
+    })
+}
+
+export async function getApplicants(recruitId:string) {
+    return prisma.recruitApplicant.findMany({
+        where: {
+            recruitId
+        }
+    })
 }
 
 /**
