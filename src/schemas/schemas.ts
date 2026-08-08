@@ -7,6 +7,22 @@ const optionalId = z
     .nullish()
     .transform((v) => (v && v.trim() !== "" ? v : null));
 
+/**
+ * HTML input은 비어 있어도 ""를 준다. optional()은 undefined만 통과시키므로
+ * ""가 그대로 검증에 들어가면 날짜·숫자는 실패한다(문자열 필드는 우연히 통과한다).
+ * 검증 전에 ""·null을 undefined로 바꿔 그 차이를 없앤다.
+ */
+const emptyToUndefined = (v: unknown) => (v === "" || v === null ? undefined : v);
+
+/** 선택 입력 날짜. 빈 칸이면 undefined, 값이 있으면 Date로 변환한다. */
+const optionalDate = z.preprocess(emptyToUndefined, z.coerce.date().optional());
+
+/** 선택 입력 인원수. 빈 칸이면 undefined, 값이 있으면 1 이상의 정수여야 한다. */
+const optionalCount = z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int("정수로 입력하세요").positive("1 이상이어야 해요").optional(),
+);
+
 // ─── 그룹 ────────────────────────────────────────────────
 
 export const groupGeneralSchema = z.object({
@@ -35,21 +51,31 @@ export type GroupNoticeInput = z.output<typeof groupNoticeSchema>;
 export const eventBaseSchema = z.object({
     name: z.string().trim().min(1, "이벤트 이름을 입력하세요").max(50, "최대 50자까지 입력할 수 있어요"),
     description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
-    startAt: z.coerce.date().optional(),
-    endAt: z.coerce.date().optional(),
-    minMember: z.number().optional(),
-    maxMember: z.number().optional(),
+    startAt: optionalDate,
+    endAt: optionalDate,
+    minMember: optionalCount,
+    maxMember: optionalCount,
     status: z.enum(EventStatus).optional(),
 });
 
-export const eventSchema = eventBaseSchema.refine((d) => !d.startAt || !d.endAt || d.startAt < d.endAt, {
+/** 이벤트를 만들 때 함께 여는 참여(JOIN) 액티브 설정. 저장 위치는 Event가 아니라 Active다. */
+export const recruitSchema = z.object({
+    startAt: optionalDate,
+    endAt: optionalDate,
+    description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
+})
+
+export const eventSchema = eventBaseSchema.extend({ recruit: recruitSchema.optional() }).refine((d) => !d.startAt || !d.endAt || d.startAt < d.endAt, {
     message: "종료 시각은 시작 시각보다 늦어야 해요",
     path: ["endAt"],
 }).refine((d) => !d.minMember || !d.maxMember || d.minMember <= d.maxMember, {
     message: "최대인원은 최소인원과 같거나 커야돼요",
     path: ["maxMember"],
 });
-export type EventFormValues = z.infer<typeof eventSchema>;
+// coerce.date()는 입력(문자열)과 출력(Date)의 타입이 다르다.
+// 폼은 input, parse를 통과한 서버 쪽은 output을 쓴다.
+export type EventFormValues = z.input<typeof eventSchema>;
+export type EventInput = z.output<typeof eventSchema>;
 
 // ─── 액티브 ──────────────────────────────────────────────
 
@@ -62,8 +88,8 @@ export const activeSchema = z.object({
     // Prisma에서 전부 기본값이 있거나 nullable이라 폼이 안 보내도 된다.
     type: z.enum(ActiveType).optional(),
     selfServe: z.boolean().optional(),
-    startAt: z.coerce.date().optional(),
-    endAt: z.coerce.date().optional(),
+    startAt: optionalDate,
+    endAt: optionalDate,
     eventId: optionalId,
     prerequisiteId: optionalId,
 });

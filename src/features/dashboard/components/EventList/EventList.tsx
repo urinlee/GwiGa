@@ -88,19 +88,20 @@ export function EventList({groupId}:EventListProps) {
             </div>
             <div className="grid grid-cols-1 gap-x-10 gap-y-3">
                 {data?.map((event: any, index: number) => (
-                    <EventCard
-                        key={index}
-                        title={event.name}
-                        description={event.description}
-                        status={StatusToKor[event.status]}
-                        primaryColor={"#2563eb"}
-                        secondaryColor={"#294a7f"}
-                        memberCount={12}
-                        maxMemberCount={20}
-                        minMemberCount={10}
-                        dateTitle={"test"}
-                        date={new Date(event.startAt)}
-                    />
+                    <div key={index} className="cursor-pointer" onClick={() => {router.push(`/group/${groupId}/event/${event.id}`)}}>
+                        <EventCard
+                            title={event.name}
+                            description={event.description}
+                            status={StatusToKor[event.status]}
+                            primaryColor={"#2563eb"}
+                            secondaryColor={"#294a7f"}
+                            memberCount={13}
+                            maxMemberCount={event.minMember}
+                            minMemberCount={event.maxMember}
+                            dateTitle={"test"}
+                            date={new Date(event.startAt)}
+                        />
+                    </div>
 
 
                 ))}

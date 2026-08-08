@@ -149,8 +149,10 @@ model GroupMember {
 
   memberActives MemberActive[]
   groupNoticeReads GroupNoticeRead[]
+  recruitApplicants RecruitApplicant[]
 
   @@unique([groupId, userId])
+  eventMembers EventMember[]
 }
 
 enum EventStatus {
@@ -171,16 +173,86 @@ model Event {
   minMember Int?
   maxMember Int?
 
-  actives Active[]
+  actives  Active[]
+  recruits Recruit[]
 
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([id, groupId])
+  eventMembers EventMember[]
+}
+
+enum EventMemberStatus {
+  CONFIRMED
+  WITHDRAWN
+}
+
+model EventMember {
+  id        String            @id @default(cuid())
+  eventId   String
+  groupId   String
+  memberId  String
+  status    EventMemberStatus @default(CONFIRMED)
+  joinedAt  DateTime          @default(now())
+  source    String?           // "recruit" | "manual" — 어떻게 들어왔는지
+
+  event  Event       @relation(fields: [eventId, groupId], references: [id, groupId], onDelete: Cascade)
+  member GroupMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, memberId])   // 이벤트당 1명 1행 — 중복 원천 차단
+  @@index([eventId, status])
+}
+
+enum RecruitStatus {
+  OPEN
+  CLOSED
+}
+
+/// 이벤트 참가자 모집. 한 이벤트가 1차·추가 모집처럼 여러 번 열 수 있어 1:N이다.
+/// 액티브(결제·설문)와 달리 "이 이벤트에 들어올 것인가"를 다루므로 별도 테이블이다.
+model Recruit {
+  id        String        @id @default(cuid())
+  eventId   String
+  groupId   String
+  title     String? // "1차 모집" 처럼 구분이 필요할 때
+  notice    String? // 신청 시 보여줄 유의사항
+  status    RecruitStatus @default(OPEN)
+  startAt   DateTime?
+  endAt     DateTime?
+  capacity  Int? // 이번 모집의 정원. Event.maxMember와 별개로 회차별 제한
+  createdAt DateTime      @default(now())
+
+  // groupId를 FK에 함께 넣어 다른 그룹의 이벤트에 붙는 것을 DB가 막는다.
+  event      Event              @relation(fields: [eventId, groupId], references: [id, groupId], onDelete: Cascade)
+  applicants RecruitApplicant[]
+
+  @@index([eventId, status]) // 지금 열린 모집 찾기
+}
+
+enum ApplicantStatus {
+  APPLIED
+  CANCELED
+}
+
+/// 모집 신청 1건. 취소해도 행을 지우지 않고 상태만 바꿔 이력을 남긴다.
+model RecruitApplicant {
+  id         String          @id @default(cuid())
+  recruitId  String
+  memberId   String
+  status     ApplicantStatus @default(APPLIED)
+  appliedAt  DateTime        @default(now())
+  canceledAt DateTime?
+
+  recruit Recruit     @relation(fields: [recruitId], references: [id], onDelete: Cascade)
+  member  GroupMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([recruitId, memberId]) // 같은 모집에 두 번 신청 방지
+  @@index([recruitId, status]) // 신청자 명단
+  @@index([memberId])
 }
 
 enum ActiveType {
   MANUAL
-  JOIN
   PAYMENT
   SURVEY
 }
@@ -194,8 +266,8 @@ model Active {
   primaryColor       String?  @default("#F4F4F5")
   secondaryColor       String?  @default("#57565C")
   createAt    DateTime @default(now())
-  startAt     DateTime @default(now())
-  endAt       DateTime @default(now())
+  startAt     DateTime?
+  endAt       DateTime?
 
   selfServe Boolean @default(false) // true면 멤버가 직접 활성화 가능, false면 관리자가 활성화해야함
 
@@ -213,8 +285,8 @@ model Active {
   memberActives MemberActive[]
 
   //액티브 종류
-  paymentActive PaymentActive?
-  surveyActive SurveyActive?
+  paymentModule PaymentModule?
+  surveyModule  SurveyModule?
 
   @@unique([id, groupId])
   @@unique([id, type])
@@ -236,9 +308,9 @@ model MemberActive {
   @@unique([groupId, userId, activeId])
 }
 
-//결제 액티브
-//이 액티브를 가진 사람은 입금을 해야지만 액티브가 활성화된다.
-model PaymentActive {
+/// 결제 모듈. type이 PAYMENT인 액티브에 붙어 금액·기한을 담는다.
+/// 이 액티브를 가진 사람은 입금을 해야 액티브가 활성화된다.
+model PaymentModule {
   activeId String     @unique
   type     ActiveType @default(PAYMENT)
   amount   Int
@@ -247,7 +319,7 @@ model PaymentActive {
   @@unique([activeId, type])
 }
 
-model SurveyActive {
+model SurveyModule {
   activeId  String     @unique
   type      ActiveType @default(SURVEY)
   surveyUrl String

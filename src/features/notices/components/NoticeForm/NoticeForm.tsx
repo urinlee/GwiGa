@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { cn } from "@/lib/cn";
 import { groupNoticeSchema } from "@/schemas/schemas";
@@ -37,6 +38,10 @@ interface NoticeEditForm extends NoticeFormProps {
 
 export function NoticeForm({ groupId, badges = [], ...editProps}: NoticeFormProps | NoticeEditForm) {
     const router = useRouter();
+    const queryClient = useQueryClient();
+
+    const noticeId = "noticeId" in editProps ? editProps.noticeId : undefined;
+    const isEdit = Boolean(noticeId);
 
     const {
         register,
@@ -44,7 +49,7 @@ export function NoticeForm({ groupId, badges = [], ...editProps}: NoticeFormProp
         handleSubmit,
         watch,
         setValue,
-        formState: { errors, isValid, isSubmitting },
+        formState: { errors, isValid },
     } = useForm<NoticeFormValues>({
         resolver: zodResolver(noticeFormSchema),
         mode: "onChange",
@@ -53,47 +58,46 @@ export function NoticeForm({ groupId, badges = [], ...editProps}: NoticeFormProp
 
     const badgeId = watch("badgeId");
 
-    const onSubmit = async (data: NoticeFormValues) => {
-        if ("noticeId" in editProps && editProps.noticeId) {
-            // 수정
-            await fetch(`/api/v1/group/${groupId}/groupnotice/${editProps.noticeId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+    const { mutate, isPending, error } = useMutation({
+        mutationFn: async (data: NoticeFormValues) => {
+            const url = isEdit
+                ? `/api/v1/group/${groupId}/groupnotice/${noticeId}`
+                : `/api/v1/group/${groupId}/groupnotice`;
+
+            const res = await fetch(url, {
+                method: isEdit ? "PUT" : "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     title: data.title,
                     content: data.content,
                     badgeId: data.badgeId,
                 }),
             });
-            router.push(`/group/${groupId}/notices/${editProps.noticeId}`); // 수정 후 상세로 이동
-            return;
-        }
-        else{
-            await fetch(`/api/v1/group/${groupId}/groupnotice`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: data.title,
-                    content: data.content,
-                    badgeId: data.badgeId,
-                }),
-            });
-            router.push(`/group/${groupId}/notices`); // 작성 후 목록으로 이동
-        }
-    };
+            // fetch는 4xx·5xx에도 reject하지 않는다. 직접 던져야 isError가 켜진다.
+            if (!res.ok) throw new Error(isEdit ? "공지 수정에 실패했어요" : "공지 등록에 실패했어요");
+            return res.json();
+        },
+        onSuccess: () => {
+            // 목록·상세 캐시를 낡음 처리해 다음 조회 때 새로 받아오게 한다.
+            queryClient.invalidateQueries({ queryKey: ["groupNotices", groupId] });
+            // 서버 컴포넌트로 렌더되는 목록·상세는 위 캐시와 무관하므로 별도로 갱신한다.
+            router.refresh();
+            router.push(
+                isEdit
+                    ? `/group/${groupId}/notices/${noticeId}` // 수정 후 상세로
+                    : `/group/${groupId}/notices`,            // 작성 후 목록으로
+            );
+        },
+    });
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 py-10">
+        <form onSubmit={handleSubmit((data) => mutate(data))} className="flex flex-col gap-8 py-10">
             {/* 헤더 */}
             <div>
                 <a href={`/group/${groupId}/notices`} className="text-[12px] text-zinc-500 hover:underline">
                     &lt; 목록으로 돌아가기
                 </a>
-                <h1 className="mt-3 text-4xl font-bold">새 공지 작성</h1>
+                <h1 className="mt-3 text-4xl font-bold">{isEdit ? "공지 수정" : "새 공지 작성"}</h1>
                 <p className="mt-2 text-sm text-zinc-500">그룹 멤버 모두에게 보여요. 내용은 마크다운을 지원해요.</p>
             </div>
 
@@ -184,21 +188,31 @@ export function NoticeForm({ groupId, badges = [], ...editProps}: NoticeFormProp
             </div>
 
             {/* 액션 */}
-            <div className="flex justify-end gap-2 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-                <button
-                    type="button"
-                    onClick={() => router.push(`/group/${groupId}/notices`)}
-                    className="cursor-pointer rounded-xl border border-zinc-300 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800/50"
-                >
-                    취소
-                </button>
-                <button
-                    type="submit"
-                    disabled={!isValid || isSubmitting}
-                    className="cursor-pointer rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-zinc-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-                >
-                    {isSubmitting ? "등록 중…" : "공지 등록"}
-                </button>
+            <div className="flex flex-col gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+                {error && (
+                    <p role="alert" className="text-right text-sm text-red-500">
+                        {error.message} 잠시 후 다시 시도해주세요.
+                    </p>
+                )}
+                <div className="flex justify-end gap-2">
+                    <button
+                        type="button"
+                        onClick={() => router.push(`/group/${groupId}/notices`)}
+                        disabled={isPending}
+                        className="cursor-pointer rounded-xl border border-zinc-300 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800/50"
+                    >
+                        취소
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={!isValid || isPending}
+                        className="cursor-pointer rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-zinc-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                    >
+                        {isPending
+                            ? isEdit ? "수정 중…" : "등록 중…"
+                            : isEdit ? "공지 수정" : "공지 등록"}
+                    </button>
+                </div>
             </div>
         </form>
     );

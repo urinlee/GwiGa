@@ -64,14 +64,9 @@ export interface InputBaseProps {
     registration?: UseFormRegisterReturn;
     /** 사용하는 곳에서 errors["이름"]?.message 를 넘긴다 */
     error?: string;
+    width?: string;
 }
 
-/**
- * 입력 종류별 prop은 EnterForm의 ZonePropsByType이 유일한 정의처다.
- * 여기서 다시 선언하지 않고 그대로 가져다 쓴다 — 따로 적으면 한쪽에만 추가한 prop이
- * 타입은 통과하는데 실제로는 무시되는 일이 생긴다(maxLength가 그랬다).
- * id·describedBy·hasError는 GetInputArea가 직접 만들어 넣으므로 바깥에 노출하지 않는다.
- */
 export type GetInputProps = {
     [K in InputType]: { type: K } & InputBaseProps &
         Omit<ZonePropsByType[K], "registration" | "id" | "describedBy" | "hasError">;
@@ -111,10 +106,10 @@ export function GetInputArea(props: GetInputProps) {
                 </div>
                 <div className={cn("flex mt-2 items-center justify-end",
                     type === "textarea" ? (isLong ? "w-full h-50" : "w-full h-10")
-                        : type === "text" || type === "select" || type === "number" ? "w-150"
+                        : type === "text" || type === "select" || type === "number" ? "w-80"
                         : type === "time" ? "w-60"
                         : type === "datetime" ? (dateOnly ? "w-60" : "w-80")
-                        : "w-auto"
+                        : "w-auto", props.width
                 )}>
                     <div className="flex w-full h-full flex-col items-end">
                         <EnterChoiceInput

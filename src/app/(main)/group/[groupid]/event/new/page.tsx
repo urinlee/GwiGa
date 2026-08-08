@@ -2,10 +2,15 @@ import { NewEventForm } from "@/features/event/components/NewEventForm/NewEventF
 
 
 
-export default function NewEventPage() {
+export default async function NewEventPage({
+    params,
+  }: {
+    params: Promise<{ groupid: string }>
+  }) {
+    const { groupid } = await params;
     return(
         <div>
-            <NewEventForm></NewEventForm>
+            <NewEventForm groupId={groupid}></NewEventForm>
         </div>
     )
 }

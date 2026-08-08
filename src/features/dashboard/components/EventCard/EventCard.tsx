@@ -3,21 +3,8 @@
 
 import { Gauge } from "@/components/ui/Gauge/Gauge";
 import { cn } from "@/lib/cn";
+import { formatDate, formatTime } from "@/lib/date";
 import { CalendarDays, Clock, Users } from "lucide-react";
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-function formatEventDate(date: Date) {
-    return `${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAYS[date.getDay()]})`;
-}
-
-function formatEventTime(date: Date) {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const period = hours < 12 ? "오전" : "오후";
-    const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-    return `${period} ${hour12}:${minutes.toString().padStart(2, "0")}`;
-}
 
 export type StatusType = "모집중" | "진행중" | "종료됨";
 
@@ -146,26 +133,27 @@ export function EventCard({
             <div className="h-2" style={{backgroundColor:primaryColor}}/>
             <div className="pt-4.5 px-5 pb-4">
                 <div className="flex justify-between items-start">
-                    <div className="flex flex-row gap-2">
-                        <div className="rounded-lg w-12 h-12" style={{backgroundColor:secondaryColor}}>
+                    {/* min-w-0이 없으면 flex 아이템이 내용보다 작아지지 않아서 긴 설명이 배지를 밀어낸다 */}
+                    <div className="flex flex-row gap-2 min-w-0 flex-1">
+                        <div className="rounded-lg w-12 h-12 shrink-0" style={{backgroundColor:secondaryColor}}>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                             <h2 className="font-bold text-lg">{title}</h2>
-                            <p className="text-[13px]">{description}</p>
+                            <p className="text-[13px] line-clamp-2">{description}</p>
                         </div>
                     </div>
-                    <div className="rounded-3xl px-2 py-1 text-xs" style={{backgroundColor:colorOfStatus[status]?.bgColor || "#a8a8a8", color:colorOfStatus[status]?.textColor || "#6d6d6d"}}>
+                    <div className="rounded-3xl px-2 py-1 text-xs shrink-0 whitespace-nowrap" style={{backgroundColor:colorOfStatus[status]?.bgColor || "#a8a8a8", color:colorOfStatus[status]?.textColor || "#6d6d6d"}}>
                         {status}
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 my-4 text-[13px] font-medium text-zinc-500">
                     <span className="flex items-center gap-1.5">
                         <CalendarDays className="w-3.5 h-3.5 text-zinc-400" />
-                        {formatEventDate(date)}
+                        {formatDate(date)}
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                        {formatEventTime(date)}
+                        {formatTime(date)}
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-zinc-400" />
