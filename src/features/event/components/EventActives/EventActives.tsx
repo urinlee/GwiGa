@@ -204,7 +204,8 @@ export interface EventActivesProps {
 
 export function EventActives({ actives, title = "액티브" }: EventActivesProps) {
     return (
-        <section className="mt-8">
+        // 바깥 여백은 쓰는 쪽이 정한다 (옆에 소개 레일이 붙는다)
+        <section>
             <div className="mb-3 flex items-baseline justify-between">
                 <h2 className="text-lg font-bold">{title}</h2>
                 <span className="text-[13px] font-medium text-zinc-500 dark:text-zinc-400">
