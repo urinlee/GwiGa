@@ -91,7 +91,6 @@ export const activeSchema = z.object({
     startAt: optionalDate,
     endAt: optionalDate,
     eventId: optionalId,
-    prerequisiteId: optionalId,
 });
 export type ActiveFormValues = z.input<typeof activeSchema>;
 export type ActiveInput = z.output<typeof activeSchema>;
