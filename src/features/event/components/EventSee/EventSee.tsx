@@ -1,14 +1,23 @@
 import { EventHero } from "../EventHero/EventHero";
 import { getEventById } from "@/services/event";
-import { requireMember, requireUser } from "@/lib/api/guard";
+import { verifyMember } from "@/lib/dal";
 import { EventActives } from "../EventActives/EventActives";
 import { EventAbout } from "../EventAbout/EventAbout";
+import { getActives } from "@/services/active";
 
 export async function EventSee({groupId, eventId}:{groupId:string, eventId:string}) {
-    const user = await requireUser()
-    await requireMember(groupId, user.id)
+    await verifyMember(groupId)
 
     const data = await getEventById(groupId, eventId)
+    const actives = await getActives(groupId, eventId)
+    const activesData = actives.map((active:any) => ({
+        name: active.name,
+        primaryColor: active.primaryColor,
+        startAt: new Date(active.startAt),
+        endAt: new Date(active.endAt),
+        userCount: active.userCount,
+        userMaxCount: active.userMaxCount
+    }))
 
     return(
         <div className="pb-16">
@@ -17,23 +26,7 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
             {/* 왼쪽은 할 일(액티브), 오른쪽은 참고(소개) */}
             <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">
                 <div className="min-w-0 flex-1">
-                    <EventActives actives={[
-                        {
-                            name:"여름 정기 모임",
-                            primaryColor:"#2563eb",
-                            startAt:new Date(),
-                            endAt:new Date(),
-                            userCount:12,
-                            userMaxCount:30
-                        },
-                        {
-                            name:"여름 정기 모임",
-                            primaryColor:"#16a34a",
-                            startAt:new Date(),
-                            endAt:new Date(),
-                            userCount:12,
-                            userMaxCount:30
-                        }]}/>
+                    <EventActives actives={activesData}/>
                 </div>
 
                 <EventAbout

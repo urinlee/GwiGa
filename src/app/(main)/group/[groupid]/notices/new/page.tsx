@@ -1,15 +1,15 @@
-import { requireAdmin, requireUser } from "@/lib/api/guard";
+import { verifyAdmin, verifySession } from "@/lib/dal";
 import { NoticeForm } from "@/features/notices/components/NoticeForm/NoticeForm";
 import { getGroupNoticeBadges } from "@/services/groupnotice";
 
 export default async function NewNoticePage({ params }: { params: Promise<{ groupid: string }> }) {
     const { groupid } = await params;
-    const user = await requireUser();
+    await verifySession();
 
     const badges = await getGroupNoticeBadges(groupid);
 
     try {
-        await requireAdmin(groupid, user.id);
+        await verifyAdmin(groupid);
     } catch {
         return (
             <div className="flex flex-col items-center justify-center gap-2 py-24 text-center">

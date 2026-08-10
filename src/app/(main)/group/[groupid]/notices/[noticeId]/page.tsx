@@ -6,7 +6,6 @@ import { getCurrentUser } from "@/utils/currentUser";
 import type { NoticeBadge } from "@/features/notices/components/NoticeHero/NoticeHero";
 import { NoticeContent } from "@/features/notices/components/NoticeContent/NoticeContent";
 import NoticeFooter from "@/features/notices/components/NoticeFooter/NoticeFooter";
-import { requireGroupNoticeAuthorOrAdmin } from "@/lib/api/guard";
 import { NoticeAuthorMenu } from "@/features/notices/components/NoticeAuthorMenu/NoticeAuthorMenu";
 
 export interface GroupNoticePageProps {
@@ -58,7 +57,7 @@ export default async function GroupNoticePage({ params }: GroupNoticePageProps) 
       isNew: !adjece.next?.isUnread || false,
     } : null;
 
-    await addGroupNoticeRecord(groupid, noticeId); // 조회수 증가
+    await addGroupNoticeRecord(groupid, noticeId, member.id); // 조회수 증가
     return (
         <div className="mb-20">
             <NoticeHero 

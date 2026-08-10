@@ -11,3 +11,5 @@ export const GET = route<Params>(async (_req, { params }) => {
 
     return ok(await getActives(params.groupId, params.eventId));
 });
+
+
