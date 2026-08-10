@@ -1,8 +1,6 @@
-import { requireUser } from "@/lib/api/guard";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { GroupNoticeInput } from "@/schemas/schemas";
-import { getCurrentUser } from "@/utils/currentUser";
 
 
 /**
@@ -129,19 +127,10 @@ export async function getAdjacentGroupNotices(noticeId: string, memberId: string
 
 
 
-export async function addGroupNoticeRecord(groupId: string, noticeId: string) {
-    const currentUser = await requireUser();
-    const member = await prisma.groupMember.findUnique({
-        where: { groupId_userId: { groupId, userId: currentUser.id } },
-        select: { id: true },
-    });
-    if (!member) throw new Error("Member not found");
+// memberId는 호출부가 dal에서 이미 받아오므로 여기서 다시 인증하지 않는다 (dal ↔ service 순환 참조도 막는다)
+export async function addGroupNoticeRecord(groupId: string, noticeId: string, memberId: string) {
     return prisma.groupNoticeRead.create({
-        data: {
-            noticeId,
-            groupId,
-            memberId: member.id,
-        },
+        data: { noticeId, groupId, memberId },
     });
 }
 

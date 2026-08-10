@@ -1,18 +1,17 @@
 import { z } from "zod";
-import { RouteContext } from "@/lib/api/params";
-import { route, ok, created } from "@/lib/api/response";
-import { requireAdmin, requireUser } from "@/lib/api/guard";
+import { route } from "@/lib/api/route";
+import { ok, created } from "@/lib/api/response";
+import { verifyAdmin } from "@/lib/dal";
 import { activeSchema } from "@/schemas/schemas";
-import { createActive, listActives } from "@/services/active";
+import { createActive, getActives } from "@/services/active";
 
-type Ctx = RouteContext<{ groupId: string }>;
+type Params = { groupId: string };
 
 // 액티브 목록
-export const GET = route<Ctx>(async (_req, { params }) => {
-    const { groupId } = await params;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
-    return ok(await listActives(groupId));
+export const GET = route<Params>(async (_req, { params }) => {
+    await verifyAdmin(params.groupId);
+
+    return ok(await getActives(params.groupId));
 });
 
 // applyToAll은 액티브 속성이 아니라 "생성 동작" 플래그라 스키마에서 분리해 받는다
@@ -21,12 +20,9 @@ const createActiveSchema = activeSchema.extend({
 });
 
 // 액티브 생성
-export const POST = route<Ctx>(async (req, { params }) => {
-    const { groupId } = await params;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
+export const POST = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
 
     const { applyToAll, ...data } = createActiveSchema.parse(await req.json());
-
-    return created(await createActive(groupId, data, applyToAll));
+    return created(await createActive(params.groupId, data, applyToAll));
 });

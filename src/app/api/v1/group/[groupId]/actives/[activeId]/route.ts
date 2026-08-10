@@ -1,26 +1,22 @@
-import { RouteContext } from "@/lib/api/params";
-import { route, ok } from "@/lib/api/response";
-import { requireAdmin, requireUser } from "@/lib/api/guard";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
+import { verifyAdmin } from "@/lib/dal";
 import { activeSchema } from "@/schemas/schemas";
 import { deleteActive, updateActive } from "@/services/active";
 
-type Ctx = RouteContext<{ groupId: string; activeId: string }>;
+type Params = { groupId: string; activeId: string };
+
 // 액티브 수정
-export const PATCH = route<Ctx>(async (req, { params }) => {
-    const { groupId, activeId } = await params;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
+export const PATCH = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
 
     const data = activeSchema.parse(await req.json());
-
-    return ok(await updateActive(groupId, activeId, data));
+    return ok(await updateActive(params.groupId, params.activeId, data));
 });
 
 // 액티브 삭제
-export const DELETE = route<Ctx>(async (_req, { params }) => {
-    const { groupId, activeId } = await params;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
+export const DELETE = route<Params>(async (_req, { params }) => {
+    await verifyAdmin(params.groupId);
 
-    return ok(await deleteActive(groupId, activeId));
+    return ok(await deleteActive(params.groupId, params.activeId));
 });

@@ -1,50 +1,34 @@
 import { getGroup, isMember } from "@/services/group";
-import { RouteContext } from "@/lib/api/params";
-import { getCurrentUser } from "@/utils/currentUser";
+import { route } from "@/lib/api/route";
+import { HttpError, ok } from "@/lib/api/response";
+import { verifySession } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 
+type Params = { groupId: string };
 
+// 초대 링크 미리보기용이라 로그인 전에도 열어 둔다
+export const GET = route<Params>(async (_req, { params }) => {
+    const group = (await getGroup(params.groupId, { members: true })) as
+        | { members: unknown[]; name: string }
+        | null;
+    if (!group) throw new HttpError(404, "GROUP_NOT_FOUND", "group is Not Found");
 
-export async function GET(req:Request, {params}:RouteContext<{ groupId: string }>) {
-    const { groupId } = await params;
+    return ok({ membersNum: group.members.length, name: group.name });
+});
 
-    const group = await getGroup(groupId, {members:true}) as { members: any[]; name: string } | null;
-    if (!group) {return Response.json({error:"group is Not Found"}, {status:404})}
-    
-    const {members, name} = group;
-    return Response.json({
-        membersNum:members.length,
-        name:name
-    }, {status:200})
-}
+export const POST = route<Params>(async (_req, { params }) => {
+    const user = await verifySession();
 
-export async function POST(req:Request, {params}:RouteContext<{ groupId: string }>) {
-    const { groupId } = await params;
-    console.log("groupid: ", groupId)
-
-    const currentUser = await getCurrentUser()
-    if (!currentUser) {
-        return Response.json({ code:"NOT_LOGGED_IN", error: "need login" }, { status: 401 });
+    if (await isMember(params.groupId, user.id)) {
+        throw new HttpError(403, "ALREADY_MEMBER", `you are already member of ${params.groupId}`);
+    }
+    if (!(await getGroup(params.groupId))) {
+        throw new HttpError(404, "GROUP_NOT_FOUND", "group is Not Found");
     }
 
-    const RUMember = await isMember(groupId, currentUser.id)
-    const group = await getGroup(groupId)
+    const member = await prisma.groupMember.create({
+        data: { groupId: params.groupId, userId: user.id },
+    });
 
-    //얘가 불가능한 경우
-    if (RUMember) return Response.json({ code:"ALREADY_MEMBER", error:`you are already member of ${groupId}` }, {status:403})
-    if (!group) {return Response.json({ code:"GROUP_NOT_FOUND", error:"group is Not Found"}, {status:404})}
-
-    //가능할때
-    const userGroupMember = await prisma.groupMember.create({
-        data:{
-            groupId:groupId,
-            userId:currentUser.id
-        }
-    })
-
-    if (userGroupMember){
-        return Response.json({ MemberId:userGroupMember.id }, {status:200})
-    }
-
-    
-}
+    return ok({ MemberId: member.id });
+});

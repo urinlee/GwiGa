@@ -1,16 +1,8 @@
-import { RouteContext } from "@/lib/api/params";
-import { ok, route } from "@/lib/api/response";
-import { isMember } from "@/services/group";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
 import { getMember } from "@/services/member";
 
-export type MemberCtx = RouteContext<{ groupId: string; userid: string }>;
-
-
-// 그룹 멤버 조회
-export const GET = route<MemberCtx>(async (_req, { params }) => {
-    const { groupId, userid } = await params;
-    await isMember(groupId, userid);
-    const member = await getMember(groupId, userid);
-    
-    return ok(member);
-})
+// TODO: 인증 없음. 기존 isMember 호출은 결과를 버려 아무것도 막지 못해 제거했다.
+export const GET = route<{ groupId: string; userid: string }>(async (_req, { params }) => {
+    return ok(await getMember(params.groupId, params.userid));
+});

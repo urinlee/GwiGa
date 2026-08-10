@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 /**
@@ -47,27 +47,4 @@ export function toResponse(err: unknown) {
     return fail(500, "INTERNAL_ERROR");
 }
 
-type Handler<Ctx> = (req: NextRequest, ctx: Ctx) => Promise<Response> | Response;
-
-/**
- * 라우트 핸들러 래퍼. try/catch를 매번 쓰지 않아도 되도록
- * HttpError / ZodError / 그 외 예외를 표준 응답으로 변환한다.
- *
- * @example
- * export const POST = route<RouteContext<{ id: string }>>(async (req, { params }) => {
- *   const { id } = await params;
- *   const user = await requireUser();
- *   await requireAdmin(id, user.id);
- *   const data = schema.parse(await req.json());
- *   return created(await createActive(id, data));
- * });
- */
-export function route<Ctx>(handler: Handler<Ctx>) {
-    return async (req: NextRequest, ctx: Ctx): Promise<Response> => {
-        try {
-            return await handler(req, ctx);
-        } catch (err) {
-            return toResponse(err);
-        }
-    };
-}
+// 라우트 핸들러 래퍼는 미들웨어 체인과 함께 route.ts에 있다.

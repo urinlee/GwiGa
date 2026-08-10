@@ -95,5 +95,16 @@ export function setClosedEvent(eventId: string) {
 
 
 
+export async function getEventMember(eventId: string, userId: string) {
+    return prisma.eventMember.findFirst({
+        where: {
+            eventId: eventId,
+            member: {
+                userId: userId
+            }
+        }
+    });
+}
+
 
 

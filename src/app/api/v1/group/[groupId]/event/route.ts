@@ -1,25 +1,23 @@
-import { ok, created, route } from "@/lib/api/response";
-import { RouteContext } from "@/lib/api/params";
+import { route } from "@/lib/api/route";
+import { ok, created } from "@/lib/api/response";
+import { verifyAdmin, verifyMember } from "@/lib/dal";
 import { createEvent, getEventsByGroupId } from "@/services/event";
-import { requireAdmin, requireMember, requireUser } from "@/lib/api/guard";
 import { EventStatus } from "@/generated/prisma/browser";
 import { eventSchema } from "@/schemas/schemas";
 
-type Ctx = RouteContext<{ groupId: string }>;
+type Params = { groupId: string };
 
-export const GET = route<Ctx>(async(req, {params}) => {
-    const { groupId } = await params;
-    const user = await requireUser();
-    await requireMember(groupId, user.id);
+export const GET = route<Params>(async (req, { params }) => {
+    await verifyMember(params.groupId);
+
     const raw = req.nextUrl.searchParams.get("status");
     const status = raw && raw in EventStatus ? (raw as EventStatus) : undefined;
-    return ok(await getEventsByGroupId(groupId, status))
-})
+    return ok(await getEventsByGroupId(params.groupId, status));
+});
 
-export const POST = route<Ctx>(async(req, {params}) => {
-    const { groupId } = await params;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
+export const POST = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
+
     const data = eventSchema.parse(await req.json());
-    return created(await createEvent(groupId, data))
-})
+    return created(await createEvent(params.groupId, data));
+});

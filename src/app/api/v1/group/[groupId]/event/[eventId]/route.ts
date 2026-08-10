@@ -1,31 +1,26 @@
-import { ok, created, route } from "@/lib/api/response";
-import { RouteContext } from "@/lib/api/params";
-import { createEvent, getEventsByGroupId, getEventById, updateEvent, deleteEvent } from "@/services/event";
-import { requireAdmin, requireMember, requireUser } from "@/lib/api/guard";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
+import { verifyAdmin, verifyMember } from "@/lib/dal";
+import { getEventById, updateEvent, deleteEvent } from "@/services/event";
 import { eventSchema } from "@/schemas/schemas";
 
-type Ctx = RouteContext<{ groupId: string, eventId: string }>;
+type Params = { groupId: string; eventId: string };
 
-export const GET = route<Ctx>(async(_req, {params}) => {
-    const { groupId, eventId } = await params;
-    const user = await requireUser(); 
-    await requireMember(groupId, user.id); 
-    return ok(await getEventById(groupId, eventId));
-})
+export const GET = route<Params>(async (_req, { params }) => {
+    await verifyMember(params.groupId);
 
-export const PUT = route<Ctx>(async(_req, {params}) => {
-    const { groupId, eventId } = await params;
-    const data = eventSchema.parse(await _req.json());
-    const user = await requireUser();
-    await requireMember(groupId, user.id);
-    await requireAdmin(groupId, user.id);
-    return ok(await updateEvent(eventId, data));
+    return ok(await getEventById(params.groupId, params.eventId));
 });
 
-export const DELETE = route<Ctx>(async(_req, {params}) => {
-    const { groupId, eventId } = await params;
-    const user = await requireUser();
-    await requireMember(groupId, user.id);
-    await requireAdmin(groupId, user.id);
-    return ok(await deleteEvent(eventId));
+export const PUT = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
+
+    const data = eventSchema.parse(await req.json());
+    return ok(await updateEvent(params.eventId, data));
+});
+
+export const DELETE = route<Params>(async (_req, { params }) => {
+    await verifyAdmin(params.groupId);
+
+    return ok(await deleteEvent(params.eventId));
 });

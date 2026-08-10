@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CurrentUser, getCurrentUser } from "@/utils/currentUser";
-import { NextResponse } from "next/server";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
+import { verifySession } from "@/lib/dal";
 import { z } from "zod";
 
 const CreateGroupSchema = z.object({
@@ -11,56 +11,32 @@ const CreateGroupSchema = z.object({
   status: z.array(z.string()).transform((arr) => [...new Set(arr)]),
 });
 
-export async function POST(req: Request) {
-  const body = CreateGroupSchema.safeParse(await req.json());
-  const currentUser = await getCurrentUser();
+export const POST = route(async (req) => {
+  const user = await verifySession();
 
-  if (!body.success) {
-    return NextResponse.json({ error: body.error.flatten() }, { status: 400 });
-  }
-  if (!currentUser) {
-    return NextResponse.json(
-      { code: "NOT_LOGGED_IN", error: "need login" },
-      { status: 401 },
-    );
-  }
-
+  const body = CreateGroupSchema.parse(await req.json());
   const ID = crypto.randomUUID();
 
   await prisma.group.create({
     data: {
       id: ID,
-      name: body.data.name,
-      description: body.data.description || null,
-      tags: body.data.tag,
-      adminId: currentUser?.id,
+      name: body.name,
+      description: body.description || null,
+      tags: body.tag,
+      adminId: user.id,
     },
   });
 
-  body.data.status.forEach(async (status, _) => {
-    await prisma.active.create({
-      data: {
-        name: status,
-        groupId: ID,
-      },
-    });
-  });
+  // 기존 forEach+async는 await되지 않아 생성 전에 응답이 나갔다
+  await Promise.all(
+    body.status.map((status) => prisma.active.create({ data: { name: status, groupId: ID } })),
+  );
 
   await prisma.groupMember.create({
-    data: {
-      groupId: ID,
-      userId: currentUser.id,
-    },
+    data: { groupId: ID, userId: user.id },
   });
 
-  return NextResponse.json(
-    {
-      id: ID,
-    },
-    {
-      status: 200,
-    },
-  );
-}
+  return ok({ id: ID });
+});
 
 //TODO: ReactForm + zod 사용 클라이언트에서

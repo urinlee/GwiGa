@@ -1,19 +1,14 @@
-import { requireAdmin, requireUser } from "@/lib/api/guard";
-import {RouteContext} from "@/lib/api/params";
-import { ok, route } from "@/lib/api/response";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
+import { verifyAdmin } from "@/lib/dal";
 import { memberActivesSchema } from "@/schemas/schemas";
 import { setMemberActives } from "@/services/memberactive";
 
+type Params = { groupId: string; userid: string };
 
-type Ctx = RouteContext<{ groupId: string; userid: string }>;
+export const PUT = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
 
-export const PUT = route<Ctx>(async (_req, { params }) => {
-    const { groupId, userid } = await params;
-    const userId = userid;
-    const user = await requireUser();
-    await requireAdmin(groupId, user.id);
-    const { actives } = memberActivesSchema.parse(await _req.json());
-    
-    return ok(await setMemberActives(groupId, userId, actives));
-})
-
+    const { actives } = memberActivesSchema.parse(await req.json());
+    return ok(await setMemberActives(params.groupId, params.userid, actives));
+});

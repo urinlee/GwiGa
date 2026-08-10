@@ -1,50 +1,27 @@
 import { prisma } from "@/lib/prisma";
-import { RouteContext } from "@/lib/api/params";
+import { route } from "@/lib/api/route";
+import { HttpError, ok } from "@/lib/api/response";
+import { verifyAdmin } from "@/lib/dal";
 import { groupGeneralSchema } from "@/schemas/schemas";
-import { getGroup, isAdmin } from "@/services/group";
-import { getCurrentUser } from "@/utils/currentUser";
+import { getGroup } from "@/services/group";
 
+type Params = { groupId: string };
 
-export async function GET(req: Request, { params }: RouteContext<{ groupId: string }>) {
-    const { groupId } = await params;
+export const GET = route<Params>(async (_req, { params }) => {
+    await verifyAdmin(params.groupId);
 
-    const user = await getCurrentUser();
+    const group = await getGroup(params.groupId);
+    if (!group) throw new HttpError(404, "GROUP_NOT_FOUND");
 
-    if (!user) return new Response("Unauthorized", { status: 401 });
+    return ok(group);
+});
 
-    if (!(await isAdmin(groupId, user.id))) {
-        return new Response("Forbidden", { status: 403 });
-    }
+export const POST = route<Params>(async (req, { params }) => {
+    await verifyAdmin(params.groupId);
 
-    const group = await getGroup(groupId);
-    
-    if (!group) return new Response("Not Found", { status: 404 });
-
-    return new Response(JSON.stringify(group), { status: 200 });
-}
-
-
-
-export async function POST(req: Request, { params }: RouteContext<{ groupId: string }>) {
-    const { groupId } = await params;
-
-    const user = await getCurrentUser();
     const body = groupGeneralSchema.parse(await req.json());
-    
+    const group = await getGroup(params.groupId);
+    if (!group) throw new HttpError(404, "GROUP_NOT_FOUND");
 
-    if (!user) return new Response("Unauthorized", { status: 401 });
-
-    if (!(await isAdmin(groupId, user.id))) {
-        return new Response("Forbidden", { status: 403 });
-    }
-
-    const group = await getGroup(groupId);
-    if (!group) return new Response("Not Found", { status: 404 });
-
-    const updatedGroup = await prisma.group.update({
-        where: { id: groupId },
-        data: body
-    });
-    
-    return new Response(JSON.stringify(updatedGroup), { status: 200 });
-}
+    return ok(await prisma.group.update({ where: { id: params.groupId }, data: body }));
+});

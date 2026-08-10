@@ -1,16 +1,8 @@
-import { prisma } from "@/lib/prisma";
-import { RouteContext } from "@/lib/api/params";
-import { ok, route } from "@/lib/api/response";
+import { route } from "@/lib/api/route";
+import { ok } from "@/lib/api/response";
 import { getGroupMemberActives } from "@/services/memberactive";
 
-
-export type MemberActiveCtx = RouteContext<{ groupId: string }>;
-
-export const GET = route<MemberActiveCtx>(async (_req, { params }) => {
-    const { groupId } = await params;
-
-    const groupMemberActives = await getGroupMemberActives(groupId);
-
-    // 이 엔드포인트는 "멤버 목록"이므로 group 전체가 아니라 members 배열을 반환한다
-    return ok(groupMemberActives);
-})
+// TODO: 인증 없음 — 비회원도 조회 가능
+export const GET = route<{ groupId: string }>(async (_req, { params }) => {
+    return ok(await getGroupMemberActives(params.groupId));
+});
