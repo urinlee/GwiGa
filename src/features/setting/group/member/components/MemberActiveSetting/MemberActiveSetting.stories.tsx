@@ -29,12 +29,16 @@ function createActive(
         id: `active-${index}`,
         name,
         description: null,
+        status: "ACTIVE",
+        type: "MANUAL",
         primaryColor,
         secondaryColor,
         createAt: FIXED_DATE,
         startAt: FIXED_DATE,
         endAt: FIXED_DATE,
+        selfServe: false,
         groupId: GROUP_ID,
+        eventId: null,
     };
 }
 
@@ -56,6 +60,7 @@ function assign(actives: Active[]): GroupMemberActives[] {
         enable: false,
         startAt: null,
         endAt: null,
+        completedAt: null,
         active,
         groupMember: {
             id: `gm-${USER_ID}`,

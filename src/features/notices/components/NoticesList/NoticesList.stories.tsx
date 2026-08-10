@@ -47,7 +47,9 @@ function createNotice(
         badgeId: withBadge ? `badge-${index}` : null,
         title,
         content: `${title}의 본문입니다.`,
+        preview: `${title}의 본문입니다.`,
         createdAt,
+        updatedAt: createdAt,
         isRead,
         readCount,
         author: {

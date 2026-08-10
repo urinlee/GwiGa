@@ -257,9 +257,16 @@ enum ActiveType {
   SURVEY
 }
 
+enum ActiveStatus {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
 
 model Active {
   id          String   @id @default(uuid())
+  status      ActiveStatus @default(ACTIVE)
   type        ActiveType @default(MANUAL)
   name        String
   description String?

@@ -31,5 +31,5 @@ export const Ongoing: Story = {
 };
 
 export const Closed: Story = {
-    args: { ...baseArgs, status: "종료" },
+    args: { ...baseArgs, status: "종료됨" },
 };

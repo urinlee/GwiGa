@@ -1,20 +1,34 @@
 import { describe, expect, it } from 'vitest';
 
 import { ParticipantsInfoCardProps } from '../components/ParticipateInfoCard/ParticipantsInfoCard';
+import { stateType } from '../components/InfoCardsContainer/InfoCardsContainer';
 import { filterParticipantsByStatus, countParticipantsByStatus } from './filterParticipantsByChecked';
 
-const allStatuses = ['ready', 'help', 'late', 'custom-tag'] as const;
+const allStatuses: stateType[] = ['ready', 'help', 'late', 'custom-tag'].map((id) => ({
+	id,
+	name: id,
+	primaryColor: '#000000',
+	secondaryColor: '#FFFFFF',
+}));
+
+const byId = (id: string) => allStatuses.find((status) => status.id === id)!;
+
+/** 켜진 상태 id만 주면 나머지는 isTrue=false로 채운다 */
+const createParticipant = (username: string, enabledIds: string[]): ParticipantsInfoCardProps => ({
+	username,
+	userStatus: allStatuses.map((status) => ({ ...status, isTrue: enabledIds.includes(status.id) })),
+});
 
 const participants: ParticipantsInfoCardProps[] = [
-	{ username: 'alice', allStatus: [...allStatuses], enableStatus: ['ready', 'help'] },
-	{ username: 'bob', allStatus: [...allStatuses], enableStatus: ['ready'] },
-	{ username: 'chris', allStatus: [...allStatuses], enableStatus: ['late', 'help'] },
-	{ username: 'dana', allStatus: [...allStatuses], enableStatus: ['ready', 'custom-tag'] },
-	{ username: 'eric', allStatus: [...allStatuses], enableStatus: [] },
+	createParticipant('alice', ['ready', 'help']),
+	createParticipant('bob', ['ready']),
+	createParticipant('chris', ['late', 'help']),
+	createParticipant('dana', ['ready', 'custom-tag']),
+	createParticipant('eric', []),
 ];
 
 const createGetStepCheckedTags = (steps: Record<number, string[]>) => {
-	return (step: number) => steps[step] ?? [];
+	return (step: number) => (steps[step] ?? []).map(byId);
 };
 
 describe('filteredParticipantsByStep', () => {

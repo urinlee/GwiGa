@@ -12,8 +12,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const twoOptions = [
-    { id: 1, name: "첫번째" },
-    { id: 2, name: "두번째" },
+    { id: 1, name: "첫번째", status: "FIRST" },
+    { id: 2, name: "두번째", status: "SECOND" },
 ];
 
 // controlled 컴포넌트라 select만 넘기면 클릭해도 안 움직인다.
@@ -30,9 +30,9 @@ export const Default: Story = {
 };
 
 const threeOptions = [
-    { id: 1, name: "전체" },
-    { id: 2, name: "입금" },
-    { id: 3, name: "미납" },
+    { id: 1, name: "전체", status: "ALL" },
+    { id: 2, name: "입금", status: "PAID" },
+    { id: 3, name: "미납", status: "UNPAID" },
 ];
 
 export const ThreeOptions: Story = {
