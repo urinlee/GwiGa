@@ -3,58 +3,12 @@ import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import { ActiveFields } from "../ActiveFields/ActiveFields";
 import { ActivePreview } from "@/types/active";
 import { ActiveFormValues, activeSchema } from "@/schemas/schemas";
+import { makeHarmoniousPair, readableText } from "@/lib/color";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
-/** hex 색의 상대 명도(WCAG) */
-function channelLuminance(hex: string): number {
-    const m = hex.replace(/^#/, "");
-    const full = m.length === 3 ? m.split("").map((c) => c + c).join("") : m;
-    const int = parseInt(full, 16);
-    if (Number.isNaN(int)) return 0;
-    const weights = [0.2126, 0.7152, 0.0722];
-    return [(int >> 16) & 255, (int >> 8) & 255, int & 255].reduce((acc, v, i) => {
-        const s = v / 255;
-        const lin = s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-        return acc + lin * weights[i];
-    }, 0);
-}
-
-/** 두 색 위에 얹었을 때 읽히는 글자색 + 미세 그림자 */
-function readableText(...hexes: string[]) {
-    const avg = hexes.reduce((a, h) => a + channelLuminance(h), 0) / hexes.length;
-    const light = avg > 0.45;
-    return {
-        color: light ? "#18181B" : "#FFFFFF",
-        textShadow: light ? "0 1px 2px rgba(255,255,255,0.45)" : "0 1px 3px rgba(0,0,0,0.35)",
-    };
-}
-
-function hslToHex(h: number, s: number, l: number): string {
-    s /= 100;
-    l /= 100;
-    const a = s * Math.min(l, 1 - l);
-    const f = (n: number) => {
-        const k = (n + h / 30) % 12;
-        const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
-        return Math.round(255 * c).toString(16).padStart(2, "0");
-    };
-    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
-}
-
-/** 서로 어울리는(유사색 조화) 랜덤 색 한 쌍 */
-function randomHarmoniousPair(): { primary: string; secondary: string } {
-    const hue = Math.floor(Math.random() * 360);
-    const shift = 25 + Math.floor(Math.random() * 35); // 25~60도 이동
-    const dir = Math.random() < 0.5 ? -1 : 1;
-    return {
-        primary: hslToHex(hue, 70, 55),
-        secondary: hslToHex((hue + dir * shift + 360) % 360, 68, 66),
-    };
-}
 
 export function NewActiveButton({ groupid, onCreated }: { groupid: string, onCreated?: (active: ActivePreview) => void }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -83,8 +37,8 @@ export function NewActiveButton({ groupid, onCreated }: { groupid: string, onCre
     )
 }
 
-export function NewActiveModal({ groupid , isOpen, setIsOpen, onCreated }: { groupid: string, isOpen: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>>, onCreated?: (active: ActivePreview) => void }) {
-    const [initialColors] = useState(randomHarmoniousPair);
+export function NewActiveModal({ groupid , eventId, isOpen, setIsOpen, onCreated }: { groupid: string, eventId?: string, isOpen: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>>, onCreated?: (active: ActivePreview) => void }) {
+    const [initialColors] = useState(makeHarmoniousPair);
     const [primaryColor, setPrimaryColor] = useState(initialColors.primary);
     const [secondaryColor, setSecondaryColor] = useState(initialColors.secondary);
     // 액티브의 속성이 아니라 "생성 동작"에 대한 플래그라 폼 스키마와 분리해서 관리한다
@@ -94,7 +48,9 @@ export function NewActiveModal({ groupid , isOpen, setIsOpen, onCreated }: { gro
 
     const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ActiveFormValues>({
         mode: "onChange",
-        resolver: zodResolver(activeSchema )
+        resolver: zodResolver(activeSchema),
+        // 이벤트 안에서 열렸으면 소속 이벤트를 고르지 않고 그 이벤트로 시작한다
+        defaultValues: { eventId },
     });
 
     const handleCreate = async (data: ActiveFormValues) => {
@@ -127,6 +83,8 @@ export function NewActiveModal({ groupid , isOpen, setIsOpen, onCreated }: { gro
                         <form onSubmit={handleSubmit(handleCreate)}>
                             <ActiveFields
                                 register={register}
+                                groupId={groupid}
+                                lockedEventId={eventId}
                                 primaryColor={primaryColor}
                                 secondaryColor={secondaryColor}
                                 onPrimaryColorChange={setPrimaryColor}

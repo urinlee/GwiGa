@@ -3,11 +3,14 @@ import "../src/app/globals.css";
 import { ThemeProvider } from 'next-themes';
  
 import { withThemeByClassName } from '@storybook/addon-themes';
+import { QueryProvider } from '../src/components/common/QueryProvider';
 
 
 const preview: Preview = {
   
   parameters: {
+    // 앱이 전부 app router라 useRouter를 쓰는 컴포넌트가 스토리에서도 뜨게 한다
+    nextjs: { appDirectory: true },
     controls: {
       matchers: {
        color: /(background|color)$/i,
@@ -23,11 +26,14 @@ const preview: Preview = {
     }
   },decorators: [
 
+    // useQuery를 쓰는 컴포넌트(EventSelect·EventList 등)가 앱과 같은 조건에서 렌더되도록
     (Story) => (
 
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <Story />
-      </ThemeProvider>
+      <QueryProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <Story />
+        </ThemeProvider>
+      </QueryProvider>
 
     ),
     withThemeByClassName({

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { NewActiveModal } from "./NewActiveModal";
 
 const meta = {
-  title: 'Features/Setting/Group/Active/NewActiveModal',
+  title: 'Features/Active/NewActiveModal',
   component: NewActiveModal,
 } satisfies Meta<typeof NewActiveModal>;
 

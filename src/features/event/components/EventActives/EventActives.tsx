@@ -200,17 +200,22 @@ export interface EventActivesProps {
     actives: (EventActiveCardProps & { id?: string })[];
     /** 섹션 제목. 기본 "액티브" */
     title?: string;
+    /** 액티브 추가 같은 버튼. 동작은 쓰는 쪽이 정한다. */
+    action?: ReactNode;
 }
 
-export function EventActives({ actives, title = "액티브" }: EventActivesProps) {
+export function EventActives({ actives, title = "액티브", action }: EventActivesProps) {
     return (
         // 바깥 여백은 쓰는 쪽이 정한다 (옆에 소개 레일이 붙는다)
         <section>
-            <div className="mb-3 flex items-baseline justify-between">
+            <div className="mb-3 flex items-baseline justify-between gap-3">
                 <h2 className="text-lg font-bold">{title}</h2>
-                <span className="text-[13px] font-medium text-zinc-500 dark:text-zinc-400">
-                    <span className="tabular-nums">{actives.length}</span>개
-                </span>
+                <div className="flex items-center gap-2.5">
+                    <span className="text-[13px] font-medium text-zinc-500 dark:text-zinc-400">
+                        <span className="tabular-nums">{actives.length}</span>개
+                    </span>
+                    {action}
+                </div>
             </div>
 
             {actives.length === 0 ? (

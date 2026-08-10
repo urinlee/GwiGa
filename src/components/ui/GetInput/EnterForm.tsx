@@ -35,8 +35,20 @@ export interface TextAreaZoneProps extends TextZoneProps {
     isLong?: boolean;
 }
 
+export interface SelectOption {
+    value: string;
+    label: string;
+}
+
 export interface ChoiceInputProps extends ZoneBaseProps {
-    options?: string[];
+    /** 문자열이면 값과 라벨이 같다. id를 값으로 보내야 하면 { value, label }을 쓴다. */
+    options?: (string | SelectOption)[];
+    /** 아무것도 안 고른 상태의 문구. 기본 "선택하세요" */
+    placeholder?: string;
+}
+
+function toOption(option: string | SelectOption): SelectOption {
+    return typeof option === "string" ? { value: option, label: option } : option;
 }
 
 export interface NumberZoneProps extends ZoneBaseProps {
@@ -157,13 +169,13 @@ export function EnterCheckboxZone({ registration, ...a11y }: ZoneBaseProps) {
     );
 }
 
-export function EnterSelectZone({ registration, options = [], ...a11y }: ChoiceInputProps) {
+export function EnterSelectZone({ registration, options = [], placeholder = "선택하세요", ...a11y }: ChoiceInputProps) {
     return (
         <select className={fieldClass(a11y.hasError)} {...a11yProps(a11y)} {...registration}>
-            <option value="">선택하세요</option>
-            {options.map((option) => (
-                <option key={option} value={option}>
-                    {option}
+            <option value="">{placeholder}</option>
+            {options.map(toOption).map(({ value, label }) => (
+                <option key={value} value={value}>
+                    {label}
                 </option>
             ))}
         </select>
@@ -181,15 +193,15 @@ export function EnterRadioZone({ registration, options = [], ...a11y }: ChoiceIn
             aria-invalid={a11y.hasError || undefined}
             className="flex gap-4"
         >
-            {options.map((option) => (
-                <label key={option} className="inline-flex items-center gap-1.5">
+            {options.map(toOption).map(({ value, label }) => (
+                <label key={value} className="inline-flex items-center gap-1.5">
                     <input
                         type="radio"
-                        value={option}
+                        value={value}
                         className="form-radio h-5 w-5 text-blue-600 focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100"
                         {...registration}
                     />
-                    <span className="text-sm">{option}</span>
+                    <span className="text-sm">{label}</span>
                 </label>
             ))}
         </div>

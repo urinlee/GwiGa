@@ -1,13 +1,17 @@
 "use client";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
+import { EventSelect } from "@/features/event/components/EventSelect/EventSelect";
 import { ActiveFormValues } from "@/schemas/schemas";
 import type { UseFormRegister } from "react-hook-form";
 
 interface ActiveFieldsProps {
     /** 부모의 useForm<ActiveFormValues>()에서 온 register */
     register: UseFormRegister<ActiveFormValues>;
+    groupId: string;
     primaryColor: string;
     secondaryColor: string;
+    /** 값이 있으면 소속 이벤트를 고르지 않고 이 이벤트로 고정한다 */
+    lockedEventId?: string;
     /** 색이 바뀔 때 부모 상태로 끌어올리고 싶을 때만 전달 */
     onPrimaryColorChange?: (hex: string) => void;
     onSecondaryColorChange?: (hex: string) => void;
@@ -16,8 +20,10 @@ interface ActiveFieldsProps {
 /** 액티브 생성/수정에서 공통으로 쓰는 입력 필드 묶음 */
 export function ActiveFields({
     register,
+    groupId,
     primaryColor,
     secondaryColor,
+    lockedEventId,
     onPrimaryColorChange,
     onSecondaryColorChange,
 }: ActiveFieldsProps) {
@@ -37,6 +43,7 @@ export function ActiveFields({
                 isLong={true}
                 registration={register("description")}
             />
+            <EventSelect groupId={groupId} registration={register("eventId")} lockedEventId={lockedEventId} />
             <GetInputArea
                 type="color"
                 title="기본 색상"

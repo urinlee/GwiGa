@@ -272,9 +272,9 @@ model Active {
   selfServe Boolean @default(false) // true면 멤버가 직접 활성화 가능, false면 관리자가 활성화해야함
 
 
-  prerequisiteId String? // prerequisite Active id
-  prerequisite Active? @relation("ActiveChain", fields: [prerequisiteId, groupId], references: [id, groupId])
-  nextActives  Active[] @relation("ActiveChain")
+  // prerequisiteId String? // prerequisite Active id
+  // prerequisite Active? @relation("ActiveChain", fields: [prerequisiteId, groupId], references: [id, groupId])
+  // nextActives  Active[] @relation("ActiveChain")
 
   groupId String
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)

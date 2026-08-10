@@ -1,5 +1,5 @@
 "use client";
-import { ActiveFields } from "../ActiveFields/ActiveFields";
+import { ActiveFields } from "@/features/active/components/ActiveFields/ActiveFields";
 import { ActiveList } from "../ActiveList/ActiveList";
 import { ActivePreview } from "@/types/active";
 import { ActiveFormValues } from "@/schemas/schemas";
@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { SaveButton } from "@/features/setting/components/SaveButton/SaveButton";
 import Button from "@/components/ui/Button/Button";
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
-import { NewActiveButton } from "../NewActiveModal/NewActiveModal";
+import { NewActiveButton } from "@/features/active/components/NewActiveModal/NewActiveModal";
 
 
 
@@ -27,12 +27,14 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
             description: "",
             primaryColor: "#F4F4F5",
             secondaryColor: "#57565C",
+            eventId: null,
         },
         values: selectedActive && {
             name: selectedActive.name,
             description: selectedActive.description ?? "",
             primaryColor: selectedActive.primaryColor ?? "#F4F4F5",
             secondaryColor: selectedActive.secondaryColor ?? "#57565C",
+            eventId: selectedActive.eventId,
         },
     });
 
@@ -113,6 +115,7 @@ export function GroupActiveSettingsForm({ groupid }: { groupid: string }) {
             <form className="mt-12 flex flex-col" onSubmit={handleSubmit(handleUpdate)}>
                 <ActiveFields
                     register={register}
+                    groupId={groupid}
                     primaryColor={selectedActive?.primaryColor ?? "#F4F4F5"}
                     secondaryColor={selectedActive?.secondaryColor ?? "#57565C"}
                 />

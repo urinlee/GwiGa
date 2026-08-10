@@ -4,6 +4,7 @@ import { verifyMember } from "@/lib/dal";
 import { EventActives } from "../EventActives/EventActives";
 import { EventAbout } from "../EventAbout/EventAbout";
 import { getActives } from "@/services/active";
+import { AddActiveButton } from "../AddActiveButton/AddActiveButton";
 
 export async function EventSee({groupId, eventId}:{groupId:string, eventId:string}) {
     await verifyMember(groupId)
@@ -26,7 +27,7 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
             {/* 왼쪽은 할 일(액티브), 오른쪽은 참고(소개) */}
             <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">
                 <div className="min-w-0 flex-1">
-                    <EventActives actives={activesData}/>
+                    <EventActives actives={activesData} action={<AddActiveButton groupId={groupId} eventId={eventId}/>}/>
                 </div>
 
                 <EventAbout
