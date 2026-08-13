@@ -14,7 +14,7 @@ export function EventAbout({ description, title = "이벤트 소개", className 
 
     return (
         <aside className={cn("min-w-0", className)}>
-            <h2 className="text-[11px] font-semibold tracking-wide text-zinc-400">{title}</h2>
+            <h2 className="text-[11px] font-semibold tracking-wide text-zinc-500 dark:text-zinc-400">{title}</h2>
 
             {/* 스크롤 영역은 키보드로도 훑을 수 있게 포커스를 받는다 */}
             <div

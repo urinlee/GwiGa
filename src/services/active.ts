@@ -7,21 +7,7 @@ export async function getActives(groupId: string, eventId?: string) {
 
 
 
-export async function getRecruits(eventId:string) {
-    return prisma.recruit.findMany({
-        where: {
-            eventId
-        }
-    })
-}
 
-export async function getApplicants(recruitId:string) {
-    return prisma.recruitApplicant.findMany({
-        where: {
-            recruitId
-        }
-    })
-}
 
 /**
  * 액티브를 생성한다. `applyToAll`이면 그룹의 모든 멤버에게 memberActive(enable=false)를 함께 만든다.

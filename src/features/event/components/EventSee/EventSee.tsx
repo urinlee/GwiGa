@@ -5,6 +5,8 @@ import { EventActives } from "../EventActives/EventActives";
 import { EventAbout } from "../EventAbout/EventAbout";
 import { getActives } from "@/services/active";
 import { AddActiveButton } from "../AddActiveButton/AddActiveButton";
+import { Recruit, RecruitList } from "../RecruitList/RecruitList";
+import { getRecruits } from "@/services/recruit";
 
 export async function EventSee({groupId, eventId}:{groupId:string, eventId:string}) {
     await verifyMember(groupId)
@@ -20,6 +22,19 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
         userMaxCount: active.userMaxCount
     }))
 
+    const recruits = await getRecruits(groupId, eventId)
+    // startAt·endAt은 nullable이라 그대로 넘긴다. new Date(null)은 1970년이 된다.
+    const recruitsData : Recruit[] = recruits.map((recruit) => ({
+        id: recruit.id,
+        status: recruit.status,
+        title: recruit.title,
+        description: recruit.notice,
+        startAt: recruit.startAt,
+        endAt: recruit.endAt,
+        userCount: recruit._count.applicants,
+        userMaxCount: recruit.capacity
+    }))
+
     return(
         <div className="pb-16">
             <EventHero groupId={groupId} name={data?.name || "찾을 수 없음"} status={data?.status || "CLOSED"} startAt={data?.startAt} endAt={data?.endAt} memberCount={12}/>
@@ -29,12 +44,15 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
                 <div className="min-w-0 flex-1">
                     <EventActives actives={activesData} action={<AddActiveButton groupId={groupId} eventId={eventId}/>}/>
                 </div>
-
-                <EventAbout
-                    description={data?.description}
-                    className="border-t border-zinc-200 pt-6 lg:w-64 lg:shrink-0 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8 dark:border-zinc-800"
-                />
+                <div className="flex flex-col gap-8">
+                    <RecruitList recruits={recruitsData} groupId={groupId}/>
+                    <EventAbout
+                        description={data?.description}
+                        className="border-t border-zinc-200 pt-6 lg:w-64 lg:shrink-0 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8 dark:border-zinc-800"
+                    />
+                </div>
             </div>
+
         </div>
     )
 }
