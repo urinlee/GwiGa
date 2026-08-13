@@ -45,8 +45,7 @@ export function createEvent(groupId:string, data:EventInput) {
                 description:data.description,
                 startAt:data.startAt,
                 endAt:data.endAt,
-                minMember:data.minMember,
-                maxMember:data.maxMember
+                minMember:data.minMember
             }
         })
 

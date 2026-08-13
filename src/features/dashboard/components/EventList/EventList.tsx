@@ -6,6 +6,7 @@ import { useState } from "react";
 import { EventCard, StatusType } from "../EventCard/EventCard";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { sumRecruitCapacity } from "@/features/event/lib/capacity";
 
 
 const testEventCardArgs = {
@@ -96,8 +97,8 @@ export function EventList({groupId}:EventListProps) {
                             primaryColor={"#2563eb"}
                             secondaryColor={"#294a7f"}
                             memberCount={event.recruits.reduce((acc: number, recruit: any) => acc + recruit._count.applicants, 0)}
-                            maxMemberCount={event.minMember}
-                            minMemberCount={event.maxMember}
+                            minMemberCount={event.minMember ?? undefined}
+                            maxMemberCount={sumRecruitCapacity(event.recruits) ?? undefined}
                             dateTitle={"test"}
                             date={new Date(event.startAt)}
                         />

@@ -29,7 +29,7 @@ const baseArgs = {
     endAt: new Date("2026-08-15T21:00:00"),
     memberCount: 12,
     minMember: 10,
-    maxMember: 30,
+    capacity: 30,
 };
 
 export const Default: Story = {
@@ -73,7 +73,7 @@ export const Full: Story = {
 
 /** 정원 제한이 없으면 게이지를 감춘다. */
 export const NoCapacity: Story = {
-    args: { ...baseArgs, minMember: null, maxMember: null, memberCount: 42 },
+    args: { ...baseArgs, minMember: null, capacity: null, memberCount: 42 },
 };
 
 /** 일정이 안 잡힌 이벤트 — 달력이 "미정"으로 떨어진다. */

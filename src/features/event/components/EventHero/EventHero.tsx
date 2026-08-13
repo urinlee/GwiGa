@@ -54,8 +54,10 @@ interface EventHeroProps {
     endAt?: Date | null;
     /** 확정 참가자 수 (EventMember where status=CONFIRMED) */
     memberCount: number;
+    /** 참고용 목표 인원. 아무것도 막지 않는다. */
     minMember?: number | null;
-    maxMember?: number | null;
+    /** 회차 정원의 합. 컬럼이 아니라 파생값이라 쓰는 쪽이 계산해 넘긴다. */
+    capacity?: number | null;
     /** 참여하기·수정 같은 버튼. 동작은 쓰는 쪽이 정한다. */
     action?: ReactNode;
 }
@@ -68,15 +70,15 @@ export function EventHero({
     endAt,
     memberCount,
     minMember,
-    maxMember,
+    capacity,
     action,
 }: EventHeroProps) {
     const style = STATUS_STYLE[status];
     const { date, time } = formatPeriod(startAt, endAt);
 
     const reachedMin = Boolean(minMember && memberCount >= minMember);
-    const isFull = Boolean(maxMember && memberCount >= maxMember);
-    const hasCapacity = Boolean(minMember || maxMember);
+    const isFull = Boolean(capacity && memberCount >= capacity);
+    const hasCapacity = Boolean(minMember || capacity);
 
     // 시작일이 없으면 종료일이라도 달력에 세운다
     const anchorDate = startAt ?? endAt ?? null;
@@ -134,7 +136,7 @@ export function EventHero({
                             )}
                         >
                             {memberCount}
-                            {maxMember ? `/${maxMember}` : ""}명
+                            {capacity ? `/${capacity}` : ""}명
                             {reachedMin && !isFull && " · 최소 달성"}
                             {isFull && " · 정원 마감"}
                         </span>
@@ -147,11 +149,11 @@ export function EventHero({
                 <>
                     <Gauge
                         value={memberCount}
-                        max={maxMember ?? minMember ?? 1}
+                        max={capacity ?? minMember ?? 1}
                         color={isFull ? "#c13c35" : reachedMin ? "#016630" : undefined}
                         className="mt-3 h-1 dark:bg-zinc-800"
                         markers={
-                            minMember && maxMember
+                            minMember && capacity
                                 ? [
                                       {
                                           value: minMember,
@@ -169,7 +171,7 @@ export function EventHero({
                             {minMember ? `최소 ${minMember}명` : ""}
                         </span>
                         <span className={cn(isFull && "text-rose-600 dark:text-rose-400")}>
-                            {maxMember ? `최대 ${maxMember}명` : ""}
+                            {capacity ? `정원 ${capacity}명` : ""}
                         </span>
                     </div>
                 </>

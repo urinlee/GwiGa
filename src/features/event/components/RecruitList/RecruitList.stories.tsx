@@ -18,11 +18,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const GROUP_ID = "group-1";
+const EVENT_ID = "event-1";
 const day = (offset: number) => new Date(Date.now() + offset * 86_400_000);
 
 export const Default: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [
             {
                 id: "recruit-2",
@@ -50,6 +52,7 @@ export const Default: Story = {
 export const NearFull: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [
             {
                 id: "recruit-2",
@@ -67,6 +70,7 @@ export const NearFull: Story = {
 export const Full: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [
             {
                 id: "recruit-2",
@@ -85,6 +89,7 @@ export const Full: Story = {
 export const Upcoming: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [
             {
                 id: "recruit-3",
@@ -103,6 +108,7 @@ export const Upcoming: Story = {
 export const NoCapacity: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [
             {
                 id: "recruit-4",
@@ -120,6 +126,19 @@ export const NoCapacity: Story = {
 export const Empty: Story = {
     args: {
         groupId: GROUP_ID,
+        eventId: EVENT_ID,
         recruits: [],
+    },
+};
+
+/** 회차 추가 모달. 정원을 치면 위 미리보기가 따라온다 */
+export const AddModal: Story = {
+    args: {
+        groupId: GROUP_ID,
+        eventId: EVENT_ID,
+        recruits: [],
+    },
+    play: async ({ canvas, userEvent }) => {
+        await userEvent.click(await canvas.findByRole("button", { name: /회차 추가/ }));
     },
 };

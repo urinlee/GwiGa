@@ -1,11 +1,18 @@
 "use client";
 import { Gauge } from "@/components/ui/Gauge/Gauge";
+import { GetInputArea } from "@/components/ui/GetInput/GetInput";
+import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
 import type { RecruitStatus } from "@/generated/prisma/enums";
 import { cn } from "@/lib/cn";
 import { daysUntil, formatShortPeriod } from "@/lib/date";
+import { RecruitFormValues, recruitSchema } from "@/schemas/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { NewRecruitForm, RecruitFieldName } from "../NewRecruitForm/NewRecruitForm";
+import { useMutation } from "@tanstack/react-query";
 
 /** status(관리자가 연·닫은 상태)와 기간을 합쳐 화면에 보일 단계를 정한다. */
 export type RecruitPhase = "예정" | "모집중" | "마감";
@@ -225,27 +232,28 @@ function RecruitCard({
 export interface RecruitListProps {
     recruits: Recruit[];
     groupId: string;
-    /** 섹션 헤더의 회차 추가 버튼. 넘기지 않으면 숨긴다. */
-    onAddRecruit?: () => void;
+    /** 회차를 여는 대상 이벤트. 모집은 이벤트에 붙으므로 목록만으로는 알 수 없다. */
+    eventId: string;
+    /** 넘기면 카드에 명단 버튼이 나온다. 신청자 화면이 준비되면 연결한다. */
     onShowApplicants?: (recruitId: string) => void;
 }
 
-export function RecruitList({ recruits, groupId, onAddRecruit, onShowApplicants }: RecruitListProps) {
+export function RecruitList({ recruits, groupId, eventId, onShowApplicants }: RecruitListProps) {
+    const [isAddOpen, setIsAddOpen] = useState(false);
+
     return (
         // 옆 레일에 놓이므로 제목 크기를 EventAbout에 맞춘다
         <section>
             <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold tracking-wide text-zinc-500 dark:text-zinc-400">모집</h2>
-                {onAddRecruit && (
-                    <button
-                        type="button"
-                        onClick={onAddRecruit}
-                        className="flex cursor-pointer items-center gap-0.5 rounded-sm py-1 text-[11px] font-medium text-zinc-500 transition-colors hover:text-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-100"
-                    >
-                        <Plus size={12} strokeWidth={2.5} />
-                        회차 추가
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={() => setIsAddOpen(true)}
+                    className="flex cursor-pointer items-center gap-0.5 rounded-sm py-1 text-[11px] font-medium text-zinc-500 transition-colors hover:text-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-100"
+                >
+                    <Plus size={12} strokeWidth={2.5} />
+                    회차 추가
+                </button>
             </div>
 
             {recruits.length === 0 ? (
@@ -261,6 +269,134 @@ export function RecruitList({ recruits, groupId, onAddRecruit, onShowApplicants 
                     ))}
                 </ul>
             )}
+            {isAddOpen && (
+                <AddRecruitModal groupId={groupId} eventId={eventId} onClose={() => setIsAddOpen(false)} />
+            )}
         </section>
+    );
+}
+
+
+
+export function AddRecruitModal({
+    groupId,
+    eventId,
+    onClose,
+}: {
+    groupId: string;
+    eventId: string;
+    onClose: () => void;
+}) {
+    const router = useRouter();
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm<RecruitFormValues>({
+        mode: "onChange",
+        resolver: zodResolver(recruitSchema),
+    });
+
+    const bind = (name: RecruitFieldName) => ({
+        registration: register(name),
+        error: errors[name]?.message,
+    });
+
+    // 정원은 preprocess를 거쳐 입력 타입이 느슨하다. 미리보기에 쓸 수 있게 숫자로 좁힌다.
+    const typedCapacity = Number(useWatch({ control, name: "capacity" }) as string | number | undefined);
+    const capacity = Number.isFinite(typedCapacity) && typedCapacity > 0 ? typedCapacity : null;
+
+    const openRecruit = useMutation({
+        mutationFn: async (data: RecruitFormValues) => {
+            const response = await fetch(`/api/v1/group/${groupId}/event/${eventId}/recruit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                throw new Error(response.status === 403 ? "모집을 열 권한이 없어요" : "모집을 열지 못했어요");
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            onClose();
+            router.refresh();
+        },
+    });
+
+    return (
+        <Modal isOpen onClose={onClose} aria-label="새 모집 회차">
+            {/* GetInputArea가 입력에 w-80을 고정으로 잡아, 이보다 좁으면 라벨 칸이 눌린다 */}
+            <ModalContent className="max-h-[85vh] w-[min(92vw,680px)] overflow-y-auto">
+                <form onSubmit={handleSubmit((data) => openRecruit.mutate(data))}>
+                    <div className="px-4 pt-1">
+                        <h2 className="text-xl font-bold tracking-tight">새 모집 회차</h2>
+                        <p className="mt-1 text-[13px] text-zinc-500 dark:text-zinc-400">
+                            정원과 기간을 정하면 참가 신청을 받기 시작해요.
+                        </p>
+                    </div>
+
+                    {/* 카드와 같은 어휘로 만들 회차를 미리 보여준다. 정원을 치면 여기가 즉시 따라온다. */}
+                    <div className="mt-5 border-y border-zinc-200 px-4 py-5 dark:border-zinc-800">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-[44px] leading-none font-bold tabular-nums">0</span>
+                            <span className="text-[15px] text-zinc-500 dark:text-zinc-400">
+                                {capacity ? `/ ${capacity}명 신청` : "명 신청"}
+                            </span>
+                        </div>
+
+                        {/* 게이지는 생성 시점에 늘 0%라 빈 막대만 남는다. 숫자와 말이 대신한다. */}
+                        <p className="mt-2.5 text-[12px] text-zinc-500 dark:text-zinc-400">
+                            {capacity
+                                ? `${capacity}자리로 시작해서, 다 차면 카드가 정원 마감으로 바뀌어요`
+                                : "정원을 비우면 인원 제한 없이 받습니다"}
+                        </p>
+                    </div>
+
+                    <GetInputArea
+                        type="text"
+                        title="회차 이름"
+                        description="비우면 '모집'으로 보여요"
+                        registration={register("title")}
+                        error={errors.title?.message}
+                    />
+                    <GetInputArea
+                        type="number"
+                        title="정원"
+                        description="이번 회차에서 받을 최대 인원"
+                        positiveOnly
+                        registration={register("capacity")}
+                        error={errors.capacity?.message}
+                    />
+                    <NewRecruitForm bind={bind} />
+
+                    {/* 폼이 길어 스크롤되므로, 확정 버튼은 늘 손 닿는 곳에 붙여둔다 */}
+                    <div className="sticky bottom-0 -mx-5 -mb-5 mt-4 border-t border-zinc-200 bg-zinc-100 px-9 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+                        <button
+                            type="submit"
+                            disabled={openRecruit.isPending}
+                            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-zinc-900 text-[15px] font-bold text-white transition-colors hover:bg-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 disabled:cursor-not-allowed disabled:bg-zinc-400 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus-visible:ring-zinc-100 dark:disabled:bg-zinc-600"
+                        >
+                            {openRecruit.isPending ? "여는 중…" : "모집 열기"}
+                        </button>
+
+                        {openRecruit.isError && (
+                            <p role="alert" className="mt-2 text-center text-[12px] text-red-600 dark:text-red-400">
+                                {openRecruit.error instanceof Error ? openRecruit.error.message : "모집을 열지 못했어요"}
+                            </p>
+                        )}
+
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="mt-2 min-h-9 w-full cursor-pointer rounded-lg text-[13px] font-medium text-zinc-500 transition-colors hover:text-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-100"
+                        >
+                            취소
+                        </button>
+                    </div>
+                </form>
+            </ModalContent>
+        </Modal>
     );
 }

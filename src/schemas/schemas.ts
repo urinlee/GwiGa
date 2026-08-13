@@ -53,13 +53,16 @@ export const eventBaseSchema = z.object({
     description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
     startAt: optionalDate,
     endAt: optionalDate,
+    // 참고용 목표 인원. 정원은 회차(Recruit) capacity의 합이라 여기서 받지 않는다.
     minMember: optionalCount,
-    maxMember: optionalCount,
     status: z.enum(EventStatus).optional(),
 });
 
 /** 이벤트를 만들 때 함께 여는 참여(JOIN) 액티브 설정. 저장 위치는 Event가 아니라 Active다. */
 export const recruitSchema = z.object({
+    // Prisma의 title·capacity를 폼에서도 받는다. 카드가 회차 이름과 정원 게이지로 이 둘을 보여준다.
+    title: z.string().trim().max(30, "최대 30자까지 입력할 수 있어요").optional(),
+    capacity: optionalCount,
     startAt: optionalDate,
     endAt: optionalDate,
     description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
@@ -71,9 +74,6 @@ export type RecruitInput = z.output<typeof recruitSchema>;
 export const eventSchema = eventBaseSchema.extend({ recruit: recruitSchema.optional() }).refine((d) => !d.startAt || !d.endAt || d.startAt < d.endAt, {
     message: "종료 시각은 시작 시각보다 늦어야 해요",
     path: ["endAt"],
-}).refine((d) => !d.minMember || !d.maxMember || d.minMember <= d.maxMember, {
-    message: "최대인원은 최소인원과 같거나 커야돼요",
-    path: ["maxMember"],
 });
 // coerce.date()는 입력(문자열)과 출력(Date)의 타입이 다르다.
 // 폼은 input, parse를 통과한 서버 쪽은 output을 쓴다.

@@ -170,8 +170,9 @@ model Event {
   startAt   DateTime?
   endAt     DateTime?
   createdAt DateTime @default(now())
+  /// 참고용 목표 인원. 아무것도 막지 않는다.
+  /// 실제 정원은 회차(Recruit)의 capacity 합이라 컬럼으로 두지 않는다.
   minMember Int?
-  maxMember Int?
 
   actives  Active[]
   recruits Recruit[]
@@ -219,7 +220,7 @@ model Recruit {
   status    RecruitStatus @default(OPEN)
   startAt   DateTime?
   endAt     DateTime?
-  capacity  Int? // 이번 모집의 정원. Event.maxMember와 별개로 회차별 제한
+  capacity  Int? // 이번 회차의 정원. 이 값들의 합이 곧 이벤트 전체 정원이다. 비우면 무제한
   createdAt DateTime      @default(now())
 
   // groupId를 FK에 함께 넣어 다른 그룹의 이벤트에 붙는 것을 DB가 막는다.

@@ -55,15 +55,10 @@ export function NewEventForm ({ groupId }: { groupId: string }) {
                 <GetInputArea type="datetime" title="이벤트 시작 시간" description="이벤트 시작 기간을 입력하시오" width="w-100" registration={register("startAt")} error={errors.startAt?.message}/>
                 <GetInputArea type="datetime" title="이벤트 종료 시간" description="이벤트 종료 기간을 입력하시오" width="w-100" registration={register("endAt")} error={errors.endAt?.message}/>
             </div>
-            <div className="flex">
-                {/* 빈 칸이면 undefined로 보낸다. valueAsNumber만 쓰면 ""가 NaN이 되어 검증에 걸린다 */}
-                <GetInputArea type="number" title="최소 인원" description="최소인원을 설정할 수 있어요!" positiveOnly
-                    registration={register("minMember", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
-                    error={errors.minMember?.message}/>
-                <GetInputArea type="number" title="최대 인원" description="최대인원을 설정할 수 있어요!" positiveOnly
-                    registration={register("maxMember", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
-                    error={errors.maxMember?.message}/>
-            </div>
+            {/* 빈 칸이면 undefined로 보낸다. valueAsNumber만 쓰면 ""가 NaN이 되어 검증에 걸린다 */}
+            <GetInputArea type="number" title="최소 인원" description="목표로 삼을 인원이에요. 참가를 막지는 않습니다." positiveOnly
+                registration={register("minMember", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
+                error={errors.minMember?.message}/>
             <div className="pl-5">
                 <div className="flex items-center justify-between py-3 border-zinc-400 border-y mt-10">
                     <span className="font-semibold text-[18px]">모집 활성화</span>
