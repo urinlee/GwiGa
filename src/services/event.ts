@@ -17,7 +17,22 @@ export function getEventsByGroupId(groupId: string, status?: EventStatus) {
         where: {
             groupId: groupId,
             ...(status && { status })
-        }
+        },
+        include: {
+            recruits: {
+                include: {
+                    _count: {
+                        select: {
+                            applicants: {
+                                where: { status: "APPLIED" }
+                            }
+                        }
+                    }
+                },
+                orderBy: { createdAt: "asc" }
+            }
+        },
+        orderBy: { startAt: "desc" }
     })
 }
 

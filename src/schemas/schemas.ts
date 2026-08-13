@@ -64,6 +64,9 @@ export const recruitSchema = z.object({
     endAt: optionalDate,
     description: z.string().trim().max(6000, "최대 6000자까지 입력할 수 있어요").optional(),
 })
+// 모집만 따로 추가하는 폼이 단독으로 쓴다. 이벤트 폼 안에서는 recruit로 중첩된다.
+export type RecruitFormValues = z.input<typeof recruitSchema>;
+export type RecruitInput = z.output<typeof recruitSchema>;
 
 export const eventSchema = eventBaseSchema.extend({ recruit: recruitSchema.optional() }).refine((d) => !d.startAt || !d.endAt || d.startAt < d.endAt, {
     message: "종료 시각은 시작 시각보다 늦어야 해요",

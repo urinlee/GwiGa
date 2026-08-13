@@ -2,7 +2,7 @@
 
 import { GetInputArea } from "@/components/ui/GetInput/GetInput";
 import { Toogle } from "@/components/ui/Toogle/Toogle";
-import { cn } from "@/lib/cn";
+import { NewRecruitForm } from "@/features/event/components/NewRecruitForm/NewRecruitForm";
 import { EventFormValues, eventSchema } from "@/schemas/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,17 +69,14 @@ export function NewEventForm ({ groupId }: { groupId: string }) {
                     <span className="font-semibold text-[18px]">모집 활성화</span>
                     <Toogle checked={recruitEnabled} onChange={setRecruitEnabled} />
                 </div>
-                <div
-                    className={cn(
-                        "transition-all duration-200",
-                        !recruitEnabled && "pointer-events-none select-none opacity-40 blur-[1.5px] h-80 overflow-hidden"
-                    )}
-                    aria-hidden={!recruitEnabled}
-                >
-                    <GetInputArea type="datetime" title="모집 시작 기간" description="모집 시작 기간을 입력하시오" width="w-100" registration={register("recruit.startAt")} error={errors.recruit?.startAt?.message}/>
-                    <GetInputArea type="datetime" title="모집 종료 기간" description="모집 종료 기간을 입력하시오" width="w-100" registration={register("recruit.endAt")} error={errors.recruit?.endAt?.message}/>
-                    <GetInputArea type="textarea" title="모집 유의사항" description="모집 유의사항은 신청시 모달 형식으로 나옵니다." isLong registration={register("recruit.description")} error={errors.recruit?.description?.message}/>
-                </div>
+                {recruitEnabled && (
+                    <NewRecruitForm
+                        bind={(name) => ({
+                            registration: register(`recruit.${name}`),
+                            error: errors.recruit?.[name]?.message,
+                        })}
+                    />
+                )}
             </div>
 
             <div className="mt-10 flex flex-col gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">

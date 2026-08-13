@@ -66,7 +66,7 @@ export function EventList({groupId}:EventListProps) {
         }
     })
 
-
+    
     return(
         <div className="flex flex-col gap-10">
             <div className="flex justify-between">
@@ -95,7 +95,7 @@ export function EventList({groupId}:EventListProps) {
                             status={StatusToKor[event.status]}
                             primaryColor={"#2563eb"}
                             secondaryColor={"#294a7f"}
-                            memberCount={13}
+                            memberCount={event.recruits.reduce((acc: number, recruit: any) => acc + recruit._count.applicants, 0)}
                             maxMemberCount={event.minMember}
                             minMemberCount={event.maxMember}
                             dateTitle={"test"}
