@@ -73,6 +73,57 @@ export function Modal({
     };
   }, [visible]);
 
+  // 포커스를 가두고, 배경을 보조기기·탭 순서에서 들어낸다.
+  // 없으면 탭이 뒤 화면으로 새어 스크린리더가 가려진 배경을 읽는다.
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!visible || !overlay) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    overlay.focus({ preventScroll: true });
+
+    const SELECTOR =
+      'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+    const focusables = () =>
+      Array.from(overlay.querySelectorAll<HTMLElement>(SELECTOR)).filter(
+        (el) => el.getClientRects().length > 0,
+      );
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = focusables();
+      if (items.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && (active === first || active === overlay)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    overlay.addEventListener("keydown", handleKeyDown);
+
+    // 이미 inert였던 형제는 우리가 푼 것으로 착각하지 않게 기억해 둔다
+    const siblings = Array.from(document.body.children).filter((el) => el !== overlay);
+    const previousInert = siblings.map((el) => ({ el, had: el.hasAttribute("inert") }));
+    siblings.forEach((el) => el.setAttribute("inert", ""));
+
+    return () => {
+      overlay.removeEventListener("keydown", handleKeyDown);
+      previousInert.forEach(({ el, had }) => {
+        if (!had) el.removeAttribute("inert");
+      });
+      previouslyFocused?.focus?.();
+    };
+  }, [visible]);
+
   if (!mounted || !visible) return null;
 
   return createPortal(
@@ -81,6 +132,8 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
+      // 내용이 길어도 위에서 시작하도록 다이얼로그 자신이 먼저 포커스를 받는다
+      tabIndex={-1}
       className={`fixed inset-0 z-50 overflow-y-auto overscroll-none bg-black/50 transition-opacity duration-200 ${
         active ? "opacity-100" : "opacity-0"
       }`}

@@ -142,3 +142,26 @@ export const AddModal: Story = {
         await userEvent.click(await canvas.findByRole("button", { name: /회차 추가/ }));
     },
 };
+
+/** 상세 보기. 명단은 API가 없는 스토리북에서 빈 상태로 떨어진다 */
+export const Detail: Story = {
+    args: {
+        groupId: GROUP_ID,
+        eventId: EVENT_ID,
+        recruits: [
+            {
+                id: "recruit-2",
+                status: "OPEN",
+                title: "2차 모집",
+                description: "회비는 신청 후 3일 안에 입금해주세요. 미입금 시 자동 취소됩니다.",
+                startAt: day(-1),
+                endAt: day(3),
+                userCount: 12,
+                userMaxCount: 15,
+            },
+        ],
+    },
+    play: async ({ canvas, userEvent }) => {
+        await userEvent.click(await canvas.findByRole("button", { name: "명단" }));
+    },
+};

@@ -1,5 +1,6 @@
 import { MenuSelectprops, MenuSidebarLayout } from "@/components/layout/MenuSidebar/MenuSidebar";
 import SidebarBackLink from "@/components/layout/MenuSidebar/SidebarBackLink";
+import { SettingLayout } from "@/components/layout/Setting/SettingLayout";
 import { getGroup } from "@/services/group";
 import { getCurrentUser } from "@/utils/currentUser";
 import { ChevronLeft, Flame, Settings, Users } from "lucide-react";
@@ -17,7 +18,7 @@ export default async function GroupSettingLayout({
   const { groupid } = await params;
   const encodedGroupId = encodeURIComponent(groupid);
 
-  const menus: MenuSelectprops[] = [
+  const menusOptions = [
     {
       icon: <Settings className="size-4" />,
       title: "일반",
@@ -36,7 +37,7 @@ export default async function GroupSettingLayout({
       description: "액티브와 관련된 설정",
       href: `/setting/group/${encodedGroupId}/active`,
     }
-  ];
+  ]
 
   const session = await getCurrentUser();
   const data = await getGroup(groupid);
@@ -58,21 +59,9 @@ export default async function GroupSettingLayout({
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-        <div className="w-72 h-full">
-            {/* <SidebarBackLink /> */}
-            <div className="border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-800/80">
-                <Link
-                    href={`/group/${encodedGroupId}/dashboard/`}
-                    className="inline-flex items-center rounded-md px-2.5 py-1.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                >
-                    <span><ChevronLeft size={15} className="mr-2" /></span> Dashboard로 이동
-                </Link>
-            </div>
-            <MenuSidebarLayout title="Group Settings" menus={menus} />
-        </div>
-        <main className="flex-1 min-w-0 overflow-y-auto p-6">{children}</main>
-    </div>
+    <SettingLayout menuLabel={"그룹 설정하기"} menus={menusOptions} returnButton={{ href: `/group/${encodedGroupId}/dashboard`, label: "그룹 대시보드로 돌아가기" }}>
+      {children}
+    </SettingLayout>
   );
 }
 

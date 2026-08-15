@@ -1,8 +1,6 @@
 "use client";
 import { Gauge } from "@/components/ui/Gauge/Gauge";
-import { GetInputArea } from "@/components/ui/GetInput/GetInput";
 import { Modal, ModalContent } from "@/components/ui/Modal/Modal";
-import type { RecruitStatus } from "@/generated/prisma/enums";
 import { cn } from "@/lib/cn";
 import { daysUntil, formatShortPeriod } from "@/lib/date";
 import { RecruitFormValues, recruitSchema } from "@/schemas/schemas";
@@ -13,42 +11,21 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { NewRecruitForm, RecruitFieldName } from "../NewRecruitForm/NewRecruitForm";
 import { useMutation } from "@tanstack/react-query";
+import { deriveRecruitPhase, type Recruit } from "../../lib/recruit";
+import { RecruitDetailModal } from "./RecruitDetailModal";
 
-/** status(관리자가 연·닫은 상태)와 기간을 합쳐 화면에 보일 단계를 정한다. */
-export type RecruitPhase = "예정" | "모집중" | "마감";
-
-export function deriveRecruitPhase(
-    status: RecruitStatus,
-    startAt?: Date | null,
-    endAt?: Date | null,
-    now: Date = new Date(),
-): RecruitPhase {
-    if (status === "CLOSED") return "마감";
-    if (endAt && now.getTime() > endAt.getTime()) return "마감";
-    if (startAt && now.getTime() < startAt.getTime()) return "예정";
-    return "모집중";
-}
-
-export interface Recruit {
-    id: string;
-    status: RecruitStatus;
-    title?: string | null;
-    description?: string | null;
-    startAt?: Date | null;
-    endAt?: Date | null;
-    userCount: number;
-    userMaxCount?: number | null;
-}
+// 상세 모달과 함께 쓰므로 순수 로직은 lib에 둔다 (서로 import하면 순환이 된다)
+export { deriveRecruitPhase, type RecruitPhase, type Recruit } from "../../lib/recruit";
 
 interface RecruitCardProps extends Recruit {
     groupId: string;
-    /** 넘기면 명단 버튼이 나온다. 신청자 화면이 준비되면 연결한다. */
-    onShowApplicants?: (recruitId: string) => void;
+    /** 카드를 눌러 상세를 연다 */
+    onShowDetail: () => void;
 }
 
-/** 레일이 좁아도 손가락이 닿아야 해서 높이는 44px로 잡는다. */
+/** 좁은 레일에 두 개가 나란히 서므로 36px로 잡는다. WCAG 최소 터치 크기(24px)는 넘긴다. */
 const BUTTON_CLASS =
-    "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md border border-zinc-300 " +
+    "flex min-h-9 flex-1 cursor-pointer items-center justify-center rounded-md border border-zinc-300 " +
     "text-[12px] font-semibold transition-colors hover:bg-zinc-50 " +
     "focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 " +
     "disabled:cursor-not-allowed disabled:text-zinc-400 dark:disabled:text-zinc-500 " +
@@ -64,7 +41,7 @@ function RecruitCard({
     endAt,
     userCount,
     userMaxCount,
-    onShowApplicants,
+    onShowDetail,
 }: RecruitCardProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -199,15 +176,13 @@ function RecruitCard({
             </p>
 
             <div className="mt-2.5 flex gap-1.5">
-                {onShowApplicants && (
-                    <button
-                        type="button"
-                        onClick={() => onShowApplicants(id)}
-                        className={cn(BUTTON_CLASS, "text-zinc-700 dark:text-zinc-200")}
-                    >
-                        명단
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={onShowDetail}
+                    className={cn(BUTTON_CLASS, "text-zinc-700 dark:text-zinc-200")}
+                >
+                    명단
+                </button>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -234,12 +209,12 @@ export interface RecruitListProps {
     groupId: string;
     /** 회차를 여는 대상 이벤트. 모집은 이벤트에 붙으므로 목록만으로는 알 수 없다. */
     eventId: string;
-    /** 넘기면 카드에 명단 버튼이 나온다. 신청자 화면이 준비되면 연결한다. */
-    onShowApplicants?: (recruitId: string) => void;
 }
 
-export function RecruitList({ recruits, groupId, eventId, onShowApplicants }: RecruitListProps) {
+export function RecruitList({ recruits, groupId, eventId }: RecruitListProps) {
     const [isAddOpen, setIsAddOpen] = useState(false);
+    // 상세는 카드가 아니라 목록이 연다. 열린 회차를 통째로 넘겨 다시 조회하지 않는다.
+    const [detail, setDetail] = useState<Recruit | null>(null);
 
     return (
         // 옆 레일에 놓이므로 제목 크기를 EventAbout에 맞춘다
@@ -264,13 +239,21 @@ export function RecruitList({ recruits, groupId, eventId, onShowApplicants }: Re
                 <ul className="flex flex-col gap-1.5">
                     {recruits.map((recruit) => (
                         <li key={recruit.id}>
-                            <RecruitCard {...recruit} groupId={groupId} onShowApplicants={onShowApplicants} />
+                            <RecruitCard {...recruit} groupId={groupId} onShowDetail={() => setDetail(recruit)} />
                         </li>
                     ))}
                 </ul>
             )}
             {isAddOpen && (
                 <AddRecruitModal groupId={groupId} eventId={eventId} onClose={() => setIsAddOpen(false)} />
+            )}
+            {detail && (
+                <RecruitDetailModal
+                    recruit={detail}
+                    groupId={groupId}
+                    onClose={() => setDetail(null)}
+                    onRecruitChange={setDetail}
+                />
             )}
         </section>
     );
@@ -328,11 +311,11 @@ export function AddRecruitModal({
     return (
         <Modal isOpen onClose={onClose} aria-label="새 모집 회차">
             {/* GetInputArea가 입력에 w-80을 고정으로 잡아, 이보다 좁으면 라벨 칸이 눌린다 */}
-            <ModalContent className="max-h-[85vh] w-[min(92vw,680px)] overflow-y-auto">
+            <ModalContent className="max-h-[85vh] w-[min(92vw,980px)] overflow-y-auto">
                 <form onSubmit={handleSubmit((data) => openRecruit.mutate(data))}>
                     <div className="px-4 pt-1">
                         <h2 className="text-xl font-bold tracking-tight">새 모집 회차</h2>
-                        <p className="mt-1 text-[13px] text-zinc-500 dark:text-zinc-400">
+                        <p className="mt-1 text-[13px] text-zinc-600 dark:text-zinc-400">
                             정원과 기간을 정하면 참가 신청을 받기 시작해요.
                         </p>
                     </div>
@@ -341,34 +324,19 @@ export function AddRecruitModal({
                     <div className="mt-5 border-y border-zinc-200 px-4 py-5 dark:border-zinc-800">
                         <div className="flex items-baseline gap-2">
                             <span className="text-[44px] leading-none font-bold tabular-nums">0</span>
-                            <span className="text-[15px] text-zinc-500 dark:text-zinc-400">
+                            <span className="text-[15px] text-zinc-600 dark:text-zinc-400">
                                 {capacity ? `/ ${capacity}명 신청` : "명 신청"}
                             </span>
                         </div>
 
                         {/* 게이지는 생성 시점에 늘 0%라 빈 막대만 남는다. 숫자와 말이 대신한다. */}
-                        <p className="mt-2.5 text-[12px] text-zinc-500 dark:text-zinc-400">
+                        <p className="mt-2.5 text-[12px] text-zinc-600 dark:text-zinc-400">
                             {capacity
                                 ? `${capacity}자리로 시작해서, 다 차면 카드가 정원 마감으로 바뀌어요`
                                 : "정원을 비우면 인원 제한 없이 받습니다"}
                         </p>
                     </div>
 
-                    <GetInputArea
-                        type="text"
-                        title="회차 이름"
-                        description="비우면 '모집'으로 보여요"
-                        registration={register("title")}
-                        error={errors.title?.message}
-                    />
-                    <GetInputArea
-                        type="number"
-                        title="정원"
-                        description="이번 회차에서 받을 최대 인원"
-                        positiveOnly
-                        registration={register("capacity")}
-                        error={errors.capacity?.message}
-                    />
                     <NewRecruitForm bind={bind} />
 
                     {/* 폼이 길어 스크롤되므로, 확정 버튼은 늘 손 닿는 곳에 붙여둔다 */}
@@ -390,7 +358,7 @@ export function AddRecruitModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="mt-2 min-h-9 w-full cursor-pointer rounded-lg text-[13px] font-medium text-zinc-500 transition-colors hover:text-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-100"
+                            className="mt-2 min-h-9 w-full cursor-pointer rounded-lg text-[13px] font-medium text-zinc-600 transition-colors hover:text-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-100"
                         >
                             취소
                         </button>

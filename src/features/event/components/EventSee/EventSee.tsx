@@ -8,9 +8,13 @@ import { AddActiveButton } from "../AddActiveButton/AddActiveButton";
 import { Recruit, RecruitList } from "../RecruitList/RecruitList";
 import { getRecruits } from "@/services/recruit";
 import { sumRecruitCapacity } from "../../lib/capacity";
+import { EventSettingLink } from "../EventSettingLink/EventSettingLink";
+import { isAdmin } from "@/services/group";
 
 export async function EventSee({groupId, eventId}:{groupId:string, eventId:string}) {
-    await verifyMember(groupId)
+    const { user } = await verifyMember(groupId)
+    // 설정은 관리자만 들어간다. 페이지도 막지만, 못 여는 문을 보여주지는 않는다.
+    const canManage = await isAdmin(groupId, user.id)
 
     const data = await getEventById(groupId, eventId)
     const actives = await getActives(groupId, eventId)
@@ -38,7 +42,7 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
 
     return(
         <div className="pb-16">
-            <EventHero groupId={groupId} name={data?.name || "찾을 수 없음"} status={data?.status || "CLOSED"} startAt={data?.startAt} endAt={data?.endAt} memberCount={12} minMember={data?.minMember} capacity={sumRecruitCapacity(recruits)}/>
+            <EventHero groupId={groupId} name={data?.name || "찾을 수 없음"} status={data?.status || "CLOSED"} startAt={data?.startAt} endAt={data?.endAt} memberCount={9999} minMember={data?.minMember} capacity={sumRecruitCapacity(recruits)} action={canManage && <EventSettingLink groupId={groupId} eventId={eventId}/>}/>
 
             {/* 왼쪽은 할 일(액티브), 오른쪽은 참고(소개) */}
             <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">

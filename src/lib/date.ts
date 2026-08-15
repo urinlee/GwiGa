@@ -34,6 +34,12 @@ export function formatShortPeriod(startAt?: Date | null, endAt?: Date | null): s
     return isSameDay(s, e) ? short(s) : `${short(s)} – ${short(e)}`;
 }
 
+/** "8/13 14:22" — 목록에서 시각까지 한 줄로 보여줄 때 */
+export function formatShortDateTime(date: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${date.getMonth() + 1}/${date.getDate()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 /** 오늘 자정 기준 남은 일수. 지났으면 음수. */
 export function daysUntil(date: Date, now: Date = new Date()): number {
     const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();

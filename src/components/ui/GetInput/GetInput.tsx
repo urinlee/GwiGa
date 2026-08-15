@@ -99,7 +99,7 @@ export function GetInputArea(props: GetInputProps) {
                         {required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     {description && (
-                        <p id={descId} className="mt-2 text-[12px] text-zinc-500">
+                        <p id={descId} className="mt-2 text-[12px] text-zinc-500 dark:text-zinc-400">
                             {description}
                         </p>
                     )}

@@ -180,6 +180,7 @@ model Event {
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([id, groupId])
+  
   eventMembers EventMember[]
 }
 

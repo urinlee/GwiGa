@@ -2,15 +2,9 @@ import { Gauge } from "@/components/ui/Gauge/Gauge";
 import type { EventStatus } from "@/generated/prisma/enums";
 import { cn } from "@/lib/cn";
 import { formatPeriod, isSameDay } from "@/lib/date";
+import { EVENT_STATUS } from "../../lib/status";
 import { ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
-
-/** accent는 EventCard와 같은 값 — 목록에서 상세로 넘어와도 색이 이어진다. */
-const STATUS_STYLE: Record<EventStatus, { label: string; accent: string; live: boolean }> = {
-    RECRUITING: { label: "모집중", accent: "#0F9D63", live: true },
-    ONGOING: { label: "진행중", accent: "#2563eb", live: true },
-    CLOSED: { label: "종료됨", accent: "#6B7280", live: false },
-};
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -73,7 +67,7 @@ export function EventHero({
     capacity,
     action,
 }: EventHeroProps) {
-    const style = STATUS_STYLE[status];
+    const style = EVENT_STATUS[status];
     const { date, time } = formatPeriod(startAt, endAt);
 
     const reachedMin = Boolean(minMember && memberCount >= minMember);

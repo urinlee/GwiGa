@@ -53,3 +53,4 @@ storybook-static
 /src/generated/prisma
 
 .claude
+.impeccable
