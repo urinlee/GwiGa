@@ -130,7 +130,7 @@ export default function InfoCardsContainer({
                 <div className="flex flex-col md:grid md:grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
                     {
                     filteredParticipants.map((participant) => (
-                        <div key={participant.username} className={cn("w-full", )}>
+                        <div key={participant.username} className={cn("w-full", )} onClick={() => participant.onClick?.(participant.memberId)}>
                             <ParticipantInfoCard {...participant} />
                         </div>
                     ))

@@ -23,23 +23,23 @@ interface MenuSidebarLayoutProps {
 
 
 
+function isPathActive(pathname: string | null, href?: string) {
+    if (!href || !pathname) {
+        return false;
+    }
+
+    const normalizedHref = href.endsWith("/") && href !== "/" ? href.slice(0, -1) : href;
+    const normalizedPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
+
+    if (normalizedHref === "/") {
+        return normalizedPath === "/";
+    }
+
+    return normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`);
+}
+
 export function MenuSidebarLayout({ menus, title = "Menu", className, selectedMenu }: MenuSidebarLayoutProps) {
     const pathname = usePathname();
-
-    const isPathActive = (href?: string) => {
-        if (!href || !pathname) {
-            return false;
-        }
-
-        const normalizedHref = href.endsWith("/") && href !== "/" ? href.slice(0, -1) : href;
-        const normalizedPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-
-        if (normalizedHref === "/") {
-            return normalizedPath === "/";
-        }
-
-        return normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`);
-    };
 
     return (
         <aside className={cn("h-full w-full max-w-72 border-r border-zinc-200/70 bg-linear-to-b from-white to-zinc-50 dark:border-zinc-800/80 dark:from-zinc-950 dark:to-zinc-900", className)}>
@@ -53,7 +53,8 @@ export function MenuSidebarLayout({ menus, title = "Menu", className, selectedMe
                 <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label={title}>
                     <ul className="space-y-1.5">
                         {menus.map((menu, index) => {
-                            const isSelected = menu.isActive || selectedMenu === menu || isPathActive(menu.href);
+                            const isSelected =
+                                menu.isActive || selectedMenu === menu || isPathActive(pathname, menu.href);
                             const itemClassName = cn(
                                 "group flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left transition-all",
                                 "hover:border-zinc-200 hover:bg-white hover:shadow-sm dark:hover:border-zinc-700 dark:hover:bg-zinc-900",
@@ -83,7 +84,11 @@ export function MenuSidebarLayout({ menus, title = "Menu", className, selectedMe
                             return (
                                 <li key={`${menu.title}-${index}`}>
                                     {menu.href ? (
-                                        <Link href={menu.href} className={itemClassName}>
+                                        <Link
+                                            href={menu.href}
+                                            className={itemClassName}
+                                            aria-current={isSelected ? "page" : undefined}
+                                        >
                                             {content}
                                         </Link>
                                     ) : (
@@ -96,5 +101,53 @@ export function MenuSidebarLayout({ menus, title = "Menu", className, selectedMe
                 </nav>
             </div>
         </aside>
+    );
+}
+
+/** 사이드바가 설 자리가 없는 좁은 화면용. 같은 menus를 가로로 눕혀 본문 폭을 지킨다. */
+export function MenuTabBar({ menus, className }: { menus: MenuSelectprops[]; className?: string }) {
+    const pathname = usePathname();
+
+    return (
+        <nav
+            className={cn(
+                "flex gap-2 overflow-x-auto border-b border-zinc-200/80 px-6 py-2.5 dark:border-zinc-800/80",
+                className,
+            )}
+            aria-label="설정 메뉴"
+        >
+            {menus.map((menu, index) => {
+                const isSelected = menu.isActive || isPathActive(pathname, menu.href);
+                const tabClassName = cn(
+                    "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3.5 text-[13px] font-semibold transition-colors",
+                    isSelected
+                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                        : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+                );
+                const content = (
+                    <>
+                        <span aria-hidden="true" className="shrink-0">
+                            {menu.icon}
+                        </span>
+                        {menu.title}
+                    </>
+                );
+
+                return menu.href ? (
+                    <Link
+                        key={`${menu.title}-${index}`}
+                        href={menu.href}
+                        className={tabClassName}
+                        aria-current={isSelected ? "page" : undefined}
+                    >
+                        {content}
+                    </Link>
+                ) : (
+                    <span key={`${menu.title}-${index}`} className={tabClassName}>
+                        {content}
+                    </span>
+                );
+            })}
+        </nav>
     );
 }

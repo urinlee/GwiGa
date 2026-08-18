@@ -3,8 +3,8 @@
 import DashboardFastSetting from "@/features/dashboard/components/DashboardFastSetting/DashboardFastSetting";
 import DashboardHero from "@/features/dashboard/components/DashboardHero/DashboardHero";
 import { EventList } from "@/features/dashboard/components/EventList/EventList";
-import InfoCardsContainer, { stateType } from "@/features/dashboard/components/InfoCardsContainer/InfoCardsContainer";
-import { ParticipantsInfoCardProps, ParticipateStatusProps } from "@/features/dashboard/components/ParticipateInfoCard/ParticipantsInfoCard";
+import InfoCardsContainer from "@/components/ui/InfoCardsContainer/InfoCardsContainer";
+import type { ParticipantsInfoCardProps, stateType } from "@/components/ui/InfoCardsContainer/types";
 import { prisma } from "@/lib/prisma";
 import { getEventsByGroupId } from "@/services/event";
 import { getGroup } from "@/services/group";
@@ -60,6 +60,7 @@ export default async function DashboardPage({
   }
   
   const participants = (Group?.members ?? []).map((Member) => ({
+    memberId: Member.id,
     username: Member.nickname || Member.user.name,
     avatarUrl: Member.user.image,
     userStatus:[...Member.memberActives].map((memberStatus, _) => ({

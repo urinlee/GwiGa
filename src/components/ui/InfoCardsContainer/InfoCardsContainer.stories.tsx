@@ -26,11 +26,11 @@ export const Default: Story = {
     args: {
         allStatuses,
         participants: [
-            { username: "이우린",  userStatus: toUserStatus(["1", "2"]) },
-            { username: "김민수",  userStatus: toUserStatus(["1", "2", "3", "4"]) },
-            { username: "박지민",  userStatus: toUserStatus([]) },
-            { username: "최수연",  userStatus: toUserStatus(["1"]) },
-            { username: "정하늘",  userStatus: toUserStatus(["3", "4"]) },
+            { memberId: "m-1", username: "이우린",  userStatus: toUserStatus(["1", "2"]) },
+            { memberId: "m-2", username: "김민수",  userStatus: toUserStatus(["1", "2", "3", "4"]) },
+            { memberId: "m-3", username: "박지민",  userStatus: toUserStatus([]) },
+            { memberId: "m-4", username: "최수연",  userStatus: toUserStatus(["1"]) },
+            { memberId: "m-5", username: "정하늘",  userStatus: toUserStatus(["3", "4"]) },
         ],
     },
     play: async ({ canvasElement }) => {
@@ -55,8 +55,8 @@ export const WithTitle: Story = {
         allStatuses,
         className: "border-t border-zinc-200 pt-8 dark:border-zinc-800",
         participants: [
-            { username: "이우린", userStatus: toUserStatus(["1", "2"]) },
-            { username: "정하늘", userStatus: toUserStatus(["3", "4"]) },
+            { memberId: "m-1", username: "이우린", userStatus: toUserStatus(["1", "2"]) },
+            { memberId: "m-5", username: "정하늘", userStatus: toUserStatus(["3", "4"]) },
         ],
     },
 };
@@ -65,6 +65,7 @@ export const ManyParticipants: Story = {
     args: {
         allStatuses,
         participants: Array.from({ length: 30 }, (_, i) => ({
+            memberId: `m-${i + 1}`,
             username: `참가자${i + 1}`,
             userStatus: toUserStatus(
                 allStatuses.filter(() => Math.random() > 0.5).map((s) => s.id)

@@ -41,3 +41,49 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 각도를 등록해야 커스텀 속성이 보간된다. 등록 안 하면 0deg에서 360deg로 툭 끊긴다. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/*
+ * 테두리만 남기는 링. 안쪽을 마스크로 파내야 반투명 바탕 위에서도 테두리로 보인다.
+ * 쓰는 쪽이 --accent(도는 빛)와 --edge(서 있을 때 색)를 내려준다.
+ */
+.trace-ring {
+  padding: 2px;
+  background: var(--edge);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/*
+ * 지금 돌아가는 중인 것만 돈다. 시작 전이면 테두리는 서 있는다.
+ * 바닥을 --edge로 깔아야 테두리가 항상 다 그려진다. 투명으로 두면 매 순간 테두리 대부분이 사라진다.
+ */
+.trace-ring[data-live="true"] {
+  background: conic-gradient(from var(--angle), var(--edge) 0 58%, var(--accent) 76%, var(--edge) 90%);
+  animation: trace-ring 5s linear infinite;
+}
+
+@keyframes trace-ring {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-ring[data-live="true"] {
+    background: var(--edge);
+    animation: none;
+  }
+}

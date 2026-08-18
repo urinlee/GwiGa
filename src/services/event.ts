@@ -109,6 +109,29 @@ export function setClosedEvent(eventId: string) {
 
 
 
+/**
+ * 이벤트에 들어와 있는 참가자와 그 사람들의 액티브 현황.
+ * memberActives는 이 이벤트에 걸린 액티브만 골라 온다. 그룹 전체 액티브까지 딸려오면
+ * 이벤트 화면에 다른 이벤트의 진행 상황이 섞인다.
+ */
+export async function getEventMembers(groupId: string, eventId: string) {
+    return prisma.eventMember.findMany({
+        where: { eventId, groupId, status: "CONFIRMED" },
+        include: {
+            member: {
+                include: {
+                    user: true,
+                    memberActives: {
+                        where: { active: { eventId } },
+                        include: { active: true },
+                    },
+                },
+            },
+        },
+        orderBy: { joinedAt: "asc" },
+    });
+}
+
 export async function getEventMember(eventId: string, userId: string) {
     return prisma.eventMember.findFirst({
         where: {
@@ -118,6 +141,7 @@ export async function getEventMember(eventId: string, userId: string) {
             }
         }
     });
+    
 }
 
 

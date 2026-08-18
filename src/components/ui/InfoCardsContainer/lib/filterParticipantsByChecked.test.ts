@@ -14,6 +14,7 @@ const byId = (id: string) => allStatuses.find((status) => status.id === id)!;
 
 /** 켜진 상태 id만 주면 나머지는 isTrue=false로 채운다 */
 const createParticipant = (username: string, enabledIds: string[]): ParticipantsInfoCardProps => ({
+	memberId: `member-${username}`,
 	username,
 	userStatus: allStatuses.map((status) => ({ ...status, isTrue: enabledIds.includes(status.id) })),
 });

@@ -27,6 +27,7 @@ const withEnabled = (ids: string[]) =>
 
 export const NoStatus: Story = {
     args: {
+        memberId: "m-1",
         username: "이우린",
         userStatus: mockStatuses,
     },
@@ -34,6 +35,7 @@ export const NoStatus: Story = {
 
 export const PartialStatus: Story = {
     args: {
+        memberId: "m-2",
         username: "김민수",
         userStatus: withEnabled(["1", "2"]),
     },
@@ -46,6 +48,7 @@ export const PartialStatus: Story = {
 
 export const AllStatus: Story = {
     args: {
+        memberId: "m-3",
         username: "박지민",
         userStatus: withEnabled(["1", "2", "3", "4"]),
     },
@@ -53,6 +56,7 @@ export const AllStatus: Story = {
 
 export const LongUsername: Story = {
     args: {
+        memberId: "m-4",
         username: "이름이매우긴참가자입니다",
         userStatus: withEnabled(["1"]),
     },

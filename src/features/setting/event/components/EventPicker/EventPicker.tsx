@@ -104,17 +104,34 @@ function EventRow({
     return (
         <li
             // 상태색을 변수로 내려 세로 막대·테두리·바탕이 한 값을 나눠 쓴다.
-            style={{ "--accent": accent, "--tint": `${accent}14`, "--tint-dark": `${accent}2e` } as CSSProperties}
+            style={
+                {
+                    "--accent": accent,
+                    "--edge": `${accent}33`,
+                    "--tint": `${accent}14`,
+                    "--tint-hover": `${accent}22`,
+                    "--tint-dark": `${accent}2e`,
+                    "--tint-dark-hover": `${accent}42`,
+                } as CSSProperties
+            }
         >
             <Link
                 href={`/setting/event/${encodeURIComponent(groupId)}/${encodeURIComponent(event.id)}`}
                 className={cn(
                     "group flex flex-col rounded-2xl px-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100",
                     featured
-                        ? "bg-[var(--tint)] py-5 hover:ring-2 hover:ring-[var(--accent)] dark:bg-[var(--tint-dark)]"
+                        ? "relative bg-[var(--tint)] py-5 hover:bg-[var(--tint-hover)] dark:bg-[var(--tint-dark)] dark:hover:bg-[var(--tint-dark-hover)]"
                         : "py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900",
                 )}
             >
+                {/* 지금 돌아가는 이벤트만 테두리가 돈다. 시작 전이면 서 있는다. */}
+                {featured && (
+                    <span
+                        aria-hidden
+                        data-live={event.status === "ONGOING"}
+                        className="trace-ring pointer-events-none absolute inset-0 rounded-2xl"
+                    />
+                )}
                 <div className={cn("flex items-center", featured ? "gap-4 sm:gap-6" : "gap-4 sm:gap-5")}>
                     <DateMark date={event.startAt ?? event.endAt} featured={featured} />
 

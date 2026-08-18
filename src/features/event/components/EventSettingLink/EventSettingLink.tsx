@@ -14,7 +14,7 @@ export function EventSettingLink({
 }) {
     return (
         <Link
-            href={`/group/${encodeURIComponent(groupId)}/event/${encodeURIComponent(eventId)}/setting`}
+            href={`/setting/event/${encodeURIComponent(groupId)}/${encodeURIComponent(eventId)}`}
             className={cn(
                 "flex min-h-9 items-center gap-1.5 rounded-lg border border-zinc-300 px-3 text-[13px] font-semibold text-zinc-700 transition-colors",
                 "hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900",
