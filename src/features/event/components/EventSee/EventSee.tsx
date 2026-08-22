@@ -93,6 +93,8 @@ export async function EventSee({groupId, eventId}:{groupId:string, eventId:strin
                 카드가 가로로 깔려야 읽히니 좁은 레일이 아니라 폭 전체를 쓴다. */}
             <section className="mt-10 border-t border-zinc-200 pt-8 dark:border-zinc-800">
                 <EventMemberCards
+                    groupId={groupId}
+                    eventId={eventId}
                     participants={participants}
                     allStatuses={activeStatuses}
                 />
